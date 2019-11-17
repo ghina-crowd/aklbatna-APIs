@@ -1,4 +1,4 @@
-var countryService=require('../service/country.js');
+var countryService=require('../service/users.js');
 var validator={
     validateCredentials:function(credentials){
         countryService.Create(req.body).then(function(result){

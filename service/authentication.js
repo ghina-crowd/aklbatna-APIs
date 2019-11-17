@@ -1,5 +1,5 @@
 var models=require('../models/models.js');
-var countryRepository=require('../repository/country.js');
+var countryRepository=require('../repository/users.js');
 var fields=require('../constant/field.js');
 var service={
     login:function(email,password){
