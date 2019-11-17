@@ -6,7 +6,7 @@ var service={
         return new Promise(function(resolve,reject){
             countryRepository.Login(email,password).then(users=>{
                 if(users == null){
-                    resolve(null);
+                    resolve(users['dataValues']);
                 }else{
                     resolve(users['dataValues']);
                 }
@@ -44,23 +44,20 @@ var service={
             });
         });
     },
-    register_user:function(email,password,first_name,last_name,phone){
+    register_user:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
-            countryRepository.Register(email,password,first_name,last_name,phone).then(users=>{
-                if(users == null){
-                    resolve(null);
-                }else{
-                    resolve(users['dataValues']);
-                }
+            countryRepository.Register(email,password,first_name,last_name,phone,user_type).then(users=>{
+
+                resolve(users['dataValues']);
 
             },error=>{
                 reject(error);
             });
         });
     },
-    check_otp:function(user_id,otp){
+    check_otp:function(token,otp){
         return new Promise(function(resolve,reject){
-            countryRepository.Check_otp(user_id,otp).then(users=>{
+            countryRepository.Check_otp(token,otp).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -86,9 +83,9 @@ var service={
             });
         });
     },
-    activate_user:function(user_id,otp){
+    activate_user:function(token,otp){
         return new Promise(function(resolve,reject){
-            countryRepository.Activate(user_id,otp).then(users=>{
+            countryRepository.Activate(token,otp).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -114,8 +111,36 @@ var service={
             });
         });
     },
+    update_profile:function(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name){
+        return new Promise(function(resolve,reject){
+            countryRepository.Update_profile(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
     logout:function(){
         console.log("Invalidate token.");
-    }
+    },
+    get_user:function(token){
+        return new Promise(function(resolve,reject){
+            countryRepository.Get_user(token).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
 };
 module.exports=service;

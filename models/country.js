@@ -2,6 +2,9 @@
 
 module.exports = function(sequelize, DataTypes) {
   return sequelize.define('user_admin', {
+    user_admin_id: {
+      type: DataTypes.STRING(45),
+    },
     email: {
       type: DataTypes.STRING(45),
     },
@@ -20,10 +23,10 @@ module.exports = function(sequelize, DataTypes) {
     last_name: {
       type: DataTypes.STRING(45),
     },
-    user_admin_id: {
+    otp: {
       type: DataTypes.STRING(45),
     },
-    otp: {
+    otp_val: {
       type: DataTypes.STRING(45),
     },
     user_id: {
@@ -34,7 +37,28 @@ module.exports = function(sequelize, DataTypes) {
     },
     token: {
       type: DataTypes.STRING(500),
-    }
+    },
+    lattitude: {
+      type: DataTypes.STRING(45),
+    },
+    longitude: {
+      type: DataTypes.STRING(45),
+    },
+    company_name: {
+      type: DataTypes.STRING(45),
+    },
+    picture: {
+      type: DataTypes.STRING(200),
+    },
+    address: {
+      type: DataTypes.STRING(200),
+    },
+    user_type: {
+      type: DataTypes.STRING(45),
+    },
+    name: {
+      type: DataTypes.STRING(45),
+     }
   }, {
     tableName: 'user_admin'
   });

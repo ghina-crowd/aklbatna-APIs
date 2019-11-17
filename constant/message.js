@@ -20,6 +20,12 @@ var message={
     ACTIVATED_USER:'User is activated you can login to your account.',
     INVALID_TOKEN:'Invalid session token.',
     CHANGE_PASS:'Password reset successful.',
+    EMPTY_FIELD_ADDRESS:'Please type your address.',
+    EMPTY_FIELD_PIC:'Please select one picture.',
+    EMPTY_FIELD_LAT:'Empty lattitude.',
+    EMPTY_FIELD_LONG:'Empty longitude.',
+    EMPTY_FIELD_COMPANY:'Please type company name.',
+    PROFILE_UPDATE:'Profile updated.',
 };
 
 module.exports=message;
