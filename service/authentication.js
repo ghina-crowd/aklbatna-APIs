@@ -72,9 +72,37 @@ var service={
             });
         });
     },
+    check_token:function(token){
+        return new Promise(function(resolve,reject){
+            countryRepository.Check_token(token).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
     activate_user:function(user_id,otp){
         return new Promise(function(resolve,reject){
             countryRepository.Activate(user_id,otp).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
+    change_pass:function(token,password){
+        return new Promise(function(resolve,reject){
+            countryRepository.Change_pass(token,password).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{

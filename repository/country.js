@@ -83,9 +83,28 @@ var CountryRepository={
             });
         });
     },
+    Check_token:function(token){
+        return new Promise(function(resolve,reject){
+            models.Country.findOne({attributes: ['session_id'], where:{session_id:token}}).then(users=>{
+                resolve(users);
+            },error=>{
+                reject(error);
+            });
+        });
+    },
     Activate:function(user_id,otp){
         return new Promise(function(resolve,reject){
             models.Country.update({active:1}, {where:{user_admin_id:user_id}}).then(function(result){
+                resolve(result);
+            },function(error){
+            },function(error){
+                reject(error);
+            });
+        });
+    },
+    Change_pass:function(token,password){
+        return new Promise(function(resolve,reject){
+            models.Country.update({password:password}, {where:{session_id:token}}).then(function(result){
                 resolve(result);
             },function(error){
             },function(error){

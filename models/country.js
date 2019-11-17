@@ -31,6 +31,9 @@ module.exports = function(sequelize, DataTypes) {
     },
     active: {
       type: DataTypes.STRING(45),
+    },
+    token: {
+      type: DataTypes.STRING(500),
     }
   }, {
     tableName: 'user_admin'

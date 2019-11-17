@@ -18,6 +18,8 @@ var message={
     EMAIL_REGISTERED:'Email is already registered.',
     REGISTERED_USER:'User registered please check your email and activate your account.',
     ACTIVATED_USER:'User is activated you can login to your account.',
+    INVALID_TOKEN:'Invalid session token.',
+    CHANGE_PASS:'Password reset successful.',
 };
 
 module.exports=message;
