@@ -29,6 +29,16 @@ var CountryRepository={
             });
         });
     },
+    Check_email:function(email){
+        return new Promise(function(resolve,reject){
+            models.Country.findOne({attributes: ['email'], where:{email:email}}).then(users=>{
+                resolve(users['dataValues']);
+                return users['dataValues'];
+            },error=>{
+                reject(error);
+            });
+        });
+    },
     Login_Token:function(id,token){
         return new Promise(function(resolve,reject){
 
@@ -38,6 +48,22 @@ var CountryRepository={
                     },function(error){
                         reject(error);
                     });
+
+
+        });
+    },
+    Update_otp:function(email){
+        return new Promise(function(resolve,reject){
+            var otp_val = Math.floor(1000 + Math.random() * 9000);
+            models.Country.update({otp:otp_val}, {where:{email:email}}).then(function(result){
+                models.Country.findOne({attributes: ['otp','email'], where:{email:email}}).then(users=>{
+                    resolve(users);
+                },error=>{
+                    reject(error);
+                });
+            },function(error){
+                reject(error);
+            });
 
 
         });
@@ -91,6 +117,16 @@ var CountryRepository={
     Change_pass:function(token,password){
         return new Promise(function(resolve,reject){
             models.Country.update({password:password}, {where:{session_id:token}}).then(function(result){
+                resolve(result);
+            },function(error){
+            },function(error){
+                reject(error);
+            });
+        });
+    },
+    Update_pass:function(otp,password){
+        return new Promise(function(resolve,reject){
+            models.Country.update({password:password}, {where:{otp:otp}}).then(function(result){
                 resolve(result);
             },function(error){
             },function(error){

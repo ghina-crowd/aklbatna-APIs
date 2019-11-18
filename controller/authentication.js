@@ -534,6 +534,142 @@ router.put('/resend_code', function(req,res){
 
         }
 });
+//reset password
+router.post('/reset_password', function(req,res){
+
+    if(req.headers.locale == 'ar'){
+        var trans_message = ar_messages;
+    }else if(req.headers.locale == 'en'){
+        var trans_message = messages;
+    }else{
+        var trans_message = messages;
+    }
+    var errors = validationResult(req);
+    if(errors.array().length==0){
+        var creqentials=req.body;
+
+        if(creqentials.email == ''){
+            res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMPTY_FIELD_EMAIL,data:null});
+        }else{
+
+            return new Promise(function (resolve, reject) {
+
+                authenticationService.check_email(creqentials.email).then(user => {
+
+                    resolve(user);
+                    console.log(user.email);
+
+
+                    if(user.email == null){
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.INVALID_DATA,
+                            message: trans_message.DATA_NOT_FOUND,
+                            data: user
+                        });
+
+                    } else {
+
+                        authenticationService.update_otp(user.email).then(user =>{
+
+                            resolve(user);
+
+                            var transporter = nodemailer.createTransport({
+                                service: 'gmail',
+                                auth: {
+                                    user: 'muhammad.umer9122@gmail.com',
+                                    pass: 'Addidas9122334455?'
+                                }
+                            });
+
+                            const mailOptions = {
+                                from: 'muhammad.umer9122@gmail.com', // sender address
+                                to: user.email, // list of receivers
+                                subject: 'Subject of your email', // Subject line
+                                html: '<p>Your code for reset password '+ user.otp +'</p>'// plain text body
+                            };
+
+                            transporter.sendMail(mailOptions, function (err, info) {
+                                if(err)
+                                    console.log(err)
+                                else
+                                    console.log(info);
+                            });
+
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.USER_FOUND,
+                                message: trans_message.DATA_FOR_RESET,
+                                data: user,
+                            });
+
+                            }, error => {
+                            reject(error);
+                        });
+
+
+                    }
+
+
+                }, error => {
+                    reject(error);
+                });
+            });
+
+        }
+    }else{
+        res.json({status:statics.STATUS_FAILURE,code:codes.INVALID_DATA,message:trans_message.INVALID_DATA,data:errors.array()});
+
+    }
+});
+// update reset password
+router.post('/update_reset_pass', function(req,res){
+    if(req.headers.locale == 'ar'){
+        var trans_message = ar_messages;
+    }else if(req.headers.locale == 'en'){
+        var trans_message = messages;
+    }else{
+        var trans_message = messages;
+    }
+    var errors = validationResult(req);
+    if(errors.array().length==0){
+        var password=req.body;
+
+        if(password.password == ''){
+            res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMPTY_FIELD_PASS,data:null});
+        }else if(password.otp == ''){
+            res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMPTY_FIELD_OTP,data:null});
+        }else {
+
+            return new Promise(function (resolve, reject) {
+
+                authenticationService.update_pass(password.otp,password.password).then(user => {
+
+                    resolve(user);
+
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: trans_message.CHANGE_PASS,
+                            data: user,
+                        });
+
+
+                }, error => {
+                    reject(error);
+                });
+
+            }, error => {
+                reject(error);
+            });
+
+
+        }
+    }else{
+        res.json({status:statics.STATUS_FAILURE,code:codes.INVALID_DATA,message:trans_message.INVALID_DATA,data:errors.array()});
+
+    }
+});
 
 
 module.exports=router;

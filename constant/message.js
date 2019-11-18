@@ -26,7 +26,8 @@ var message={
     EMPTY_FIELD_LONG:'Empty longitude.',
     EMPTY_FIELD_COMPANY:'Please type company name.',
     PROFILE_UPDATE:'Profile updated.',
-    RESEND: 'OTP SENT'
+    RESEND: 'OTP SENT',
+    DATA_FOR_RESET: 'Security code sent to you email to reset password'
 };
 
 module.exports=message;

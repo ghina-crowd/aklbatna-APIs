@@ -16,9 +16,37 @@ var service={
             });
         });
     },
+    check_email:function(email){
+        return new Promise(function(resolve,reject){
+            countryRepository.Check_email(email).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
     login_token:function(id,token){
         return new Promise(function(resolve,reject){
             countryRepository.Login_Token(id,token).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
+    update_otp:function(email){
+        return new Promise(function(resolve,reject){
+            countryRepository.Update_otp(email).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -102,6 +130,20 @@ var service={
     change_pass:function(token,password){
         return new Promise(function(resolve,reject){
             countryRepository.Change_pass(token,password).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
+    update_pass:function(otp,password){
+        return new Promise(function(resolve,reject){
+            countryRepository.Update_pass(otp,password).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
