@@ -35,8 +35,6 @@ var CountryRepository={
             console.log(id,token);
                     models.Country.update({session_id:token}, {where:{user_admin_id:id}}).then(function(result){
                         resolve(result);
-                        console.log(result);
-                    },function(error){
                     },function(error){
                         reject(error);
                     });
@@ -44,31 +42,27 @@ var CountryRepository={
 
         });
     },
-    Check:function(email){
+    Check:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
             models.Country.findOne({attributes: ['user_admin_id'], where:{email:email}}).then(users=>{
-                resolve(users);
-
-                return users;
+                if(users == null){
+                    var otp_val = Math.floor(1000 + Math.random() * 9000);
+                    models.Country.create({email:email, password:password, first_name:first_name, last_name:last_name, phone:phone, otp:otp_val,user_type:user_type}).then(users=>{
+                        resolve(users);
+                    },error=>{
+                        reject(error)
+                    });
+                }else{
+                    resolve(null)
+                }
             },error=>{
                 reject(error);
             });
         });
     },
-    Register:function(email,password,first_name,last_name,phone,user_type){
-        return new Promise(function(resolve,reject){
-            var otp_val = Math.floor(1000 + Math.random() * 9000);
-
-            models.Country.create({email:email, password:password, first_name:first_name, last_name:last_name, phone:phone, otp:otp_val,user_type:user_type}).then(users=>{
-                resolve(users);
-            },error=>{
-                reject(error)
-            });
-        });
-    },
     Check_otp:function(token,otp){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['otp'], where:{session_id:token,otp:otp}}).then(users=>{
+            models.Country.findOne({attributes: ['otp','email'], where:{session_id:token,otp:otp}}).then(users=>{
                 resolve(users);
             },error=>{
                 reject(error);
@@ -108,8 +102,11 @@ var CountryRepository={
         return new Promise(function(resolve,reject){
             var otp_val = Math.floor(1000 + Math.random() * 9000);
             models.Country.update({otp:otp_val}, {where:{session_id:token}}).then(function(result){
-                resolve(result);
-            },function(error){
+                models.Country.findOne({attributes: ['otp','email'], where:{session_id:token}}).then(users=>{
+                    resolve(users);
+                },error=>{
+                    reject(error);
+                });
             },function(error){
                 reject(error);
             });

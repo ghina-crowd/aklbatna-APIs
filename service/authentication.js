@@ -6,7 +6,7 @@ var service={
         return new Promise(function(resolve,reject){
             countryRepository.Login(email,password).then(users=>{
                 if(users == null){
-                    resolve(users['dataValues']);
+                    resolve(null);
                 }else{
                     resolve(users['dataValues']);
                 }
@@ -22,7 +22,7 @@ var service={
                 if(users == null){
                     resolve(null);
                 }else{
-                    resolve(users);
+                    resolve(users['dataValues']);
                 }
 
             },error=>{
@@ -30,9 +30,9 @@ var service={
             });
         });
     },
-    check_user:function(email){
+    check_user:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
-            countryRepository.Check(email).then(users=>{
+            countryRepository.Check(email,password,first_name,last_name,phone,user_type).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -47,9 +47,11 @@ var service={
     register_user:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
             countryRepository.Register(email,password,first_name,last_name,phone,user_type).then(users=>{
-
-                resolve(users['dataValues']);
-
+                if(users == null){
+                    resolve(null);
+                }else {
+                    resolve(users['dataValues']);
+                }
             },error=>{
                 reject(error);
             });

@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({storage: storage});
-
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 var router=express.Router();
 
@@ -135,46 +135,55 @@ router.post('/register', function(req,res){
             res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMPTY_FIELD_LAST,data:null});
         }else if(creqentials.phone == ''){
             res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMPTY_FIELD_PHONE,data:null});
-        }else {
+        }else{
 
             return new Promise(function (resolve, reject) {
 
-                authenticationService.check_user(creqentials.email).then(user => {
+                authenticationService.check_user(creqentials.email,creqentials.password,creqentials.first_name,creqentials.last_name,creqentials.phone,creqentials.user_type).then(user => {
 
                     resolve(user);
+
                     if(user == null){
+                        res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMAIL_REGISTEreq,data:null});
+                    }else{
+                        var userdata = {
+                            id: user.id,
+                            email: user.email,
+                            username: user.password,
 
-                        authenticationService.register_user(creqentials.email,creqentials.password,creqentials.first_name,creqentials.last_name,creqentials.phone,creqentials.user_type).then(user => {
+                        }
+                        var token = jwt.sign(userdata, 'secretkey', {});
+                        authenticationService.login_token(user.id, token);
 
-                            resolve(user);
-
-                            var userdata = {
-                                id: user.user_admin_id,
-                                username: user.name,
-                                email: user.email
-
+                        var transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                                user: 'muhammad.umer9122@gmail.com',
+                                pass: 'Addidas9122334455?'
                             }
-
-                            var token = jwt.sign(userdata, 'secretkey', {
-
-                            });
-                            authenticationService.login_token(user.user_admin_id, token);
-
-
-
-                            res.json({
-                                status: statics.STATUS_SUCCESS,
-                                code: codes.SUCCESS,
-                                message: trans_message.REGISTEreq_USER,
-                                data: user,
-                                token:token
-                            });
-                        }, error => {
-                            reject(error);
                         });
 
-                    }else{
-                        res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.EMAIL_REGISTEreq,data:null});
+                        const mailOptions = {
+                            from: 'muhammad.umer9122@gmail.com', // sender address
+                            to: user.email, // list of receivers
+                            subject: 'Subject of your email', // Subject line
+                            html: '<p>Your OTP here '+ user.otp +'</p>'// plain text body
+                        };
+
+                        transporter.sendMail(mailOptions, function (err, info) {
+                            if(err)
+                                console.log(err)
+                            else
+                                console.log(info);
+                        });
+
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: trans_message.REGISTEreq_USER,
+                            data: user,
+                            token:token
+                        });
                     }
 
 
@@ -202,6 +211,7 @@ router.put('/activate', function(req,res){
     var errors = validationResult(req);
     if(errors.array().length==0){
         var headerdata=req.headers;
+        console.log(headerdata);
         var otp=req.body;
 
         if(otp.otp == ''){
@@ -213,6 +223,7 @@ router.put('/activate', function(req,res){
                 authenticationService.check_otp(headerdata.token,otp.otp).then(user => {
 
                     resolve(user);
+
                     if(user == null){
 
                         res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.INVALID_OTP,data:null});
@@ -475,10 +486,32 @@ router.put('/resend_code', function(req,res){
 
                             resolve(user);
 
+                            var transporter = nodemailer.createTransport({
+                                service: 'gmail',
+                                auth: {
+                                    user: 'muhammad.umer9122@gmail.com',
+                                    pass: 'Addidas9122334455?'
+                                }
+                            });
+
+                            const mailOptions = {
+                                from: 'muhammad.umer9122@gmail.com', // sender address
+                                to: user.email, // list of receivers
+                                subject: 'Subject of your email', // Subject line
+                                html: '<p>Your OTP here '+ user.otp +'</p>'// plain text body
+                            };
+
+                            transporter.sendMail(mailOptions, function (err, info) {
+                                if(err)
+                                    console.log(err)
+                                else
+                                    console.log(info);
+                            });
+
                             res.json({
                                 status: statics.STATUS_SUCCESS,
                                 code: codes.SUCCESS,
-                                message: trans_message.ACTIVATED_USER,
+                                message: trans_message.RESEND,
                                 data: user,
                             });
 
@@ -501,5 +534,6 @@ router.put('/resend_code', function(req,res){
 
         }
 });
+
 
 module.exports=router;

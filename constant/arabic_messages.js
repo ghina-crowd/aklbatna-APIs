@@ -26,6 +26,7 @@ var message={
     EMPTY_FIELD_LONG:'الرجاء ادخال احداثيات الموقع.',
     EMPTY_FIELD_COMPANY:'الرجاء ادخال اسم الشركة .',
     PROFILE_UPDATE:'تم تحديث معلومات بنجاح.',
+    RESEND: 'OTP SENT'
 };
 
 module.exports=message;
