@@ -1,6 +1,6 @@
 var countryService=require('../service/users.js');
 var validator={
-    validateCredentials:function(credentials){
+    validateCreqentials:function(creqentials){
         countryService.Create(req.body).then(function(result){
             res.json({status:statics.STATUS_SUCCESS,code:codes.SUCCESS,message:messages.DATA_SAVED,data:null});
         },function(error){

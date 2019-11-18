@@ -58,7 +58,16 @@ module.exports = function(sequelize, DataTypes) {
     },
     name: {
       type: DataTypes.STRING(45),
-     }
+     },
+    locale: {
+      type: DataTypes.STRING(45),
+    },
+    company_name_arabic: {
+      type: DataTypes.STRING(45),
+    },
+    photo: {
+      type: DataTypes.STRING(45),
+    },
   }, {
     tableName: 'user_admin'
   });

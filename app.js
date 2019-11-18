@@ -10,6 +10,7 @@ var app=express();
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: false}));
 app.use(morgan(config.PROFILE));
+
 app.use(function(req,res,next){
     defaultMiddleware(req,res);
     next();

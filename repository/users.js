@@ -104,6 +104,17 @@ var CountryRepository={
             });
         });
     },
+    Resend_otp:function(token){
+        return new Promise(function(resolve,reject){
+            var otp_val = Math.floor(1000 + Math.random() * 9000);
+            models.Country.update({otp:otp_val}, {where:{session_id:token}}).then(function(result){
+                resolve(result);
+            },function(error){
+            },function(error){
+                reject(error);
+            });
+        });
+    },
     Update_profile:function(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name){
         return new Promise(function(resolve,reject){
             models.Country.update({first_name:first_name,last_name:last_name,address:address,phone:phone,picture:picture,lattitude:lattitude,longitude:longitude,company_name:company_name}, {where:{session_id:token}}).then(function(result){
@@ -116,7 +127,7 @@ var CountryRepository={
     },
     Get_user:function(token){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['user_admin_id','email','first_name','last_name','address','phone','picture','lattitude','longitude','company_name'], where:{session_id:token}}).then(users=>{
+            models.Country.findOne({attributes: ['user_admin_id','email','first_name','last_name','address','phone','picture','lattitude','longitude','company_name','company_name_arabic'], where:{session_id:token}}).then(users=>{
                 resolve(users);
             },error=>{
                 reject(error);

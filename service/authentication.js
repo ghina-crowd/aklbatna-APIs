@@ -111,6 +111,20 @@ var service={
             });
         });
     },
+    resend_user:function(token){
+        return new Promise(function(resolve,reject){
+            countryRepository.Resend_otp(token).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
     update_profile:function(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name){
         return new Promise(function(resolve,reject){
             countryRepository.Update_profile(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name).then(users=>{
