@@ -127,8 +127,13 @@ var UserRepository={
     Update_pass:function(otp,password){
         return new Promise(function(resolve,reject){
             models.User.update({password:password}, {where:{otp:otp}}).then(function(result){
-                resolve(result);
-            },function(error){
+
+                models.User.findOne({attributes: ['otp'], where:{otp:otp}}).then(results=>{
+                    resolve(results);
+                },error=>{
+                    reject(error);
+                });
+
             },function(error){
                 reject(error);
             });
