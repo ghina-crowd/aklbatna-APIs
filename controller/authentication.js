@@ -645,6 +645,7 @@ router.post('/update_reset_pass', function(req,res){
 
                 authenticationService.update_pass(password.otp,password.password).then(user => {
 
+
                     resolve(user);
 
                     if(user == null){
