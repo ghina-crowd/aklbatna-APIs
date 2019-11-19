@@ -647,12 +647,23 @@ router.post('/update_reset_pass', function(req,res){
 
                     resolve(user);
 
+                    if(user == null){
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: trans_message.INVALID_OTP,
+                            data: user,
+                        });
+                    }else{
                         res.json({
                             status: statics.STATUS_SUCCESS,
                             code: codes.SUCCESS,
                             message: trans_message.CHANGE_PASS,
                             data: user,
                         });
+                    }
+
+
 
 
                 }, error => {

@@ -1,18 +1,18 @@
-var countryRepository=require('../repository/users.js');
+var UserRepository=require('../repository/users.js');
 var fields=require('../constant/field.js');
 var models=require('../models/models.js');
 module.exports={
-    GetAllCountry:function(){
+    GetAllUser:function(){
         return new Promise(function(resolve,reject){
-            countryRepository.FindAllByDeleted(false).then(existingCountries=>{
+            UserRepository.FindAllByDeleted(false).then(existingCountries=>{
                 var countries=[];
-                existingCountries.forEach(existingCountry => {
-                    var country={};
-                    country[fields.ID]=existingCountry.pk_country_id;
-                    country[fields.NAME]=existingCountry.name;
-                    country[fields.SHORT_NAME]=existingCountry.short_name;
-                    country[fields.MOBILE_CODE]=existingCountry.mobile_code;
-                    countries.push(country);
+                existingCountries.forEach(existingUser => {
+                    var User={};
+                    User[fields.ID]=existingUser.pk_User_id;
+                    User[fields.NAME]=existingUser.name;
+                    User[fields.SHORT_NAME]=existingUser.short_name;
+                    User[fields.MOBILE_CODE]=existingUser.mobile_code;
+                    countries.push(User);
                 });
                 resolve(countries);
             },error=>{
@@ -20,32 +20,32 @@ module.exports={
             }); 
         });
     },
-    GetCountry:function(id){
+    GetUser:function(id){
         return new Promise(function(resolve,reject){
-            countryRepository.FindByIdAndDeleted(id,false).then(existingCountry=>{
-                var country;
-                if(existingCountry){
-                    country={};
-                    country[fields.ID]=existingCountry.pk_country_id;
-                    country[fields.NAME]=existingCountry.name;
-                    country[fields.SHORT_NAME]=existingCountry.short_name;
-                    country[fields.MOBILE_CODE]=existingCountry.mobile_code;
+            UserRepository.FindByIdAndDeleted(id,false).then(existingUser=>{
+                var User;
+                if(existingUser){
+                    User={};
+                    User[fields.ID]=existingUser.pk_User_id;
+                    User[fields.NAME]=existingUser.name;
+                    User[fields.SHORT_NAME]=existingUser.short_name;
+                    User[fields.MOBILE_CODE]=existingUser.mobile_code;
                 }
-                resolve(country);
+                resolve(User);
             },error=>{
                 reject(error);
             }); 
         });
     },
-    Create:function(newCountryData){
+    Create:function(newUserData){
         return new Promise(function(resolve,reject){
-            var newCountryModel={};
-            newCountryModel[fields.NAME]=newCountryData.name;
-            newCountryModel[fields.SHORT_NAME]=newCountryData.short_name;
-            newCountryModel[fields.MOBILE_CODE]=newCountryData.mobile_code;
-            newCountryModel[fields.DELETED]=false;
-            var newCountry=models.Country.build(newCountryModel);
-            countryRepository.Save(newCountry).then(function(result){
+            var newUserModel={};
+            newUserModel[fields.NAME]=newUserData.name;
+            newUserModel[fields.SHORT_NAME]=newUserData.short_name;
+            newUserModel[fields.MOBILE_CODE]=newUserData.mobile_code;
+            newUserModel[fields.DELETED]=false;
+            var newUser=models.User.build(newUserModel);
+            UserRepository.Save(newUser).then(function(result){
                 resolve(result);
             },function(error){
                 reject(error);
@@ -54,7 +54,7 @@ module.exports={
     },
     Login:function(data){
         return new Promise(function(resolve,reject){
-            countryRepository.Login(data.email,data.password).then(existinguser=>{
+            UserRepository.Login(data.email,data.password).then(existinguser=>{
                 resolve(existinguser);
                 return existinguser;
             },error=>{
@@ -62,15 +62,15 @@ module.exports={
             });
         });
     },
-    Update:function(id,countryData){
+    Update:function(id,UserData){
         return new Promise(function(resolve,reject){
-            countryRepository.FindByIdAndDeleted(id,false).then(existingCountry=>{
-                var country;
-                if(existingCountry){
-                    existingCountry[fields.NAME]=countryData[fields.NAME];
-                    existingCountry[fields.SHORT_NAME]=countryData[fields.SHORT_NAME];
-                    existingCountry[fields.MOBILE_CODE]=countryData[fields.MOBILE_CODE];
-                    countryRepository.Save(existingCountry).then(function(result){
+            UserRepository.FindByIdAndDeleted(id,false).then(existingUser=>{
+                var User;
+                if(existingUser){
+                    existingUser[fields.NAME]=UserData[fields.NAME];
+                    existingUser[fields.SHORT_NAME]=UserData[fields.SHORT_NAME];
+                    existingUser[fields.MOBILE_CODE]=UserData[fields.MOBILE_CODE];
+                    UserRepository.Save(existingUser).then(function(result){
                         resolve(result);
                     },function(error){
                         reject(error);

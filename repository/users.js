@@ -1,10 +1,10 @@
 var models=require('../models/models.js');
 var fields=require('../constant/field.js');
 var commonRepository=require('./common.js');
-var CountryRepository={
+var UserRepository={
     FindAllByDeleted:function(deleted){
         return new Promise(function(resolve,reject){
-            models.Country.findAll({where:{deleted:deleted}}).then(existingCountries=>{
+            models.User.findAll({where:{deleted:deleted}}).then(existingCountries=>{
                 resolve(existingCountries);
             },error=>{
                 reject(error);
@@ -13,7 +13,7 @@ var CountryRepository={
     },
     FindByIdAndDeleted:function(id,deleted){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({where:{pk_country_id:id,deleted:deleted}}).then(existingCountries=>{
+            models.User.findOne({where:{pk_User_id:id,deleted:deleted}}).then(existingCountries=>{
                 resolve(existingCountries);
             },error=>{
                 reject(error);
@@ -22,7 +22,7 @@ var CountryRepository={
     },
     Login:function(email,password){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['user_admin_id','name','email','phone','first_name','last_name','active'], where:{email:email,password:password}}).then(users=>{
+            models.User.findOne({attributes: ['user_admin_id','name','email','phone','first_name','last_name','active'], where:{email:email,password:password}}).then(users=>{
                 resolve(users);
             },error=>{
                 reject(error);
@@ -31,7 +31,7 @@ var CountryRepository={
     },
     Check_email:function(email){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['email'], where:{email:email}}).then(users=>{
+            models.User.findOne({attributes: ['email'], where:{email:email}}).then(users=>{
                 resolve(users['dataValues']);
                 return users['dataValues'];
             },error=>{
@@ -43,7 +43,7 @@ var CountryRepository={
         return new Promise(function(resolve,reject){
 
             console.log(id,token);
-                    models.Country.update({session_id:token}, {where:{user_admin_id:id}}).then(function(result){
+                    models.User.update({session_id:token}, {where:{user_admin_id:id}}).then(function(result){
                         resolve(result);
                     },function(error){
                         reject(error);
@@ -55,8 +55,8 @@ var CountryRepository={
     Update_otp:function(email){
         return new Promise(function(resolve,reject){
             var otp_val = Math.floor(1000 + Math.random() * 9000);
-            models.Country.update({otp:otp_val}, {where:{email:email}}).then(function(result){
-                models.Country.findOne({attributes: ['otp','email'], where:{email:email}}).then(users=>{
+            models.User.update({otp:otp_val}, {where:{email:email}}).then(function(result){
+                models.User.findOne({attributes: ['otp','email'], where:{email:email}}).then(users=>{
                     resolve(users);
                 },error=>{
                     reject(error);
@@ -70,10 +70,10 @@ var CountryRepository={
     },
     Check:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['user_admin_id'], where:{email:email}}).then(users=>{
+            models.User.findOne({attributes: ['user_admin_id'], where:{email:email}}).then(users=>{
                 if(users == null){
                     var otp_val = Math.floor(1000 + Math.random() * 9000);
-                    models.Country.create({email:email, password:password, first_name:first_name, last_name:last_name, phone:phone, otp:otp_val,user_type:user_type}).then(users=>{
+                    models.User.create({email:email, password:password, first_name:first_name, last_name:last_name, phone:phone, otp:otp_val,user_type:user_type}).then(users=>{
                         resolve(users);
                     },error=>{
                         reject(error)
@@ -88,7 +88,7 @@ var CountryRepository={
     },
     Check_otp:function(token,otp){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['otp','email'], where:{session_id:token,otp:otp}}).then(users=>{
+            models.User.findOne({attributes: ['otp','email'], where:{session_id:token,otp:otp}}).then(users=>{
                 resolve(users);
             },error=>{
                 reject(error);
@@ -97,7 +97,7 @@ var CountryRepository={
     },
     Check_token:function(token){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['session_id'], where:{session_id:token}}).then(users=>{
+            models.User.findOne({attributes: ['session_id'], where:{session_id:token}}).then(users=>{
                 resolve(users);
             },error=>{
                 reject(error);
@@ -106,7 +106,7 @@ var CountryRepository={
     },
     Activate:function(token,otp){
         return new Promise(function(resolve,reject){
-            models.Country.update({active:1}, {where:{session_id:token}}).then(function(result){
+            models.User.update({active:1}, {where:{session_id:token}}).then(function(result){
                 resolve(result);
             },function(error){
             },function(error){
@@ -116,7 +116,7 @@ var CountryRepository={
     },
     Change_pass:function(token,password){
         return new Promise(function(resolve,reject){
-            models.Country.update({password:password}, {where:{session_id:token}}).then(function(result){
+            models.User.update({password:password}, {where:{session_id:token}}).then(function(result){
                 resolve(result);
             },function(error){
             },function(error){
@@ -126,7 +126,7 @@ var CountryRepository={
     },
     Update_pass:function(otp,password){
         return new Promise(function(resolve,reject){
-            models.Country.update({password:password}, {where:{otp:otp}}).then(function(result){
+            models.User.update({password:password}, {where:{otp:otp}}).then(function(result){
                 resolve(result);
             },function(error){
             },function(error){
@@ -137,8 +137,8 @@ var CountryRepository={
     Resend_otp:function(token){
         return new Promise(function(resolve,reject){
             var otp_val = Math.floor(1000 + Math.random() * 9000);
-            models.Country.update({otp:otp_val}, {where:{session_id:token}}).then(function(result){
-                models.Country.findOne({attributes: ['otp','email'], where:{session_id:token}}).then(users=>{
+            models.User.update({otp:otp_val}, {where:{session_id:token}}).then(function(result){
+                models.User.findOne({attributes: ['otp','email'], where:{session_id:token}}).then(users=>{
                     resolve(users);
                 },error=>{
                     reject(error);
@@ -150,7 +150,7 @@ var CountryRepository={
     },
     Update_profile:function(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name){
         return new Promise(function(resolve,reject){
-            models.Country.update({first_name:first_name,last_name:last_name,address:address,phone:phone,picture:picture,lattitude:lattitude,longitude:longitude,company_name:company_name}, {where:{session_id:token}}).then(function(result){
+            models.User.update({first_name:first_name,last_name:last_name,address:address,phone:phone,picture:picture,lattitude:lattitude,longitude:longitude,company_name:company_name}, {where:{session_id:token}}).then(function(result){
                 resolve(result);
             },function(error){
             },function(error){
@@ -160,7 +160,7 @@ var CountryRepository={
     },
     Get_user:function(token){
         return new Promise(function(resolve,reject){
-            models.Country.findOne({attributes: ['user_admin_id','email','first_name','last_name','address','phone','picture','lattitude','longitude','company_name','company_name_arabic'], where:{session_id:token}}).then(users=>{
+            models.User.findOne({attributes: ['user_admin_id','email','first_name','last_name','address','phone','picture','lattitude','longitude','company_name','company_name_arabic'], where:{session_id:token}}).then(users=>{
                 resolve(users);
             },error=>{
                 reject(error);
@@ -168,5 +168,5 @@ var CountryRepository={
         });
     },
 };
-Object.assign(CountryRepository,commonRepository);
-module.exports=CountryRepository;
+Object.assign(UserRepository,commonRepository);
+module.exports=UserRepository;

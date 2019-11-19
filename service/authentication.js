@@ -1,10 +1,10 @@
 var models=require('../models/models.js');
-var countryRepository=require('../repository/users.js');
+var UserRepository=require('../repository/users.js');
 var fields=require('../constant/field.js');
 var service={
     login:function(email,password){
         return new Promise(function(resolve,reject){
-            countryRepository.Login(email,password).then(users=>{
+            UserRepository.Login(email,password).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -18,7 +18,7 @@ var service={
     },
     check_email:function(email){
         return new Promise(function(resolve,reject){
-            countryRepository.Check_email(email).then(users=>{
+            UserRepository.Check_email(email).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -32,7 +32,7 @@ var service={
     },
     login_token:function(id,token){
         return new Promise(function(resolve,reject){
-            countryRepository.Login_Token(id,token).then(users=>{
+            UserRepository.Login_Token(id,token).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -46,7 +46,7 @@ var service={
     },
     update_otp:function(email){
         return new Promise(function(resolve,reject){
-            countryRepository.Update_otp(email).then(users=>{
+            UserRepository.Update_otp(email).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -60,7 +60,7 @@ var service={
     },
     check_user:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
-            countryRepository.Check(email,password,first_name,last_name,phone,user_type).then(users=>{
+            UserRepository.Check(email,password,first_name,last_name,phone,user_type).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -74,7 +74,7 @@ var service={
     },
     register_user:function(email,password,first_name,last_name,phone,user_type){
         return new Promise(function(resolve,reject){
-            countryRepository.Register(email,password,first_name,last_name,phone,user_type).then(users=>{
+            UserRepository.Register(email,password,first_name,last_name,phone,user_type).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else {
@@ -87,7 +87,7 @@ var service={
     },
     check_otp:function(token,otp){
         return new Promise(function(resolve,reject){
-            countryRepository.Check_otp(token,otp).then(users=>{
+            UserRepository.Check_otp(token,otp).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -101,7 +101,7 @@ var service={
     },
     check_token:function(token){
         return new Promise(function(resolve,reject){
-            countryRepository.Check_token(token).then(users=>{
+            UserRepository.Check_token(token).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -115,7 +115,7 @@ var service={
     },
     activate_user:function(token,otp){
         return new Promise(function(resolve,reject){
-            countryRepository.Activate(token,otp).then(users=>{
+            UserRepository.Activate(token,otp).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -129,7 +129,7 @@ var service={
     },
     change_pass:function(token,password){
         return new Promise(function(resolve,reject){
-            countryRepository.Change_pass(token,password).then(users=>{
+            UserRepository.Change_pass(token,password).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -143,7 +143,7 @@ var service={
     },
     update_pass:function(otp,password){
         return new Promise(function(resolve,reject){
-            countryRepository.Update_pass(otp,password).then(users=>{
+            UserRepository.Update_pass(otp,password).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -157,7 +157,7 @@ var service={
     },
     resend_user:function(token){
         return new Promise(function(resolve,reject){
-            countryRepository.Resend_otp(token).then(users=>{
+            UserRepository.Resend_otp(token).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -171,7 +171,7 @@ var service={
     },
     update_profile:function(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name){
         return new Promise(function(resolve,reject){
-            countryRepository.Update_profile(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name).then(users=>{
+            UserRepository.Update_profile(token,first_name,last_name,address,phone,picture,lattitude,longitude,company_name).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -188,7 +188,7 @@ var service={
     },
     get_user:function(token){
         return new Promise(function(resolve,reject){
-            countryRepository.Get_user(token).then(users=>{
+            UserRepository.Get_user(token).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{

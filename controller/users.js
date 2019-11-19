@@ -7,12 +7,12 @@ var statics=require('../constant/static.js');
 var messages=require('../constant/message.js');
 var codes=require('../constant/code.js');
 var fields=require('../constant/field.js');
-var countryService=require('../service/users.js');
+var UserService=require('../service/users.js');
 
 var router=express.Router();
 
 router.get('/',function(request,res){
-    var countries=countryService.GetAllCountry();
+    var countries=UserService.GetAllUser();
     countries.then(function(result){
         res.json({status:statics.STATUS_SUCCESS,code:codes.SUCCESS,message:messages.DATA_FOUND,data:result});
     },function(error){
@@ -22,7 +22,7 @@ router.get('/',function(request,res){
 });
 
 router.get('/:id',function(req,res){
-    var countries=countryService.GetCountry(req.params.id);
+    var countries=UserService.GetUser(req.params.id);
     countries.then(function(result){
         if(result){
             res.json({status:statics.STATUS_SUCCESS,code:codes.SUCCESS,message:messages.DATA_FOUND,data:result});
@@ -42,7 +42,7 @@ router.post('/create',[
 ],function(req,res){
     var errors = validationResult(req);
     if(errors.array().length==0){
-        countryService.Create(req.body).then(function(result){
+        UserService.Create(req.body).then(function(result){
             res.json({status:statics.STATUS_SUCCESS,code:codes.SUCCESS,message:messages.DATA_SAVED,data:null});
         },function(error){
             logger.error(messages.SERVER_ERROR+' '+error)
@@ -60,7 +60,7 @@ router.post('/:id/update',[
 ],function(req,res){
     var errors = validationResult(req);
     if(errors.array().length==0){
-        countryService.Update(req.params[fields.ID],req.body).then(function(result){
+        UserService.Update(req.params[fields.ID],req.body).then(function(result){
             res.json({status:statics.STATUS_SUCCESS,code:codes.SUCCESS,message:messages.DATA_SAVED,data:null});
         },function(error){
             logger.error(messages.SERVER_ERROR+' '+error)
