@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/awadhesh22791/expressjs-template#readme",
   "dependencies": {
+    "array-merge-by-key": "^1.0.1",
     "body-parser": "^1.18.3",
     "express": "^4.17.1",
     "express-fileupload": "^1.1.6-alpha.6",

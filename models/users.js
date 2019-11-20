@@ -59,7 +59,7 @@ module.exports = function(sequelize, DataTypes) {
     name: {
       type: DataTypes.STRING(45),
      },
-    locale: {
+    language: {
       type: DataTypes.STRING(45),
     },
     company_name_arabic: {

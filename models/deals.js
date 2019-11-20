@@ -1,23 +1,56 @@
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define('shop_product', {
-        shop_product_id: {
-            type: DataTypes.STRING(45),
+    return sequelize.define('deals', {
+        deal_id: {
+            type: DataTypes.STRING(225),
         },
-        sales_id: {
-            type: DataTypes.STRING(45),
+        user_id: {
+            type: DataTypes.STRING(225),
         },
-        vendor_id: {
-            type: DataTypes.STRING(45),
+        sub_category_id: {
+            type: DataTypes.STRING(225),
         },
-        shop_category_id: {
-            type: DataTypes.STRING(45),
+        deal_title: {
+            type: DataTypes.STRING(225),
         },
-        product_name: {
-            type: DataTypes.STRING(45),
+        lattitude: {
+            type: DataTypes.STRING(225),
+        },
+        longitude: {
+            type: DataTypes.STRING(225),
+        },
+        company_name: {
+            type: DataTypes.STRING(225),
+        },
+        short_detail: {
+            type: DataTypes.STRING(225),
+        },
+        details: {
+            type: DataTypes.STRING(225),
+        },
+        pre_price: {
+            type: DataTypes.STRING(225),
+        },
+        new_price: {
+            type: DataTypes.STRING(225),
+        },
+        start_time: {
+            type: DataTypes.STRING(225),
+        },
+        end_time: {
+            type: DataTypes.STRING(225),
+        },
+        active: {
+            type: DataTypes.STRING(225),
+        },
+        premium: {
+            type: DataTypes.STRING(225),
+        },
+        location_address: {
+            type: DataTypes.STRING(225),
         },
 
     }, {
-        tableName: 'shop_product'
+        tableName: 'deals'
     });
 };

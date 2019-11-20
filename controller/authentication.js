@@ -25,9 +25,9 @@ var router=express.Router();
 //login
 router.post('/login', function(req,res){
 
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -114,9 +114,9 @@ router.post('/login', function(req,res){
 });
 //register
 router.post('/register', function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -201,9 +201,9 @@ router.post('/register', function(req,res){
 });
 //activate
 router.put('/activate', function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -265,9 +265,9 @@ router.put('/activate', function(req,res){
 });
 // change password
 router.put('/change_pass', function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -327,9 +327,9 @@ router.put('/change_pass', function(req,res){
 });
 //logout
 router.post('/logout',function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -339,9 +339,9 @@ router.post('/logout',function(req,res){
 });
 // get profile
 router.get('/profile', function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -384,9 +384,9 @@ router.put('/update_profile', upload.single('picture'), function(req,res){
     var path = req.file.path;
     console.log(path);
 
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -415,7 +415,7 @@ router.put('/update_profile', upload.single('picture'), function(req,res){
 
             return new Promise(function (resolve, reject) {
 
-                authenticationService.check_token(headerdata.token).then(user => {
+                authenticationService.check_token(headerdata.Authentication).then(user => {
 
 
 
@@ -425,7 +425,7 @@ router.put('/update_profile', upload.single('picture'), function(req,res){
                         res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.INVALID_TOKEN,data:null});
 
                     }else{
-                        authenticationService.update_profile(headerdata.token,data.first_name,data.last_name,data.address,data.phone,path,data.lattitude,data.longitude,data.company_name).then(user => {
+                        authenticationService.update_profile(headerdata.Authentication,data.first_name,data.last_name,data.address,data.phone,path,data.lattitude,data.longitude,data.company_name).then(user => {
 
                             resolve(user);
 
@@ -461,9 +461,9 @@ router.put('/update_profile', upload.single('picture'), function(req,res){
 });
 //resend code
 router.put('/resend_code', function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -474,7 +474,7 @@ router.put('/resend_code', function(req,res){
 
         return new Promise(function (resolve, reject) {
 
-                authenticationService.check_token(headerdata.token).then(user => {
+                authenticationService.check_token(headerdata.Authentication).then(user => {
 
                     resolve(user);
                     if(user == null){
@@ -482,7 +482,7 @@ router.put('/resend_code', function(req,res){
                         res.json({status:statics.STATUS_FAILURE,code:codes.FAILURE,message:trans_message.INVALID_TOKEN,data:null});
 
                     }else{
-                        authenticationService.resend_user(headerdata.token).then(user => {
+                        authenticationService.resend_user(headerdata.Authentication).then(user => {
 
                             resolve(user);
 
@@ -537,9 +537,9 @@ router.put('/resend_code', function(req,res){
 //reset password
 router.post('/reset_password', function(req,res){
 
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -565,7 +565,7 @@ router.post('/reset_password', function(req,res){
                             status: statics.STATUS_FAILURE,
                             code: codes.INVALID_DATA,
                             message: trans_message.DATA_NOT_FOUND,
-                            data: user
+                            data: null
                         });
 
                     } else {
@@ -624,9 +624,9 @@ router.post('/reset_password', function(req,res){
 });
 // update reset password
 router.post('/update_reset_pass', function(req,res){
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;

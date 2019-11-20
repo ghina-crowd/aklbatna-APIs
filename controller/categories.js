@@ -4,7 +4,7 @@ var statics=require('../constant/static.js');
 var messages=require('../constant/message.js');
 var ar_messages=require('../constant/arabic_messages.js');
 var codes=require('../constant/code.js');
-var categoryServices=require('../service/categories.js');
+var subcategoryServices=require('../service/categories.js');
 var authenticationValidator=require('../validator/authentication.js');
 const multer = require('multer');
 
@@ -22,104 +22,7 @@ const jwt = require('jsonwebtoken');
 var router=express.Router();
 
 //categories
-router.get('/', function(req,res){
 
-    if(req.headers.locale == 'ar'){
-        var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
-        var trans_message = messages;
-    }else{
-        var trans_message = messages;
-    }
-    return new Promise(function(resolve,reject) {
-        categoryServices.get_pro_categories().then(categories => {
-            resolve(categories);
-            if(categories == null){
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: trans_message.DATA_NOT_FOUND,
-                    data: categories,
-                });
-            }else {
-                res.json({
-                    status: statics.STATUS_SUCCESS,
-                    code: codes.SUCCESS,
-                    message: trans_message.DATA_FOUND,
-                    data: categories,
-                });
-            }
-        }, error => {
-            reject(error);
-        });
-    });
-});
-//categories
-router.get('/categories', function(req,res){
-
-    if(req.headers.locale == 'ar'){
-        var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
-        var trans_message = messages;
-    }else{
-        var trans_message = messages;
-    }
-    return new Promise(function(resolve,reject) {
-        categoryServices.get_categories().then(categories => {
-            resolve(categories);
-            if(categories == null){
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: trans_message.DATA_NOT_FOUND,
-                    data: categories,
-                });
-            }else {
-                res.json({
-                    status: statics.STATUS_SUCCESS,
-                    code: codes.SUCCESS,
-                    message: trans_message.DATA_FOUND,
-                    data: categories,
-                });
-            }
-        }, error => {
-            reject(error);
-        });
-    });
-});
-//sub_categories
-router.get('/sub_categories', function(req,res){
-
-    if(req.headers.locale == 'ar'){
-        var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
-        var trans_message = messages;
-    }else{
-        var trans_message = messages;
-    }
-    return new Promise(function(resolve,reject) {
-        categoryServices.get_sub_categories().then(categories => {
-            resolve(categories);
-            if(categories == null){
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: trans_message.DATA_NOT_FOUND,
-                    data: categories,
-                });
-            }else {
-                res.json({
-                    status: statics.STATUS_SUCCESS,
-                    code: codes.SUCCESS,
-                    message: trans_message.DATA_FOUND,
-                    data: categories,
-                });
-            }
-        }, error => {
-            reject(error);
-        });
-    });
-});
 
 
 module.exports=router;
