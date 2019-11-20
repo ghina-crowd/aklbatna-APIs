@@ -1,7 +1,7 @@
 
 module.exports = function(sequelize, DataTypes) {
     return sequelize.define('shop_category', {
-        sub_category_id: {
+        shop_category_id: {
             type: DataTypes.STRING(225),
         },
         name: {
@@ -26,9 +26,6 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING(225),
         },
         timestamp_create: {
-            type: DataTypes.STRING(225),
-        },
-        timestamp_update: {
             type: DataTypes.STRING(225),
         },
     }, {

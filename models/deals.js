@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
         user_id: {
             type: DataTypes.STRING(225),
         },
-        sub_category_id: {
+        shop_category_id: {
             type: DataTypes.STRING(225),
         },
         deal_title: {
