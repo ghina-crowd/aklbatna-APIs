@@ -31,7 +31,7 @@ var SubCategoryRepository = {
                              var dealsArray = [];
                              subcategories.forEach(item =>{
                                  deals.forEach(deal =>{
-                                     if( deal.dataValues.sub_category_id === item.dataValues.sub_category_id){
+                                     if( deal.dataValues.sub_category_id == item.dataValues.sub_category_id){
                                          dealsArray.push(deal.dataValues);
                                      }
                                  })
