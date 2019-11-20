@@ -27,7 +27,19 @@ var SubCategoryRepository = {
 
                      models.SubCategory.findAll({attributes: ["sub_category_id","shop_category_id","sub_name","short_details","created_time"]},{where: {active: 1}}).then(subcategories => {
 
-                         resolve(subcategories);
+                         deals_model.Deals.findAll({attributes: ['deal_id', 'user_id', 'sub_category_id', 'deal_title', 'lattitude', 'longitude', 'company_name', 'short_detail', 'details', 'pre_price', 'new_price', 'start_time', 'end_time', 'active', 'premium', 'location_address']},{where: {active: 1}}).then(deals => {
+                             var dealsArray = [];
+                             subcategories.forEach(item =>{
+                                 deals.forEach(deal =>{
+                                     if( deal.dataValues.shop_sub_category_id == item.dataValues.shop_sub_category_id){
+                                         dealsArray.push(deal.dataValues);
+                                     }
+                                 })
+
+                                 item.dataValues['deals'] =  dealsArray;
+                             })
+                             resolve(subcategories);
+                         });
 
 
                     }, error => {
