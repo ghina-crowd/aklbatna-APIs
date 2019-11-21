@@ -1,6 +1,6 @@
 var message={
-    DATA_FOUND:'Data Found.',
-    DATA_NOT_FOUND:'Data not found.',
+    DATA_FOUND:'ٍSuccess.',
+    DATA_NOT_FOUND:'User name or password incorrect.',
     LOGOUT_SUCCESS:'Logout successfully.',
     INVALID_DATA:'Invalid data.',
     INVALID_LENGTH:'Length of {} should be of {} to {} characters.',
@@ -15,7 +15,7 @@ var message={
     EMPTY_FIELD_OTP:'Please Type 4 digit OTP.',
     INVALID_OTP:'Invalid 4 digit OTP.',
     ACTIVATION:'User is not activated.',
-    EMAIL_REGISTEreq:'Email is already registereq.',
+    EMAIL_REGISTERED:'Email is already registereq.',
     REGISTEreq_USER:'User registereq please check your email and activate your account.',
     ACTIVATED_USER:'User is activated you can login to your account.',
     INVALID_TOKEN:'Invalid session token.',
@@ -27,7 +27,12 @@ var message={
     EMPTY_FIELD_COMPANY:'Please type company name.',
     PROFILE_UPDATE:'Profile updated.',
     RESEND: 'OTP SENT',
-    DATA_FOR_RESET: 'Security code sent to you email to reset password'
+    DATA_FOR_RESET: 'Security code sent to you email to reset password',
+    NO_TOKEN: 'No token provided.',
+    FAILED_AUTHENTICATE_TOKEN : 'Failed to authenticate token.',
+    INVALID_EMAIL : 'Invalid Email',
+
+
 };
 
 module.exports=message;

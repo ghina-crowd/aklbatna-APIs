@@ -1,6 +1,13 @@
 var models=require('../models/models.js');
 var UserRepository=require('../repository/users.js');
 var fields=require('../constant/field.js');
+var bcrypt = require('bcryptjs');
+var config = require('../constant/config.js');
+
+
+
+
+
 var service={
     login:function(email,password){
         return new Promise(function(resolve,reject){
@@ -22,6 +29,7 @@ var service={
                 if(users == null){
                     resolve(null);
                 }else{
+                    console.log(users);
                     resolve(users);
                 }
 
@@ -30,7 +38,28 @@ var service={
             });
         });
     },
-    login_token:function(id,token){
+
+    getLanguale:function(req){
+        if (req.headers.language == 'ar') {
+            return  trans_message = ar_messages;
+        } else if (req.headers.language == 'en') {
+            var trans_message = messages;
+        } else {
+            return trans_message = messages;
+        }
+    },
+
+    checkLanguage:function(req){
+        if (req.headers.language == 'ar') {
+            return  ar_messages;
+        } else if (req.headers.language == 'en') {
+            return trans_message = messages;
+        } else {
+            return  messages;
+        }
+    },
+
+    login_token:function(id){
         return new Promise(function(resolve,reject){
             UserRepository.Login_Token(id,token).then(users=>{
                 if(users == null){
@@ -58,9 +87,12 @@ var service={
             });
         });
     },
+
     check_user:function(email,password,first_name,last_name,phone,user_type){
+
+        var password = bcrypt.hashSync(password, 8);
         return new Promise(function(resolve,reject){
-            UserRepository.Check(email,password,first_name,last_name,phone,user_type).then(users=>{
+            UserRepository.Check(email,password ,first_name,last_name,phone,user_type).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -85,9 +117,10 @@ var service={
             });
         });
     },
-    check_otp:function(token,otp){
+    check_otp:function(email,otp){
+        console.log(email);
         return new Promise(function(resolve,reject){
-            UserRepository.Check_otp(token,otp).then(users=>{
+            UserRepository.Check_otp(email,otp).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -99,19 +132,35 @@ var service={
             });
         });
     },
-    check_token:function(token){
+    get_language:function(lang){
         return new Promise(function(resolve,reject){
-            UserRepository.Check_token(token).then(users=>{
-                if(users == null){
-                    resolve(null);
-                }else{
-                    resolve(users['dataValues']);
-                }
+            if (lang == 'ar') {
 
-            },error=>{
-                reject(error);
-            });
+            } else if (lang == 'en') {
+                // var trans_message = messages;
+            } else {
+                // var trans_message = messages;
+            }
         });
+
+
+    },
+    check_token:function(token){
+        // return new Promise(function(resolve,reject){
+            jwt.verify(token, config.secret, function(err, decoded) {
+                if (err)
+                {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.TOKEN_INVALID,
+                        message: trans_message.FAILED_AUTHENTICATE_TOKEN,
+                        data: null
+                    });
+                }
+                return decoded.email;
+
+            });
+        // });
     },
     activate_user:function(token,otp){
         return new Promise(function(resolve,reject){
@@ -155,9 +204,9 @@ var service={
             });
         });
     },
-    resend_user:function(token){
+    resend_user:function(email){
         return new Promise(function(resolve,reject){
-            UserRepository.Resend_otp(token).then(users=>{
+            UserRepository.Resend_otp(email).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{

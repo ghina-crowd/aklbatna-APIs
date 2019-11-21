@@ -1,4 +1,5 @@
 var config={
+    secret: 'ghina',
     PORT:3000,
     PROFILE:'dev',
     db:{
@@ -9,5 +10,7 @@ var config={
         DIALECT:'mysql'
     }
 };
+
+
 
 module.exports=config;

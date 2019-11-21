@@ -1,13 +1,13 @@
 var message={
-    DATA_FOUND:'البيانات موجودة.',
-    DATA_NOT_FOUND:'البيانات غير موجودة.',
+    DATA_FOUND:'نجاح.',
+    DATA_NOT_FOUND:'اسم المستخدم أو كلمة المرور غير صحيحة.',
     LOGOUT_SUCCESS:'تم تسجيل الخروج بنجاح.',
     INVALID_DATA:'بيانات غير صحيحة.',
     INVALID_LENGTH:'الرجاء ادخال من <> الى <> محرف.',
     SERVER_ERROR:'Server error.',
     DATA_SAVED:'تم حفظ البيانات بنجاح.',
     DATA_NOT_SAVED:'فشل في حفظ البيانات.',
-    EMPTY_FIELD_EMAIL:'الرجاء ادخال البريد الالكتروني.',
+    EMPTY_FIELD_EMAIL:'الرجاء ادخال البريد الالكتروني .',
     EMPTY_FIELD_PASS:'الرجاء ادخال كلمة المرور.',
     EMPTY_FIELD_FIRST:'الرجاء ادخال  الاسم االأول.',
     EMPTY_FIELD_LAST:'الرجاء ادخال الاسم  الأخير.',
@@ -27,7 +27,11 @@ var message={
     EMPTY_FIELD_COMPANY:'الرجاء ادخال اسم الشركة .',
     PROFILE_UPDATE:'تم تحديث معلومات بنجاح.',
     RESEND: 'OTP SENT',
-    DATA_FOR_RESET: 'Security code sent to you email to reset password'
+    DATA_FOR_RESET: 'Security code sent to you email to reset password',
+    NO_TOKEN: '.مفتاح التحقق مفقود',
+    FAILED_AUTHENTICATE_TOKEN : 'مفتاح النحقق خاطئ',
+    INVALID_EMAIL : 'Invalid Email',
+
 };
 
 module.exports=message;
