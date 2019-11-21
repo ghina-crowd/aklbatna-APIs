@@ -24,9 +24,9 @@ var router=express.Router();
 //categories
 router.get('/', function(req,res){
 
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -57,9 +57,9 @@ router.get('/', function(req,res){
 //categories
 router.get('/categories', function(req,res){
 
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;
@@ -90,9 +90,9 @@ router.get('/categories', function(req,res){
 //sub_categories
 router.get('/sub_categories', function(req,res){
 
-    if(req.headers.locale == 'ar'){
+    if(req.headers.language == 'ar'){
         var trans_message = ar_messages;
-    }else if(req.headers.locale == 'en'){
+    }else if(req.headers.language == 'en'){
         var trans_message = messages;
     }else{
         var trans_message = messages;

@@ -40,9 +40,9 @@ var service={
     },
 
     getLanguale:function(req){
-        if (req.headers.locale == 'ar') {
+        if (req.headers.language == 'ar') {
             return  trans_message = ar_messages;
-        } else if (req.headers.locale == 'en') {
+        } else if (req.headers.language == 'en') {
             var trans_message = messages;
         } else {
             return trans_message = messages;
@@ -50,9 +50,9 @@ var service={
     },
 
     checkLanguage:function(req){
-        if (req.headers.locale == 'ar') {
+        if (req.headers.language == 'ar') {
             return  ar_messages;
-        } else if (req.headers.locale == 'en') {
+        } else if (req.headers.language == 'en') {
             return trans_message = messages;
         } else {
             return  messages;
@@ -87,6 +87,7 @@ var service={
             });
         });
     },
+
     check_user:function(email,password,first_name,last_name,phone,user_type){
 
         var password = bcrypt.hashSync(password, 8);
@@ -130,6 +131,19 @@ var service={
                 reject(error);
             });
         });
+    },
+    get_language:function(lang){
+        return new Promise(function(resolve,reject){
+            if (lang == 'ar') {
+
+            } else if (lang == 'en') {
+                // var trans_message = messages;
+            } else {
+                // var trans_message = messages;
+            }
+        });
+
+
     },
     check_token:function(token){
         // return new Promise(function(resolve,reject){

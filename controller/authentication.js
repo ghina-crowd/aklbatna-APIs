@@ -24,16 +24,48 @@ const jwt = require('jsonwebtoken');
 var router = express.Router();
 
 
+function language(lang) {
+    if (lang == 'ar') {
+        return ar_messages;
+    } else if (lang == 'en') {
+        return messages;
+    } else {
+        return messages;
+    }
+}
+
+function verifyToken(token, res, trans_message) {
+    if (!token) {
+        res.json({
+            status: statics.STATUS_FAILURE,
+            code: codes.TOKEN_MISSING,
+            message: trans_message.NO_TOKEN,
+            auth: false,
+            data: null
+        });
+        return
+    }
+
+    jwt.verify(token, config.secret, function (err, decoded) {
+        if (err) {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.TOKEN_INVALID,
+                message: trans_message.FAILED_AUTHENTICATE_TOKEN,
+                data: null
+            });
+            return
+        }
+        return decoded.email;
+
+    });
+}
+
 //login
 router.post('/login', function (req, res) {
 
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -56,7 +88,7 @@ router.post('/login', function (req, res) {
         } else {
 
             return new Promise(function (resolve, reject) {
-                authenticationService.login(creqentials.email, creqentials.password ).then(user => {
+                authenticationService.login(creqentials.email, creqentials.password).then(user => {
 
                     resolve(user);
                     if (user == null) {
@@ -75,7 +107,7 @@ router.post('/login', function (req, res) {
                         var token = jwt.sign(userData, config.secret, {});
                         // authenticationService.login_token(user.user_admin_id);
 
-                        if (user.active ==  0) {
+                        if (user.active == 0) {
 
                             res.json({
                                 status: statics.STATUS_FAILURE,
@@ -88,13 +120,13 @@ router.post('/login', function (req, res) {
 
                             // authenticationService.login_token(user.user_admin_id, token);
                             user['token'] = token,
-                            res.json({
-                                status: statics.STATUS_SUCCESS,
-                                code: codes.SUCCESS,
-                                message: trans_message.DATA_FOUND,
-                                data: user,
-                                // token: token
-                            });
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: trans_message.DATA_FOUND,
+                                    data: user,
+                                    // token: token
+                                });
                         }
                     }
 
@@ -116,16 +148,10 @@ router.post('/login', function (req, res) {
     }
 });
 
-
 //register
 router.post('/register', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages; // get arabic message
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages; // get english message
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var creqentials = req.body;
@@ -169,7 +195,7 @@ router.post('/register', function (req, res) {
 
             return new Promise(function (resolve, reject) {
 
-                authenticationService.check_user(creqentials.email, creqentials.password , creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type).then(user => {
+                authenticationService.check_user(creqentials.email, creqentials.password, creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type).then(user => {
 
                     resolve(user);
 
@@ -239,20 +265,13 @@ router.post('/register', function (req, res) {
     }
 });
 
-
-
 //activate
 router.put('/activate', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+
+    var trans_message = language(req.headers.language);
+    var token = req.headers.authorization;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var headerdata = req.headers;
         var otp = req.body;
 
         if (otp.otp == '') {
@@ -265,64 +284,44 @@ router.put('/activate', function (req, res) {
         } else {
 
             return new Promise(function (resolve, reject) {
-                var token = req.headers['token'];
-                if (!token) {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.TOKEN_MISSING,
-                        message: trans_message.NO_TOKEN,
-                        auth: false,
-                        data: null
-                    });
-                }
-                var email;
-                jwt.verify(token, config.secret, function(err, decoded) {
-                    if (err)
-                    {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.TOKEN_INVALID,
-                            message: trans_message.FAILED_AUTHENTICATE_TOKEN,
-                            data: null
-                        });
-                    }
-                    email = decoded.email;
 
-                });
-                authenticationService.check_otp(email, otp.otp).then(user => {
+                var email = verifyToken(token, res, trans_message);
+                if (email) {
+                    authenticationService.check_otp(email, otp.otp).then(user => {
 
-                    resolve(user);
+                        resolve(user);
 
-                    if (user == null) {
-
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: trans_message.INVALID_OTP,
-                            data: null
-                        });
-
-                    } else {
-                        authenticationService.activate_user(headerdata.token, otp.otp).then(user => {
-
-                            resolve(user);
+                        if (user == null) {
 
                             res.json({
-                                status: statics.STATUS_SUCCESS,
-                                code: codes.SUCCESS,
-                                message: trans_message.ACTIVATED_USER,
-                                data: user,
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: trans_message.INVALID_OTP,
+                                data: null
                             });
 
-                        }, error => {
-                            reject(error);
-                        });
-                    }
+                        } else {
+                            authenticationService.activate_user(headerdata.token, otp.otp).then(user => {
+
+                                resolve(user);
+
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: trans_message.ACTIVATED_USER,
+                                    data: user,
+                                });
+
+                            }, error => {
+                                reject(error);
+                            });
+                        }
 
 
-                }, error => {
-                    reject(error);
-                });
+                    }, error => {
+                        reject(error);
+                    });
+                }
 
 
             }, error => {
@@ -342,17 +341,10 @@ router.put('/activate', function (req, res) {
     }
 });
 
-
-
 // change password
 router.put('/change_pass', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var headerdata = req.headers;
@@ -365,7 +357,7 @@ router.put('/change_pass', function (req, res) {
                 message: trans_message.EMPTY_FIELD_PASS,
                 data: null
             });
-        }else if(data.otp === ''){
+        } else if (data.otp === '') {
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.FAILURE,
@@ -428,27 +420,19 @@ router.put('/change_pass', function (req, res) {
 
     }
 });
+
 //logout
 router.post('/logout', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     authenticationService.logout();
     res.json({status: statics.STATUS_SUCCESS, code: codes.SUCCESS, message: trans_message.LOGOUT_SUCCESS, data: null});
 });
+
 // get profile
 router.get('/profile', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     var headerdata = req.headers;
 
     var errors = validationResult(req);
@@ -486,19 +470,15 @@ router.get('/profile', function (req, res) {
         });
     }
 });
+
 // update profile
 router.put('/update_profile', upload.single('picture'), function (req, res) {
 
     var path = req.file.path;
     console.log(path);
 
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -610,76 +590,57 @@ router.put('/update_profile', upload.single('picture'), function (req, res) {
 
     }
 });
+
 //resend code
 router.put('/resend_code', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var headerdata = req.headers;
 
         return new Promise(function (resolve, reject) {
-            var email;
-            jwt.verify(headerdata.token, config.secret, function(err, decoded) {
-                if (err)
-                {
+            var email = verifyToken(req.headers.authorization, res, trans_message);
+            if (email) {
+                authenticationService.resend_user(email).then(user => {
+
+                    resolve(user);
+
+                    var transporter = nodemailer.createTransport({
+                        service: 'gmail',
+                        auth: {
+                            user: 'muhammad.umer9122@gmail.com',
+                            pass: 'Addidas9122334455?'
+                        }
+                    });
+
+                    const mailOptions = {
+                        from: 'muhammad.umer9122@gmail.com', // sender address
+                        to: user.email, // list of receivers
+                        subject: 'Subject of your email', // Subject line
+                        html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
+                    };
+
+                    transporter.sendMail(mailOptions, function (err, info) {
+                        if (err)
+                            console.log(err)
+                        else
+                            console.log(info);
+                    });
+
                     res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.TOKEN_INVALID,
-                        message: trans_message.FAILED_AUTHENTICATE_TOKEN,
-                        data: null
-                    });
-                }
-                email = decoded.email;
-
-            });
-
-
-                    authenticationService.resend_user(email).then(user => {
-
-                        resolve(user);
-
-                        var transporter = nodemailer.createTransport({
-                            service: 'gmail',
-                            auth: {
-                                user: 'muhammad.umer9122@gmail.com',
-                                pass: 'Addidas9122334455?'
-                            }
-                        });
-
-                        const mailOptions = {
-                            from: 'muhammad.umer9122@gmail.com', // sender address
-                            to: user.email, // list of receivers
-                            subject: 'Subject of your email', // Subject line
-                            html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
-                        };
-
-                        transporter.sendMail(mailOptions, function (err, info) {
-                            if (err)
-                                console.log(err)
-                            else
-                                console.log(info);
-                        });
-
-                        res.json({
-                            status: statics.STATUS_SUCCESS,
-                            code: codes.SUCCESS,
-                            message: trans_message.RESEND,
-                            data: user,
-                        });
-
-                    }, error => {
-                        reject(error);
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: trans_message.RESEND,
+                        data: user,
                     });
 
+                }, error => {
+                    reject(error);
+                });
 
 
-
+            }
 
 
         }, error => {
@@ -693,13 +654,8 @@ router.put('/resend_code', function (req, res) {
 //reset password
 router.post('/sent_otp_by_email', function (req, res) {
 
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var creqentials = req.body;
@@ -716,55 +672,54 @@ router.post('/sent_otp_by_email', function (req, res) {
             return new Promise(function (resolve, reject) {
                 authenticationService.check_email(creqentials.email).then(user => {
                     resolve(user);
-                    if(!user) {
+                    if (!user) {
+
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.INVALID_DATA,
+                            message: trans_message.INVALID_EMAIL,
+                            data: user
+                        });
+
+                    } else {
+
+                        authenticationService.update_otp(user.email).then(user => {
+                            resolve(user);
+                            var transporter = nodemailer.createTransport({
+                                service: 'gmail',
+                                auth: {
+                                    user: 'muhammad.umer9122@gmail.com',
+                                    pass: 'Addidas9122334455?'
+                                }
+                            });
+
+                            const mailOptions = {
+                                from: 'muhammad.umer9122@gmail.com', // sender address
+                                to: user.email, // list of receivers
+                                subject: 'Subject of your email', // Subject line
+                                html: '<p>Your code for reset password ' + user.otp + '</p>'// plain text body
+                            };
+
+                            transporter.sendMail(mailOptions, function (err, info) {
+                                if (err)
+                                    console.log(err)
+                                else
+                                    console.log(info);
+                            });
 
                             res.json({
-                                status: statics.STATUS_FAILURE,
-                                code: codes.INVALID_DATA,
-                                message: trans_message.INVALID_EMAIL,
-                                data: user
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: trans_message.DATA_FOR_RESET,
+                                data: user,
                             });
 
-                        } else {
-
-                            authenticationService.update_otp(user.email).then(user => {
-                                resolve(user);
-                                var transporter = nodemailer.createTransport({
-                                    service: 'gmail',
-                                    auth: {
-                                        user: 'muhammad.umer9122@gmail.com',
-                                        pass: 'Addidas9122334455?'
-                                    }
-                                });
-
-                                const mailOptions = {
-                                    from: 'muhammad.umer9122@gmail.com', // sender address
-                                    to: user.email, // list of receivers
-                                    subject: 'Subject of your email', // Subject line
-                                    html: '<p>Your code for reset password ' + user.otp + '</p>'// plain text body
-                                };
-
-                                transporter.sendMail(mailOptions, function (err, info) {
-                                    if (err)
-                                        console.log(err)
-                                    else
-                                        console.log(info);
-                                });
-
-                                res.json({
-                                    status: statics.STATUS_SUCCESS,
-                                    code: codes.SUCCESS,
-                                    message: trans_message.DATA_FOR_RESET,
-                                    data: user,
-                                });
-
-                            }, error => {
-                                reject(error);
-                            });
+                        }, error => {
+                            reject(error);
+                        });
 
 
-                        }
-
+                    }
 
 
                 }, error => {
@@ -786,13 +741,8 @@ router.post('/sent_otp_by_email', function (req, res) {
 
 // update reset password
 router.post('/reset_password', function (req, res) {
-    if (req.headers.locale == 'ar') {
-        var trans_message = ar_messages;
-    } else if (req.headers.locale == 'en') {
-        var trans_message = messages;
-    } else {
-        var trans_message = messages;
-    }
+    var trans_message = language(req.headers.language);
+
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var data = req.body;
