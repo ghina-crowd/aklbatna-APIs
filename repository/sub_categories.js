@@ -23,7 +23,6 @@ var SubCategoryRepository = {
     Get_categories_products: function () {
         return new Promise(function (resolve, reject) {
 
-
             models.SubCategory.belongsTo(category_model.Categories, {targetKey:'shop_category_id',foreignKey: 'shop_category_id'});
             models.SubCategory.findAll({attributes: ['sub_category_id','shop_category_id']},{include: [{model: category_model.Categories}]}).then(subcategories => {
 
@@ -32,7 +31,7 @@ var SubCategoryRepository = {
                              var dealsArray = [];
                              subcategories.forEach(item =>{
                                  deals.forEach(deal =>{
-                                     if( deal.dataValues.sub_category_id == item.dataValues.sub_category_id){
+                                     if(deal.dataValues.sub_category_id == item.dataValues.sub_category_id){
                                          dealsArray.push(deal.dataValues);
                                      }
                                  })
