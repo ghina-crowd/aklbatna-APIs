@@ -1,0 +1,38 @@
+var message={
+    DATA_FOUND:'ٍSuccess.',
+    DATA_NOT_FOUND:'User name or password incorrect.',
+    LOGOUT_SUCCESS:'Logout successfully.',
+    INVALID_DATA:'Invalid data.',
+    INVALID_LENGTH:'Length of {} should be of {} to {} characters.',
+    SERVER_ERROR:'Server error.',
+    DATA_SAVED:'Data Saved.',
+    DATA_NOT_SAVED:'Data not saved.',
+    EMPTY_FIELD_EMAIL:'Please type email.',
+    EMPTY_FIELD_PASS:'Please Type Password.',
+    EMPTY_FIELD_FIRST:'Please Type first name.',
+    EMPTY_FIELD_LAST:'Please Type last name.',
+    EMPTY_FIELD_PHONE:'Please Type phone.',
+    EMPTY_FIELD_OTP:'Please Type 4 digit OTP.',
+    INVALID_OTP:'Invalid 4 digit OTP.',
+    ACTIVATION:'User is not activated.',
+    EMAIL_REGISTERED:'Email is already registereq.',
+    REGISTEreq_USER:'User registereq please check your email and activate your account.',
+    ACTIVATED_USER:'User is activated you can login to your account.',
+    INVALID_TOKEN:'Invalid session token.',
+    CHANGE_PASS:'Password reset successful.',
+    EMPTY_FIELD_ADDRESS:'Please type your address.',
+    EMPTY_FIELD_PIC:'Please select one picture.',
+    EMPTY_FIELD_LAT:'Empty lattitude.',
+    EMPTY_FIELD_LONG:'Empty longitude.',
+    EMPTY_FIELD_COMPANY:'Please type company name.',
+    PROFILE_UPDATE:'Profile updated.',
+    RESEND: 'OTP SENT',
+    DATA_FOR_RESET: 'Security code sent to you email to reset password',
+    NO_TOKEN: 'No token provided.',
+    FAILED_AUTHENTICATE_TOKEN : 'Failed to authenticate token.',
+    INVALID_EMAIL : 'Invalid Email',
+
+
+};
+
+module.exports=message;
