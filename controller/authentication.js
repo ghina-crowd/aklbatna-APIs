@@ -5,7 +5,7 @@ var messages=require('../constant/message.js');
 var ar_messages=require('../constant/arabic_messages.js');
 var codes=require('../constant/code.js');
 var authenticationService=require('../service/authentication.js');
-var authenticationValidator=require('../validator/authentication.js');
+var languageService=require('../validator/language');
 const multer = require('multer');
 var config = require('../constant/config.js');
 var bcrypt = require('bcryptjs');
@@ -116,15 +116,12 @@ router.post('/login', function (req, res) {
                                 token: token
                             });
                         } else {
-
-                            // authenticationService.login_token(user.user_admin_id, token);
                             user['token'] = token,
                                 res.json({
                                     status: statics.STATUS_SUCCESS,
                                     code: codes.SUCCESS,
                                     message: trans_message.DATA_FOUND,
                                     data: user,
-                                    // token: token
                                 });
                         }
                     }
@@ -149,45 +146,52 @@ router.post('/login', function (req, res) {
 
 //register
 router.post('/register', function (req, res) {
-    var trans_message = language(req.headers.language);
+
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var creqentials = req.body;
+        var lang = req.headers.language;
 
         if (creqentials.email == '') {
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.FAILURE,
-                message: trans_message.EMPTY_FIELD_EMAIL,
-                data: null
+
+            return new Promise(function (resolve, reject) {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: languageService.get_lang(lang,'EMPTY_FIELD_EMAIL').then(msg => {resolve(msg);}),
+                    data: null
+                },error=>{
+                    reject(error);
+                });
             });
+
         } else if (creqentials.password == '') {
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.FAILURE,
-                message: trans_message.EMPTY_FIELD_PASS,
+                message: languageService.get_lang(lang,'EMPTY_FIELD_PASS').then(msg => {res.json({message: msg})}),
                 data: null
             });
         } else if (creqentials.first_name == '') {
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.FAILURE,
-                message: trans_message.EMPTY_FIELD_FIRST,
+                message: languageService.get_lang(lang,'EMPTY_FIELD_FIRST').then(msg => {res.json({message: msg})}),
                 data: null
             });
         } else if (creqentials.last_name == '') {
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.FAILURE,
-                message: trans_message.EMPTY_FIELD_LAST,
+                message: languageService.get_lang(lang,'EMPTY_FIELD_LAST').then(msg => {res.json({message: msg})}),
                 data: null
             });
         } else if (creqentials.phone == '') {
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.FAILURE,
-                message: trans_message.EMPTY_FIELD_PHONE,
+                message: languageService.get_lang(lang,'EMPTY_FIELD_PHONE').then(msg => {res.json({message: msg})}),
                 data: null
             });
         } else {
@@ -606,7 +610,7 @@ router.put('/resend_code', function (req, res) {
 });
 
 //reset password
-    router.post('/sent_otp_by_email', function (req, res) {
+router.post('/sent_otp_by_email', function (req, res) {
 
         var trans_message = language(req.headers.language);
 

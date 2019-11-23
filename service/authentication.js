@@ -23,7 +23,7 @@ var service={
             });
         });
     },
-    check_email:function(email){
+check_email:function(email){
         return new Promise(function(resolve,reject){
             UserRepository.Check_email(email).then(users=>{
                 if(users == null){

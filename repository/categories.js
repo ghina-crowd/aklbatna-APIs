@@ -5,7 +5,19 @@ var commonRepository = require('./common.js');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 var CategoryRepository = {
-
+    Get_categories: function () {
+        return new Promise(function (resolve, reject) {
+            models.Categories.findAll({where: {active: 1}}).then(categories => {
+                if (categories == null) {
+                    resolve(null);
+                } else {
+                    resolve(categories);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
 };
 Object.assign(CategoryRepository, commonRepository);
 module.exports = CategoryRepository;

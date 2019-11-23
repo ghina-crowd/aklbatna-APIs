@@ -16,7 +16,7 @@ var message={
     INVALID_OTP:'Invalid 4 digit OTP.',
     ACTIVATION:'User is not activated.',
     EMAIL_REGISTERED:'Email is already registereq.',
-    REGISTEreq_USER:'User registereq please check your email and activate your account.',
+    REGISTERED_USER:'User registereq please check your email and activate your account.',
     ACTIVATED_USER:'User is activated you can login to your account.',
     INVALID_TOKEN:'Invalid session token.',
     CHANGE_PASS:'Password reset successful.',
@@ -31,8 +31,6 @@ var message={
     NO_TOKEN: 'No token provided.',
     FAILED_AUTHENTICATE_TOKEN : 'Failed to authenticate token.',
     INVALID_EMAIL : 'Invalid Email',
-
-
 };
 
 module.exports=message;
