@@ -86,7 +86,6 @@ router.post('/login', function (req, res) {
                 });
             });
         } else {
-
             return new Promise(function (resolve, reject) {
                 authenticationService.login(creqentials.email, creqentials.password).then(user => {
                     resolve(user);
