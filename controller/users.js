@@ -108,7 +108,7 @@ router.put('/edit_profile', function (req, res) {
             var token = req.headers.authorization;
              verifyToken(token, res, lang);
             if (email) {
-                // var email = 'muhammad.umer9122@gmail.com';
+                // var email = 'acoponey@gmail.com';
                 if (creqentials.first_name == '') {
                     languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                         res.json({

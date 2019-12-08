@@ -28,7 +28,6 @@ module.exports = function(sequelize, DataTypes) {
         company_id: {
             type: DataTypes.STRING(225),
             foreignKey: true,
-
         },
         short_detail: {
             type: DataTypes.STRING(225),

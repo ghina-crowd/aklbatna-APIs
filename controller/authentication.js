@@ -1,5 +1,5 @@
 var express = require('express');
-const {check, validationResult} = require('express-validator/check');
+const { check, validationResult } = require('express-validator/check');
 var statics = require('../constant/static.js');
 var messages = require('../constant/message.js');
 var ar_messages = require('../constant/arabic_messages.js');
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
         cb(null, new Date().toISOString() + '_' + file.originalname);
     }
 });
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 var router = express.Router();
@@ -153,143 +153,156 @@ router.post('/login', function (req, res) {
 
 //register
 router.post('/register', function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var creqentials = req.body;
         var lang = req.headers.language;
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            var creqentials = req.body;
-            var lang = req.headers.language;
 
-            return new Promise(function (resolve, reject) {
-                if (creqentials.email == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        })
+        return new Promise(function (resolve, reject) {
+            if (creqentials.email == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    })
+                });
+
+            } else if (creqentials.password == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
                     });
-
-                } else if (creqentials.password == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        });
+                });
+            } else if (creqentials.first_name == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
                     });
-                } else if (creqentials.first_name == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        });
+                });
+            } else if (creqentials.last_name == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
+
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
                     });
-                } else if (creqentials.last_name == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
-
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        });
+                });
+            } else if (creqentials.phone == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
                     });
-                } else if (creqentials.phone == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        });
-                    });
-                } else {
+                });
+            } else {
 
-                    return new Promise(function (resolve, reject) {
+                return new Promise(function (resolve, reject) {
 
-                        authenticationService.check_user(creqentials.email, creqentials.password, creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type).then(user => {
+                    authenticationService.check_user(creqentials.email, creqentials.password, creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type).then(user => {
 
-                                resolve(user);
+                        resolve(user);
 
-                                if (user == null) {
-                                    languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
+                        if (user == null) {
+                            languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.FAILURE,
+                                    message: msg.message,
+                                    data: null
+                                });
+                            });
+                        } else {
 
-                                        res.json({
-                                            status: statics.STATUS_FAILURE,
-                                            code: codes.FAILURE,
-                                            message: msg.message,
-                                            data: null
-                                        });
-                                    });
-                                } else {
-                                    var userdata = {
-                                        id: user.id,
-                                        email: user.email,
-                                        password: user.password,
+                            var userdata = {
+                                id: user.id,
+                                email: user.email,
+                                password: user.password,
 
-                                    }
-                                    var token = jwt.sign(userdata, config.secret, {});
-                                    user.token = token;
+                            }
 
-                                    var transporter = nodemailer.createTransport({
-                                        service: 'gmail',
-                                        auth: {
-                                            user: 'muhammad.umer9122@gmail.com',
-                                            pass: 'Addidas9122334455?'
-                                        }
-                                    });
+                            
+                            var token = jwt.sign(userdata, config.secret, {});
+                            user.token = token;
 
-                                    const mailOptions = {
-                                        from: 'muhammad.umer9122@gmail.com', // sender address
-                                        to: user.email, // list of receivers
-                                        subject: 'Subject of your email', // Subject line
-                                        html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
-                                    };
+                            var transporter = nodemailer.createTransport({
+                                service: 'gmail',
+                                auth: {
+                                    user: 'acoponey@gmail.com',
+                                    pass: 'muhammadcrowd'
+                                }
+                            });
+                            const mailOptions = {
+                                from: 'acoponey@gmail.com', // sender address
+                                to: [user.email], // list of receivers
+                                subject: 'Coponey', // Subject line
+                                html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
+                            };
 
-                                    transporter.sendMail(mailOptions, function (err, info) {
-                                        if (err)
-                                            console.log(err)
-                                        else
-                                            console.log(info);
-                                    });
-                                    languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
-                                        res.json({
-                                            status: statics.STATUS_SUCCESS,
-                                            code: codes.SUCCESS,
-                                            message: msg.message,
-                                            data: user,
-                                        });
-                                    });
+                            transporter.sendMail(mailOptions, function (err, info) {
+                                if (err)
+                                    console.log(err)
+                                else
+                                    console.log(info);
+                            });
+                            languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
+
+                                var tempuser = {
+                                    user_admin_id: user.user_admin_id,
+                                    email: user.email,
+                                    first_name: user.first_name,
+                                    last_name: user.last_name,
+                                    phone: user.phone,
+                                    user_type: user.user_type,
+                                    photo: user.photo,
+                                    token: user.token,
                                 }
 
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: msg.message,
+                                    data: tempuser,
+                                });
+                            });
+                        }
 
-                            }
-                            ,
-                            error => {
-                                reject(error);
-                            }
-                        );
-                    });
 
-
-                }
-            })
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
+                    }
+                        ,
+                        error => {
+                            reject(error);
+                        }
+                    );
                 });
-            });
 
-        }
+
+            }
+        })
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
     }
+}
 );
 
 //activate
@@ -712,15 +725,15 @@ router.put('/resend_code', function (req, res) {
                     var transporter = nodemailer.createTransport({
                         service: 'gmail',
                         auth: {
-                            user: 'muhammad.umer9122@gmail.com',
-                            pass: 'Addidas9122334455?'
+                            user: 'acoponey@gmail.com',
+                            pass: 'muhammadcrowd'
                         }
                     });
 
                     const mailOptions = {
-                        from: 'muhammad.umer9122@gmail.com', // sender address
+                        from: 'acoponey@gmail.com', // sender address
                         to: user.email, // list of receivers
-                        subject: 'Subject of your email', // Subject line
+                        subject: 'Coponey', // Subject line
                         html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
                     };
 
@@ -804,15 +817,15 @@ router.post('/sent_otp_by_email', function (req, res) {
                             var transporter = nodemailer.createTransport({
                                 service: 'gmail',
                                 auth: {
-                                    user: 'muhammad.umer9122@gmail.com',
-                                    pass: 'Addidas9122334455?'
+                                    user: 'acoponey@gmail.com',
+                                    pass: 'muhammadcrowd'
                                 }
                             });
 
                             const mailOptions = {
-                                from: 'muhammad.umer9122@gmail.com', // sender address
+                                from: 'acoponey@gmail.com', // sender address
                                 to: user.email, // list of receivers
-                                subject: 'Subject of your email', // Subject line
+                                subject: 'Coponey', // Subject line
                                 html: '<p>Your code for reset password ' + user.otp + '</p>'// plain text body
                             };
 
@@ -876,7 +889,7 @@ router.post('/reset_password', function (req, res) {
                     data: null
                 });
             });
-        }else if (data.password == '') {
+        } else if (data.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -898,7 +911,7 @@ router.post('/reset_password', function (req, res) {
 
             return new Promise(function (resolve, reject) {
 
-                authenticationService.update_pass(data.otp, data.password , data.email).then(user => {
+                authenticationService.update_pass(data.otp, data.password, data.email).then(user => {
 
                     resolve(user);
 

@@ -2,6 +2,8 @@ var express = require("express");
 var bodyparser = require('body-parser');
 var morgan = require('morgan');
 var UserRouter = require('./controller/users.js');
+var AccountRouter = require('./controller/accounts');
+var PurchaseRouter = require('./controller/purchase');
 var authenticationRouter = require('./controller/authentication.js');
 var subcategoriesRouter = require('./controller/sub_categories.js');
 var categoriesRouter = require('./controller/categories.js');
@@ -31,6 +33,8 @@ app.get("/", function (req, res) {
 
 //Register routers
 app.use('/user', UserRouter);
+app.use('/account', AccountRouter);
+app.use('/purchase', PurchaseRouter);
 app.use('/authenticate', authenticationRouter);
 app.use('/sub_categories', subcategoriesRouter);
 app.use('/categories', categoriesRouter);

@@ -34,7 +34,17 @@ var message={
     INVALID_EMAIL : 'Invalid Email',
     SUCCESS : 'Success',
     FAILED : 'Failed',
-    MISSING_PAGE_NUMBER : 'Missing Page number'
+    MISSING_PAGE_NUMBER : 'Missing Page number',
+
+
+    EMPTY_FIELD_CARD_TYPE: 'Security code sent to you email to reset password',
+    EMPTY_FIELD_CARD_NUMBER: '.مفتاح التحقق مفقود',
+    EMPTY_FIELD_EXPIRY_DATE : 'مفتاح النحقق خاطئ',
+    EMPTY_FIELD_CVC : 'Invalid Email',
+    EMPTY_FIELD_OWNER_NAME : 'نجاح',
+    EMPTY_FIELD_USER_ID : 'خطأ',
+    MISSING_PAGE_NUMBER : 'الرجاء ادخال رقم الصفحة'
+
 
 };
 
