@@ -256,7 +256,7 @@ router.post('/register', function (req, res) {
                                         else
                                             console.log(info);
                                     });
-                                    languageService.get_lang(lang, 'REGISTEreq_USER').then(msg => {
+                                    languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
                                         res.json({
                                             status: statics.STATUS_SUCCESS,
                                             code: codes.SUCCESS,
