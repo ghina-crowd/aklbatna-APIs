@@ -18,7 +18,7 @@ app.use(function(req,res,next){
     next();
 });
 app.get("/",function(req,res){
-    res.send("Hello World");
+    res.send("Hello Muhammad");
 });
 //Register routers
 app.use('/User',UserRouter);
