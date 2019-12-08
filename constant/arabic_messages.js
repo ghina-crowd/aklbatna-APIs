@@ -1,6 +1,7 @@
 var message={
     DATA_FOUND:'نجاح.',
-    DATA_NOT_FOUND:'اسم المستخدم أو كلمة المرور غير صحيحة.',
+    INCORRECT_PASSWORD_USER:'اسم المستخدم أو كلمة المرور غير صحيحة.',
+    DATA_NOT_FOUND:'لا يوجد بيانات.',
     LOGOUT_SUCCESS:'تم تسجيل الخروج بنجاح.',
     INVALID_DATA:'بيانات غير صحيحة.',
     INVALID_LENGTH:'الرجاء ادخال من <> الى <> محرف.',
@@ -31,6 +32,10 @@ var message={
     NO_TOKEN: '.مفتاح التحقق مفقود',
     FAILED_AUTHENTICATE_TOKEN : 'مفتاح النحقق خاطئ',
     INVALID_EMAIL : 'Invalid Email',
+    SUCCESS : 'نجاح',
+    FAILED : 'خطأ',
+    MISSING_PAGE_NUMBER : 'الرجاء ادخال رقم الصفحة'
+
 
 };
 

@@ -1,6 +1,7 @@
 var message={
     DATA_FOUND:'ٍSuccess.',
-    DATA_NOT_FOUND:'User name or password incorrect.',
+    INCORRECT_PASSWORD_USER:'User name or password incorrect.',
+    DATA_NOT_FOUND:'No data.',
     LOGOUT_SUCCESS:'Logout successfully.',
     INVALID_DATA:'Invalid data.',
     INVALID_LENGTH:'Length of {} should be of {} to {} characters.',
@@ -31,6 +32,10 @@ var message={
     NO_TOKEN: 'No token provided.',
     FAILED_AUTHENTICATE_TOKEN : 'Failed to authenticate token.',
     INVALID_EMAIL : 'Invalid Email',
+    SUCCESS : 'Success',
+    FAILED : 'Failed',
+    MISSING_PAGE_NUMBER : 'Missing Page number'
+
 };
 
 module.exports=message;

@@ -4,6 +4,8 @@ module.exports = function(sequelize, DataTypes) {
   return sequelize.define('user_admin', {
     user_admin_id: {
       type: DataTypes.STRING(45),
+      primaryKey: true,
+      autoIncrement: true
     },
     email: {
       type: DataTypes.STRING(45),
@@ -11,9 +13,7 @@ module.exports = function(sequelize, DataTypes) {
     password: {
       type: DataTypes.STRING(45),
     },
-    session_id: {
-      type: DataTypes.STRING(500),
-    },
+
     first_name: {
       type: DataTypes.STRING(45),
     },
@@ -26,27 +26,18 @@ module.exports = function(sequelize, DataTypes) {
     otp: {
       type: DataTypes.STRING(45),
     },
-    otp_val: {
-      type: DataTypes.STRING(45),
-    },
-    user_id: {
-      type: DataTypes.STRING(45),
-    },
+
     active: {
       type: DataTypes.STRING(45),
     },
-    token: {
-      type: DataTypes.STRING(500),
-    },
+
     lattitude: {
       type: DataTypes.STRING(45),
     },
     longitude: {
       type: DataTypes.STRING(45),
     },
-    company_name: {
-      type: DataTypes.STRING(45),
-    },
+
     picture: {
       type: DataTypes.STRING(200),
     },
@@ -56,15 +47,7 @@ module.exports = function(sequelize, DataTypes) {
     user_type: {
       type: DataTypes.STRING(45),
     },
-    name: {
-      type: DataTypes.STRING(45),
-     },
-    language: {
-      type: DataTypes.STRING(45),
-    },
-    company_name_arabic: {
-      type: DataTypes.STRING(45),
-    },
+
     photo: {
       type: DataTypes.STRING(45),
     },

@@ -1,28 +1,30 @@
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define('shop_sub_category', {
-        sub_category_id: {
+    return sequelize.define('rating', {
+        rating_id: {
             type: DataTypes.STRING(225),
             primaryKey: true,
             autoIncrement: true
         },
-        shop_category_id: {
+        deal_id: {
             type: DataTypes.STRING(225),
+            foreignKey: true
         },
-        sub_name_en: {
+        user_id: {
             type: DataTypes.STRING(225),
+            foreignKey: true
         },
-        sub_name_ar: {
-            type: DataTypes.STRING(225),
+        rate: {
+            type: DataTypes.INTEGER,
         },
-        short_details: {
-            type: DataTypes.STRING(225),
+        date: {
+            type: DataTypes.DATE,
         },
-        created_time: {
+        comment: {
             type: DataTypes.STRING(225),
         },
 
     }, {
-        tableName: 'shop_sub_category'
+        tableName: 'deal_ratings'
     });
 };

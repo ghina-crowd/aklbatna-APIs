@@ -190,9 +190,9 @@ check_email:function(email){
             });
         });
     },
-    update_pass:function(otp,password){
+    update_pass:function(otp,password , email){
         return new Promise(function(resolve,reject){
-            UserRepository.Update_pass(otp,password).then(users=>{
+            UserRepository.Update_pass(otp,password , email).then(users=>{
                 if(users == null){
                     resolve(null);
                 }else{
@@ -235,6 +235,8 @@ check_email:function(email){
     logout:function(){
         console.log("Invalidate token.");
     },
+
+
     get_user:function(token){
         return new Promise(function(resolve,reject){
             UserRepository.Get_user(token).then(users=>{

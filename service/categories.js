@@ -11,5 +11,15 @@ var service={
             });
         });
     },
+
+    get_categories_sub_categories:function(){
+        return new Promise(function(resolve,reject){
+            categoryRepository.get_categories_sub_categories().then(categories=>{
+                resolve(categories);
+            },error=>{
+                reject(error);
+            });
+        });
+    },
 };
 module.exports=service;

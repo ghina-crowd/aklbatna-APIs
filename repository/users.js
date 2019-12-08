@@ -13,10 +13,19 @@ var UserRepository = {
             });
         });
     },
-    FindByIdAndDeleted: function (id, deleted) {
+    getUser: function (email) {
         return new Promise(function (resolve, reject) {
-            models.User.findOne({where: {pk_User_id: id, deleted: deleted}}).then(existingCountries => {
-                resolve(existingCountries);
+            models.User.findOne({where: {email: email}}).then(user => {
+                if (user == null) {
+                    resolve(null);
+
+                } else {
+                    var isDeleted = delete user.dataValues['password'];
+                    var isDeletedOTP = delete user.dataValues['otp'];
+                    if (isDeleted && isDeletedOTP) {
+                        resolve(user);
+                    }
+                }
             }, error => {
                 reject(error);
             });
@@ -25,23 +34,25 @@ var UserRepository = {
     Login: function (email, password) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({
-                attributes: ['user_admin_id', 'password', 'name', 'email', 'phone', 'first_name', 'last_name', 'active'],
+                attributes: ['user_admin_id', 'password',  'email', 'phone', 'first_name', 'last_name', 'active'],
                 where: {email: email}
             }).then(users => {
+                console.log(users);
                 if (users) {
                     var passwordIsValid = bcrypt.compareSync(password, users.password);
+                    console.log(passwordIsValid);
                     if (!passwordIsValid) {
                         resolve(null)
-                    }else{
+                    } else {
                         var isDeleted = delete users.dataValues['password'];
-                        if(isDeleted){
+                        if (isDeleted) {
                             resolve(users)
-                        }else{
+                        } else {
                             resolve(null)
                         }
                     }
-                }else {
-                    resolve(users);
+                } else {
+                    resolve(null);
                 }
             }, error => {
                 reject(error);
@@ -51,9 +62,9 @@ var UserRepository = {
     Check_email: function (email) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({attributes: ['email'], where: {email: email}}).then(users => {
-                if(users){
+                if (users) {
                     resolve(users['dataValues']);
-                }else{
+                } else {
                     resolve(null);
                 }
 
@@ -78,7 +89,7 @@ var UserRepository = {
         return new Promise(function (resolve, reject) {
             var otp_val = Math.floor(1000 + Math.random() * 9000);
             models.User.update({otp: otp_val}, {where: {email: email}}).then(function (result) {
-                models.User.findOne({attributes: [ 'email'], where: {email: email}}).then(users => {
+                models.User.findOne({attributes: ['email'], where: {email: email}}).then(users => {
                     resolve(users);
                 }, error => {
                     reject(error);
@@ -104,14 +115,13 @@ var UserRepository = {
                         otp: otp_val,
                         user_type: user_type
                     }).then(users => {
-                       var isDeleted = delete users.dataValues['password'];
-                       var isDeletedOTP = delete users.dataValues['otp'];
-                       if(isDeleted && isDeletedOTP){
-                           console.log(users);
-                           resolve(users);
-                       }else{
-                           resolve(null);
-                       }
+                        var isDeleted = delete users.dataValues['password'];
+                        var isDeletedOTP = delete users.dataValues['otp'];
+                        if (isDeleted && isDeletedOTP) {
+                            resolve(users);
+                        } else {
+                            resolve(null);
+                        }
 
                     }, error => {
                         reject(error)
@@ -162,14 +172,13 @@ var UserRepository = {
             });
         });
     },
-    Update_pass: function (otp, password) {
+    Update_pass: function (otp, password , email) {
         return new Promise(function (resolve, reject) {
-            console.log(password);
             var hashPassword = bcrypt.hashSync(password, 8);
-
-            models.User.update({password: hashPassword}, {where: {otp: otp}}).then(function (result) {
-
-                models.User.findOne({attributes: ['email'], where: {otp: otp}}).then(results => {
+            console.log(hashPassword);
+            models.User.update({password: hashPassword}, {where: {otp: otp , email: email} }).then(function (result) {
+                console.log(result);
+                models.User.findOne({attributes: ['email' ], where: {email: email}}).then(results => {
                     resolve(results);
                 }, error => {
                     reject(error);
@@ -194,25 +203,29 @@ var UserRepository = {
             });
         });
     },
-    Update_profile: function (token, first_name, last_name, address, phone, picture, lattitude, longitude, company_name) {
+    update_profile: function ( first_name, last_name, phone , email) {
         return new Promise(function (resolve, reject) {
             models.User.update({
                 first_name: first_name,
                 last_name: last_name,
-                address: address,
                 phone: phone,
-                picture: picture,
-                lattitude: lattitude,
-                longitude: longitude,
-                company_name: company_name
-            }, {where: {session_id: token}}).then(function (result) {
-                resolve(result);
+
+            }, {where: {email: email}}).then(function (result) {
+                models.User.findOne({where: {email: email} , attributes: ['email' , 'first_name' , 'last_name' , 'phone' ]}).then(users => {
+                    resolve(users);
+                }, error => {
+                    reject(error);
+                });
+
+
             }, function (error) {
             }, function (error) {
                 reject(error);
             });
         });
     },
+
+
     Get_user: function (token) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({

@@ -1,12 +1,14 @@
-var express=require('express');
-const { check, validationResult } = require('express-validator/check');
-var statics=require('../constant/static.js');
-var messages=require('../constant/message.js');
-var ar_messages=require('../constant/arabic_messages.js');
-var codes=require('../constant/code.js');
-var subcategoryServices=require('../service/categories.js');
-var authenticationValidator=require('../validator/authentication.js');
+var express = require('express');
+const {check, validationResult} = require('express-validator/check');
+var statics = require('../constant/static.js');
+var messages = require('../constant/message.js');
+var ar_messages = require('../constant/arabic_messages.js');
+var codes = require('../constant/code.js');
+var categoryServices = require('../service/categories.js');
+var authenticationValidator = require('../validator/authentication.js');
 const multer = require('multer');
+var languageService = require('../validator/language');
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -19,42 +21,102 @@ const storage = multer.diskStorage({
 const upload = multer({storage: storage});
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
-var router=express.Router();
+var router = express.Router();
 
-//categories
-router.get('/categories', function(req,res){
 
-    if(req.headers.language == 'ar'){
-        var trans_message = ar_messages;
-    }else if(req.headers.language == 'en'){
-        var trans_message = messages;
-    }else{
-        var trans_message = messages;
-    }
-    return new Promise(function(resolve,reject) {
-        categoryServices.get_categories().then(categories => {
-            resolve(categories);
-            if(categories == null){
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: trans_message.DATA_NOT_FOUND,
-                    data: categories,
-                });
-            }else {
-                res.json({
-                    status: statics.STATUS_SUCCESS,
-                    code: codes.SUCCESS,
-                    message: trans_message.DATA_FOUND,
-                    data: categories,
-                });
-            }
-        }, error => {
-            reject(error);
+router.get('/get_categories_subCategories', function (req, res) {
+
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        return new Promise(function (resolve, reject) {
+            categoryServices.get_categories_sub_categories().then(categories => {
+                resolve(categories);
+                if (categories == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    })
+
+                }
+            }, error => {
+                reject(error);
+            });
         });
-    });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+
+
+    }
+
+
 });
 
+router.get('/categories', function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
 
+        return new Promise(function (resolve, reject) {
+            categoryServices.get_categories().then(categories => {
+                resolve(categories);
+                if (categories == null) {
 
-module.exports=router;
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    })
+
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    })
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+
+module.exports = router;
