@@ -43,7 +43,6 @@ var AccountRepository = {
                         reject(error)
                     });
                 } else {
-                    console.log('account already exist');
                     console.log(account['dataValues']);
                     resolve(account['dataValues'])
                 }
@@ -56,14 +55,15 @@ var AccountRepository = {
     updateAccount: function (newAccountData) {
         return new Promise(function (resolve, reject) {
             models.Account.update({
+
                 owner_name: newAccountData.owner_name,
                 cvc: newAccountData.cvc,
                 expiry_date: newAccountData.expiry_date,
                 card_number: newAccountData.card_number,
                 type: newAccountData.type,
 
-            }, { where: { fk_user_id: newAccountData.fk_user_id } }).then(function (result) {
-                models.Account.findOne({ where: { fk_user_id: newAccountData.fk_user_id }, attributes: ['owner_name', 'cvc', 'expiry_date', 'card_number', 'type'] }).then(account => {
+            }, { where: { pk_account_id: newAccountData.pk_account_id } }).then(function (result) {
+                models.Account.findOne({ where: { pk_account_id: newAccountData.pk_account_id }, attributes: ['owner_name', 'cvc', 'expiry_date', 'card_number', 'type'] }).then(account => {
                     resolve(account);
                 }, error => {
                     reject(error);
@@ -75,7 +75,7 @@ var AccountRepository = {
     },
     deleteAccount: function (newAccountData) {
         return new Promise(function (resolve, reject) {
-            models.Account.destroy({ where: { fk_user_id: newAccountData.fk_user_id } }).then(deleted => {
+            models.Account.destroy({ where: { pk_account_id: newAccountData.pk_account_id } }).then(deleted => {
                 resolve(deleted);
             }, error => {
                 reject(error);

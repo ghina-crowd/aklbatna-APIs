@@ -56,9 +56,8 @@ router.get('/get', function (req, res) {
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
             AccountService.GetAccount(id).then(account => {
-                console.log(account);
                 resolve(account);
-                if(account == null){
+                if (account == null) {
                     account = [];
                 }
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
@@ -92,20 +91,9 @@ router.post('/create', function (req, res) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
-
-
         return new Promise(function (resolve, reject) {
-            if (!creqentials.fk_user_id || creqentials.fk_user_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_USER_ID').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    })
-                });
-
-            } else if (!creqentials.owner_name || creqentials.owner_name == '') {
+            creqentials.fk_user_id = id;
+            if (!creqentials.owner_name || creqentials.owner_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_OWNER_NAME').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -209,8 +197,9 @@ router.put('/update', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            if (!creqentials.fk_user_id || creqentials.fk_user_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_USER_ID').then(msg => {
+            creqentials.fk_user_id = id;
+            if (!creqentials.pk_account_id || creqentials.pk_account_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_ACCOUNT_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -266,7 +255,6 @@ router.put('/update', function (req, res) {
                     });
                 });
             } else {
-
                 return new Promise(function (resolve, reject) {
                     AccountService.Update(creqentials).then(account => {
                         resolve(account);
@@ -297,7 +285,6 @@ router.put('/update', function (req, res) {
                 data: errors.array()
             });
         });
-
     }
 }
 );
@@ -321,6 +308,7 @@ router.delete('/delete', function (req, res) {
                 });
 
             } else {
+
                 return new Promise(function (resolve, reject) {
                     AccountService.Delete(creqentials).then(account => {
                         resolve(account);

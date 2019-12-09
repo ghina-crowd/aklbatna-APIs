@@ -50,16 +50,14 @@ var CompanyRepository = {
 
                 var filtercompanies = [];
                 companies.forEach(item => {
-                    var subArray = [];
                     var distance = calcCrow(item.latitude, item.longitude, latitude, longitude);
-                    console.log(distance);
-                    item = { distance: distance };
-                    filtercompanies.push(item);
+                    if (distance <= 10) {
+                        item["dataValues"].distance = distance;
+                        filtercompanies.push(item);
+                    }
 
                 });
-                // console.log(location_name);
-                // console.log(offset);
-                // console.log(companies);
+                filtercompanies.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
                 resolve(filtercompanies);
             }, error => {
                 reject(error);

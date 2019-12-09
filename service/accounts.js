@@ -36,7 +36,6 @@ module.exports = {
             }, function (error) {
                 reject(error);
             });
-
         }, error => {
             reject(error);
         });

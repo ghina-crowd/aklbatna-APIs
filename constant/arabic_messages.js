@@ -36,20 +36,18 @@ var message = {
     FAILED: 'خطأ',
     MISSING_PAGE_NUMBER: 'الرجاء ادخال رقم الصفحة',
 
-    EMPTY_FIELD_CARD_TYPE: '',
-    EMPTY_FIELD_ACCOUNT_ID: '',
-    EMPTY_FIELD_CARD_NUMBER: '',
-    EMPTY_FIELD_EXPIRY_DATE: '',
-    EMPTY_FIELD_CVC: '',
-    EMPTY_FIELD_OWNER_NAME: '',
-    EMPTY_FIELD_USER_ID: '',
-    MISSING_PAGE_NUMBER: '',
+    EMPTY_FIELD_CARD_TYPE: 'Invalid Card Type',
+    EMPTY_FIELD_CARD_NUMBER: 'Invalid Card number',
+    EMPTY_FIELD_EXPIRY_DATE: 'Invalid Expiry date',
+    EMPTY_FIELD_CVC: 'Invalid CVC',
+    EMPTY_FIELD_OWNER_NAME: 'Invalid Owner name',
+    EMPTY_FIELD_USER_ID: 'Invalid User id.',
 
-
-    INVALID_USER_ID: '',
-    INVALID_DEAL_ID: '',
-    INVALID_STATUS: '',
-    INVALID_DATE: '',
+    INVALID_USER_ID: 'invalid user id',
+    INVALID_DEAL_ID: 'invalid deal id',
+    INVALID_STATUS: 'invalid status',
+    INVALID_DATE: 'invalid date',
+    EMPTY_FIELD_ACCOUNT_ID: 'invalid account id'
 
 
 };

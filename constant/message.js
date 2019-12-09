@@ -37,19 +37,19 @@ var message = {
     MISSING_PAGE_NUMBER: 'Missing Page number',
 
 
-    EMPTY_FIELD_CARD_TYPE: 'Invalid or No data.',
-    EMPTY_FIELD_CARD_NUMBER: 'Invalid or No data.',
-    EMPTY_FIELD_EXPIRY_DATE: 'Invalid or No data.',
-    EMPTY_FIELD_CVC: 'Invalid or No data.',
-    EMPTY_FIELD_OWNER_NAME: 'Invalid or No data.',
-    EMPTY_FIELD_USER_ID: 'Invalid or No data.',
-    MISSING_PAGE_NUMBER: 'Invalid or No data.',
-    EMPTY_FIELD_ACCOUNT_ID: 'Invalid or No data.',
+    EMPTY_FIELD_CARD_TYPE: 'Invalid Card Type',
+    EMPTY_FIELD_CARD_NUMBER: 'Invalid Card number',
+    EMPTY_FIELD_EXPIRY_DATE: 'Invalid Expiry date',
+    EMPTY_FIELD_CVC: 'Invalid CVC',
+    EMPTY_FIELD_OWNER_NAME: 'Invalid Owner name',
+    EMPTY_FIELD_USER_ID: 'Invalid User id.',
 
-    INVALID_USER_ID: 'Invalid or No data.',
-    INVALID_DEAL_ID: 'Invalid or No data.',
-    INVALID_STATUS: 'Invalid or No data.',
-    INVALID_DATE: 'Invalid or No data.',
+
+    INVALID_USER_ID: 'invalid user id',
+    INVALID_DEAL_ID: 'invalid deal id',
+    INVALID_STATUS: 'invalid status',
+    INVALID_DATE: 'invalid date',
+    EMPTY_FIELD_ACCOUNT_ID: 'invalid account id'
 
 
 };
