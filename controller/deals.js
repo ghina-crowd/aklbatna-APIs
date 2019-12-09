@@ -203,6 +203,8 @@ router.post('/filter', function (req, res) {
         var sub_category_id = Number(data.sub_category_id) ? Number(data.sub_category_id) : 0;
         var min_price = data.min_price ? data.min_price : 0;
         var max_price = data.max_price ? data.max_price : 0;
+        var latitude = Number(data.latitude) ? Number(data.latitude) : 0;
+        var longitude = Number(data.longitude) ? Number(data.longitude) : 0;
         var date = data.date ? data.date : '';
         var monthly_new = data.monthly_new ? data.monthly_new : ''; // 1 => monthly , 2 => new
         var sort_by = data.sort_by ? data.sort_by : ''; // 1 => price low to high , 2 => price high to low , 3 => distance
@@ -220,7 +222,7 @@ router.post('/filter', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                dealServices.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword).then(deals => {
+                dealServices.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword,latitude,longitude).then(deals => {
                     resolve(deals);
                     if (deals == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {

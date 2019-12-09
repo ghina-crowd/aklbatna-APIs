@@ -1,26 +1,26 @@
 var PurchaseRepository = require('../repository/purcahse');
 module.exports = {
-    GetAllPurchase: function () {
+    GetAllPurchase: function (id) {
         return new Promise(function (resolve, reject) {
-            PurchaseRepository.GetAll().then(user => {
+            PurchaseRepository.GetAll(id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
             });
         });
     },
-    GetAllUased: function () {
+    GetAllUased: function (id) {
         return new Promise(function (resolve, reject) {
-            PurchaseRepository.GetAllUsed().then(user => {
+            PurchaseRepository.GetAllUsed(id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
             });
         });
     },
-    GetAllUnused: function () {
+    GetAllUnused: function (id) {
         return new Promise(function (resolve, reject) {
-            PurchaseRepository.GetAllUnused().then(user => {
+            PurchaseRepository.GetAllUnused(id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);

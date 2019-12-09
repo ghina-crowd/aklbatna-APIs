@@ -17,7 +17,6 @@ var id;
 function verifyToken(token, res, lang) {
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
-
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.TOKEN_MISSING,
@@ -342,6 +341,5 @@ router.delete('/delete', function (req, res) {
     }
 }
 );
-
 
 module.exports = router;

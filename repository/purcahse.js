@@ -2,9 +2,16 @@ var models = require('../models/models.js');
 var commonRepository = require('./common.js');
 
 var PurchaseRepository = {
-    GetAll: function () {
+    GetAll: function (id) {
+
+        var data = {};
+        if (id) {
+            data = { user_id: id };
+        } else {
+            data = {};
+        }
         return new Promise(function (resolve, reject) {
-            models.Purchase.findAll().then(purcahses => {
+            models.Purchase.findAll({ where: data }).then(purcahses => {
                 resolve(purcahses);
             }, error => {
                 reject(error);
@@ -13,9 +20,15 @@ var PurchaseRepository = {
     },
 
 
-    GetAllUsed: function () {
+    GetAllUsed: function (id) {
         return new Promise(function (resolve, reject) {
-            models.Purchase.findAll({ where: { status: 1 } }).then(purcahses => {
+            var data = {};
+            if (id) {
+                data = { status: 1, user_id: id };
+            } else {
+                data = { status: 1 };
+            }
+            models.Purchase.findAll({ where: data }).then(purcahses => {
                 resolve(purcahses);
             }, error => {
                 reject(error);
@@ -25,9 +38,16 @@ var PurchaseRepository = {
 
 
 
-    GetAllUnused: function () {
+    GetAllUnused: function (id) {
+
+        var data = {};
+        if (id) {
+            data = { status: 0, user_id: id };
+        } else {
+            data = { status: 0 };
+        }
         return new Promise(function (resolve, reject) {
-            models.Purchase.findAll({ where: { status: 0 } }).then(purcahses => {
+            models.Purchase.findAll({ where: data }).then(purcahses => {
                 resolve(purcahses);
             }, error => {
                 reject(error);

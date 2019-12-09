@@ -43,9 +43,9 @@ var service = {
         });
     },
 
-    filter_deals: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating , page , keyword) {
+    filter_deals: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating , page , keyword,latitude,longitude) {
         return new Promise(function (resolve, reject) {
-            dealRepository.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating , page , keyword).then(deals => {
+            dealRepository.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating , page , keyword,latitude,longitude).then(deals => {
                 resolve(deals);
             }, error => {
                 reject(error);

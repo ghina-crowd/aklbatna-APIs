@@ -9,6 +9,7 @@ var config = require('../constant/config.js');
 
 
 var router = express.Router();
+var id;
 function verifyToken(token, res, lang) {
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
@@ -36,8 +37,8 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        email = decoded.email;
-        return decoded.email;
+        id = decoded.id;
+        return decoded.id;
 
     });
 }
@@ -50,7 +51,7 @@ router.get('/getAll', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            PurchaseService.GetAllPurchase().then(purchases => {
+            PurchaseService.GetAllPurchase(undefined).then(purchases => {
                 resolve(purchases);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
@@ -84,7 +85,7 @@ router.get('/getunused', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            PurchaseService.GetAllUnused().then(purchases => {
+            PurchaseService.GetAllUnused(undefined).then(purchases => {
                 resolve(purchases);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
@@ -118,7 +119,7 @@ router.get('/getused', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            PurchaseService.GetAllUased(req.body.user_admin_id).then(purchases => {
+            PurchaseService.GetAllUased(undefined).then(purchases => {
                 resolve(purchases);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
@@ -228,9 +229,111 @@ router.post('/create', function (req, res) {
         });
 
     }
-}
+});
 
-);
+
+router.get('/user/getAll', function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+        return new Promise(function (resolve, reject) {
+            PurchaseService.GetAllPurchase(id).then(purchases => {
+                resolve(purchases);
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: purchases
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+
+router.get('/user/getunused', function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+        return new Promise(function (resolve, reject) {
+            PurchaseService.GetAllUnused(id).then(purchases => {
+                resolve(purchases);
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: purchases
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+
+router.get('/user/getused', function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+        return new Promise(function (resolve, reject) {
+            PurchaseService.GetAllUased(id).then(purchases => {
+                resolve(purchases);
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: purchases
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+
 function isNumber(value) {
     try {
         var temp = Number(value);
