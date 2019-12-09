@@ -413,5 +413,50 @@ router.get('/reviews/:id/:page', function (req, res) {
 
 });
 
+router.get('/sub_deals/:id', function (req, res) {
+    var lang = req.headers.language;
+    var deal_id = req.params.id;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+            return new Promise(function (resolve, reject) {
+                dealServices.get_sub_deals(deal_id).then(sub_deals => {
+                    resolve(sub_deals);
+                    if (sub_deals == null) {
+                        languageService.get_lang(lang, 'FAILED').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: [],
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: sub_deals,
+                            });
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+
+    }
+
+});
+
 
 module.exports = router;

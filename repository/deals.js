@@ -366,6 +366,7 @@ var dealsRepository = {
                 model_rate.Rating.findAll({
                     limit: pageSize,
                     offset: offset,
+                    order: [['date' , 'DESC']],
                     where: {deal_id: deal_id},
                     include: [{
                         model: model_user.User,
@@ -381,9 +382,30 @@ var dealsRepository = {
                     reject(error);
                 });
             });
+        },
+
+
+
+    get_sub_deals: function (deal_id) {
+    return new Promise(function (resolve, reject) {
+        if (lang.acceptedLanguage == 'en') {
+            sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
+        } else {
+            sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
         }
-        ,
-    }
-;
+        sub_deals.SubDeals.findAll({ attributes: sub_deals_attributes ,
+            where: {deal_id: deal_id},
+        }).then(reviews => {
+            if (reviews == null) {
+                resolve(null);
+            } else {
+                resolve(reviews);
+            }
+        }, error => {
+            reject(error);
+        });
+    });
+},
+};
 Object.assign(dealsRepository, commonRepository);
 module.exports = dealsRepository;

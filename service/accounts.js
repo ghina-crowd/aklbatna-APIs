@@ -2,9 +2,9 @@ var AccountRepository = require('../repository/accounts.js');
 var fields = require('../constant/field.js');
 var models = require('../models/models.js');
 module.exports = {
-    GetAccount: function (pk_account_id) {
+    GetAccount: function (user_id) {
         return new Promise(function (resolve, reject) {
-            AccountRepository.getAccount(pk_account_id).then(user => {
+            AccountRepository.getAccount(user_id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);

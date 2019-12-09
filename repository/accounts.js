@@ -11,10 +11,9 @@ var AccountRepository = {
             });
         });
     },
-    getAccount: function (pk_account_id) {
+    getAccount: function (user_id) {
         return new Promise(function (resolve, reject) {
-            models.Account.findOne({ where: { pk_account_id: pk_account_id } }).then((account => {
-                console.log(account);
+            models.Account.findAll({ where: { fk_user_id: user_id } }).then((account => {
                 if (account == null) {
                     resolve(null);
                 } else {
