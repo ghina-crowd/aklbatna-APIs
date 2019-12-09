@@ -25,7 +25,7 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
     },
     card_number: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(100),
       allowNull: false,
     },
     type: {

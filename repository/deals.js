@@ -46,7 +46,6 @@ var dealsRepository = {
                 company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link'];
                 sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
             } else {
-
                 deal_attributes = ['deal_id','shop_category_id',  ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link'];
                 sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
@@ -276,7 +275,6 @@ var dealsRepository = {
                     } else {
                         models.Deals.findAll({
                             limit: pageSize, offset: offset, order: order, where: data, attributes: deal_attributes
-
                         }).then(deals => {
                             if (deals == null) {
                                 resolve(null);

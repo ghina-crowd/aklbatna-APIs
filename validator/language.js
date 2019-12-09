@@ -83,6 +83,8 @@ var language = {
                 resolve({ message: messages.MISSING_PAGE_NUMBER });
             } else if (type == 'INCORRECT_PASSWORD_USER') {
                 resolve({ message: messages.INCORRECT_PASSWORD_USER });
+            } else if (type == 'EMPTY_FIELD_ACCOUNT_ID') {
+                resolve({ message: messages.EMPTY_FIELD_ACCOUNT_ID });
             } else if (type == 'EMPTY_FIELD_USER_ID') {
                 resolve({ message: messages.EMPTY_FIELD_USER_ID });
             } else if (type == 'EMPTY_FIELD_OWNER_NAME') {
@@ -95,6 +97,14 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_CARD_NUMBER });
             } else if (type == 'EMPTY_FIELD_CARD_TYPE') {
                 resolve({ message: messages.EMPTY_FIELD_CARD_TYPE });
+            } else if (type == 'INVALID_USER_ID') {
+                resolve({ message: messages.INVALID_USER_ID });
+            } else if (type == 'INVALID_DEAL_ID') {
+                resolve({ message: messages.INVALID_DEAL_ID });
+            } else if (type == 'INVALID_STATUS') {
+                resolve({ message: messages.INVALID_STATUS });
+            } else if (type == 'INVALID_DATE') {
+                resolve({ message: messages.INVALID_DATE });
             }
 
         });

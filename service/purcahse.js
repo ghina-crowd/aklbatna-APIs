@@ -27,9 +27,9 @@ module.exports = {
             });
         });
     },
-    CreatePurchase: function (newAccountData) {
+    CreatePurchase: function (newPurchaseData) {
         return new Promise(function (resolve, reject) {
-            PurchaseRepository.CreateAccount(newAccountData).then(function (result) {
+            PurchaseRepository.CreatePurchase(newPurchaseData).then(function (result) {
                 resolve(result);
             }, function (error) {
                 reject(error);

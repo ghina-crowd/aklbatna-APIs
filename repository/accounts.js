@@ -11,9 +11,9 @@ var AccountRepository = {
             });
         });
     },
-    getAccount: function (user_admin_id) {
+    getAccount: function (pk_account_id) {
         return new Promise(function (resolve, reject) {
-            models.Account.findOne({ where: { fk_user_id: user_admin_id } }).then((account => {
+            models.Account.findOne({ where: { pk_account_id: pk_account_id } }).then((account => {
                 console.log(account);
                 if (account == null) {
                     resolve(null);
@@ -26,10 +26,9 @@ var AccountRepository = {
         });
     },
 
-
     createAccount: function (newAccountData) {
         return new Promise(function (resolve, reject) {
-            models.Account.findOne({ attributes: ['pk_account_id'], where: { fk_user_id: newAccountData.fk_user_id } }).then(account => {
+            models.Account.findOne({ where: { card_number: newAccountData.card_number } }).then(account => {
                 if (account == null) {
                     models.Account.create({
                         fk_user_id: newAccountData.fk_user_id,
@@ -45,7 +44,9 @@ var AccountRepository = {
                         reject(error)
                     });
                 } else {
-                    resolve(null)
+                    console.log('account already exist');
+                    console.log(account['dataValues']);
+                    resolve(account['dataValues'])
                 }
             }, error => {
                 reject(error);

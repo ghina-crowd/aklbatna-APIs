@@ -50,14 +50,14 @@ router.get('/getAll', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            PurchaseService.GetAllPurchase().then(account => {
-                resolve(account);
+            PurchaseService.GetAllPurchase().then(purchases => {
+                resolve(purchases);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
                         status: statics.STATUS_SUCCESS,
                         code: codes.SUCCESS,
                         message: msg.message,
-                        data: account
+                        data: purchases
                     });
                 });
             }, error => {
@@ -75,8 +75,6 @@ router.get('/getAll', function (req, res) {
         })
     }
 });
-
-
 
 router.get('/getunused', function (req, res) {
     lang = req.headers.language;
@@ -86,14 +84,14 @@ router.get('/getunused', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            PurchaseService.GetAllUnused().then(account => {
-                resolve(account);
+            PurchaseService.GetAllUnused().then(purchases => {
+                resolve(purchases);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
                         status: statics.STATUS_SUCCESS,
                         code: codes.SUCCESS,
                         message: msg.message,
-                        data: account
+                        data: purchases
                     });
                 });
             }, error => {
@@ -111,8 +109,6 @@ router.get('/getunused', function (req, res) {
         })
     }
 });
-
-
 
 router.get('/getused', function (req, res) {
     lang = req.headers.language;
@@ -122,14 +118,14 @@ router.get('/getused', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            PurchaseService.GetAccount(req.body.user_admin_id).then(account => {
-                resolve(account);
+            PurchaseService.GetAllUased(req.body.user_admin_id).then(purchases => {
+                resolve(purchases);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
                         status: statics.STATUS_SUCCESS,
                         code: codes.SUCCESS,
                         message: msg.message,
-                        data: account
+                        data: purchases
                     });
                 });
             }, error => {
@@ -148,4 +144,105 @@ router.get('/getused', function (req, res) {
     }
 });
 
+router.post('/create', function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var creqentials = req.body;
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+
+
+        return new Promise(function (resolve, reject) {
+
+            if (!creqentials.user_id || !isNumber(creqentials.user_id)) {
+                console.log(isNumber(creqentials.user_id))
+                languageService.get_lang(lang, 'INVALID_USER_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    })
+                });
+
+            } else if (!creqentials.deal_id || !isNumber(creqentials.deal_id)) {
+                languageService.get_lang(lang, 'INVALID_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!creqentials.status || !isNumber(creqentials.status)) {
+                languageService.get_lang(lang, 'INVALID_STATUS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!creqentials.date || !isDate(creqentials.date)) {
+                languageService.get_lang(lang, 'INVALID_DATE').then(msg => {
+
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else {
+
+                return new Promise(function (resolve, reject) {
+                    PurchaseService.CreatePurchase(creqentials).then(purchase => {
+                        resolve(purchase);
+                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: purchase
+                            });
+                        });
+                    }
+                        ,
+                        error => {
+                            reject(error);
+                        }
+                    );
+                });
+            }
+        })
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+}
+
+);
+function isNumber(value) {
+    try {
+        var temp = Number(value);
+        console.log(temp);
+        return true;
+    } catch (ex) {
+        return false;
+    }
+}
+function isDate(sDate) {
+    if (sDate.toString() == parseInt(sDate).toString()) return false;
+    var tryDate = new Date(sDate);
+    return (tryDate && tryDate.toString() != "NaN" && tryDate != "Invalid Date");
+}
 module.exports = router;

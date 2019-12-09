@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('purchase', {
+  return sequelize.define('purchases', {
     pk_account_id: {
       type: DataTypes.STRING(11),
       primaryKey: true,
@@ -19,8 +19,12 @@ module.exports = function (sequelize, DataTypes) {
     status: {
       type: DataTypes.STRING(1),
       allowNull: false,
+    }, 
+    date: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
     }
   }, {
-    tableName: 'purchase'
+    tableName: 'purchases'
   });
 };
