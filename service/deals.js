@@ -73,6 +73,16 @@ var service = {
             });
         });
     },
+
+    get_sub_deals: function (deal_id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.get_sub_deals(deal_id).then(reviews => {
+                resolve(reviews);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
 };
 
 

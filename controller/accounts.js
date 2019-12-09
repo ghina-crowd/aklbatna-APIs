@@ -13,7 +13,7 @@ var config = require('../constant/config.js');
 
 
 var router = express.Router();
-var email;
+var id;
 function verifyToken(token, res, lang) {
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
@@ -41,8 +41,8 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        email = decoded.email;
-        return decoded.email;
+        id = decoded.id;
+        return decoded.id;
 
     });
 }
@@ -55,8 +55,12 @@ router.get('/get', function (req, res) {
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         return new Promise(function (resolve, reject) {
-            AccountService.GetAccount(req.body.user_admin_id).then(account => {
+            AccountService.GetAccount(id).then(account => {
+                console.log(account);
                 resolve(account);
+                if(account == null){
+                    account = [];
+                }
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
                         status: statics.STATUS_SUCCESS,
