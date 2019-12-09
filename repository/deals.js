@@ -5,7 +5,6 @@ var sub_deals = require('../models/sub_deals_model.js');
 var model_company = require('../models/company_model.js');
 var model_user = require('../models/models.js');
 var category_model = require('../models/categories_model.js');
-var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
 const sequelize = require('sequelize');
 var lang = require('../app');

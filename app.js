@@ -4,6 +4,7 @@ var morgan = require('morgan');
 var UserRouter = require('./controller/users.js');
 var AccountRouter = require('./controller/accounts');
 var PurchaseRouter = require('./controller/purchase');
+var CompanyRouter = require('./controller/company');
 var authenticationRouter = require('./controller/authentication.js');
 var subcategoriesRouter = require('./controller/sub_categories.js');
 var categoriesRouter = require('./controller/categories.js');
@@ -34,6 +35,7 @@ app.get("/", function (req, res) {
 //Register routers
 app.use('/user', UserRouter);
 app.use('/account', AccountRouter);
+app.use('/company', CompanyRouter);
 app.use('/purchase', PurchaseRouter);
 app.use('/authenticate', authenticationRouter);
 app.use('/sub_categories', subcategoriesRouter);
