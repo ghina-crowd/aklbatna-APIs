@@ -51,12 +51,7 @@ router.get('/places', function (req, res) {
     if (errors.array().length == 0) {
         var data = req.body;
         var lang = req.headers.language;
-        var token = req.headers.authorization;
         var address = data.address ? data.address : undefined;
-        verifyToken(token, res, lang);
-        if (!email) {
-            return;
-        }
         if (address) {
             MapsService.getPlaces(address).then(response => {
                 languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
@@ -80,7 +75,64 @@ router.get('/places', function (req, res) {
 
 
         } else {
-            console.log('else');
+            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.INVALID_DATA,
+                    message: msg.message,
+                    data: errors.array()
+                });
+            });
+
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+
+}
+);
+
+
+router.get('/details', function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var data = req.body;
+        var lang = req.headers.language;
+        var place_id = data.place_id ? data.place_id : undefined;
+        if (place_id) {
+            MapsService.getDetails(place_id).then(response => {
+                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: response.json.result
+                    });
+                });
+            }, error => {
+                console.log(error);
+                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: [],
+                    });
+                });
+            });
+
+
+        } else {
+           
             languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,

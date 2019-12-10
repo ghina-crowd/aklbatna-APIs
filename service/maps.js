@@ -18,5 +18,18 @@ module.exports = {
                     reject(err)
                 });
         });
+    },
+    getDetails: function (place_id) {
+        return new Promise(function (resolve, reject) {
+            console.log(place_id);
+            googleMapsClient.place({ placeid: place_id })
+                .asPromise()
+                .then((response) => {
+                    resolve(response);
+                })
+                .catch((err) => {
+                    reject(err)
+                });
+        });
     }
 };
