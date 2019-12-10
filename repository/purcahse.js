@@ -22,11 +22,7 @@ var PurchaseRepository = {
                         new_price_subtotal = new_price_subtotal + item["dataValues"].deal.new_price;
                     });
                     var diff = pre_price_total - new_price_subtotal;
-                    // console.log(new_price_subtotal);
-                    // console.log(pre_price_total);
-                    // console.log(diff);
                     var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
-                    // console.log(percDiff);
                     var response = {};
                     response.pre_price_total = pre_price_total;
                     response.new_price_subtotal = new_price_subtotal;

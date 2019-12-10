@@ -42,7 +42,6 @@ function verifyToken(token, res, lang) {
         }
         id = decoded.id;
         return decoded.id;
-
     });
 }
 

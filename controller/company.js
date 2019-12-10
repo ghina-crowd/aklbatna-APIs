@@ -45,9 +45,6 @@ router.get('/filter', function (req, res) {
     if (errors.array().length == 0) {
 
         var lang = req.headers.language;
-        var token = req.headers.authorization;
-        verifyToken(token, res, lang);
-
         var lang = req.headers.language;
         var data = req.body;
         var latitude = Number(data.latitude) ? Number(data.latitude) : 0;
