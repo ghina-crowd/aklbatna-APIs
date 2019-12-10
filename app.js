@@ -2,6 +2,7 @@ var express = require("express");
 var bodyparser = require('body-parser');
 var morgan = require('morgan');
 var UserRouter = require('./controller/users.js');
+var MapsRouter = require('./controller/maps');
 var AccountRouter = require('./controller/accounts');
 var PurchaseRouter = require('./controller/purchase');
 var CompanyRouter = require('./controller/company');
@@ -13,13 +14,13 @@ var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
 var app = express();
 app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({extended: false}));
+app.use(bodyparser.urlencoded({ extended: false }));
 app.use(morgan(config.PROFILE));
 
 app.use(function (req, res, next) {
-    if(req.headers.language){
+    if (req.headers.language) {
         exports.acceptedLanguage = req.headers.language;
-    }else{
+    } else {
         exports.acceptedLanguage = 'en'
     }
 
@@ -41,6 +42,7 @@ app.use('/authenticate', authenticationRouter);
 app.use('/sub_categories', subcategoriesRouter);
 app.use('/categories', categoriesRouter);
 app.use('/deals', dealsRouter);
+app.use('/maps', MapsRouter);
 //Register routers
 //Register routers
 

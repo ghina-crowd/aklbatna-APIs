@@ -1,4 +1,5 @@
 var models = require('../models/models.js');
+var modelsdeals = require('../models/deals_model');
 var commonRepository = require('./common.js');
 
 var PurchaseRepository = {
@@ -7,16 +8,48 @@ var PurchaseRepository = {
         var data = {};
         if (id) {
             data = { user_id: id };
-        } else {
-            data = {};
-        }
-        return new Promise(function (resolve, reject) {
-            models.Purchase.findAll({ where: data }).then(purcahses => {
-                resolve(purcahses);
-            }, error => {
-                reject(error);
+            return new Promise(function (resolve, reject) {
+                models.Purchase.belongsTo(modelsdeals.Deals, { foreignKey: 'deal_id' })
+                models.Purchase.findAll({
+                    where: data, include: [
+                        { model: modelsdeals.Deals },
+                    ]
+                }).then(purcahses => {
+                    var pre_price_total = 0;
+                    var new_price_subtotal = 0;
+                    purcahses.forEach(item => {
+                        pre_price_total = pre_price_total + item["dataValues"].deal.pre_price;
+                        new_price_subtotal = new_price_subtotal + item["dataValues"].deal.new_price;
+                    });
+                    var diff = pre_price_total - new_price_subtotal;
+                    // console.log(new_price_subtotal);
+                    // console.log(pre_price_total);
+                    // console.log(diff);
+                    var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
+                    // console.log(percDiff);
+                    var response = {};
+                    response.pre_price_total = pre_price_total;
+                    response.new_price_subtotal = new_price_subtotal;
+                    response.diff = diff;
+                    response.percDiff = percDiff;
+                    response.purcahses = purcahses;
+
+                    resolve(response);
+                }, error => {
+                    reject(error);
+                });
             });
-        });
+
+        } else {
+            return new Promise(function (resolve, reject) {
+                models.Purchase.findAll().then(purcahses => {
+                    resolve(purcahses);
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+
     },
 
 

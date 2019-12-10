@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/awadhesh22791/expressjs-template#readme",
   "dependencies": {
+    "@google/maps": "^1.0.2",
     "array-merge-by-key": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",

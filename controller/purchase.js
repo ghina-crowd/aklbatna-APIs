@@ -231,7 +231,6 @@ router.post('/create', function (req, res) {
     }
 });
 
-
 router.get('/user/getAll', function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
