@@ -1,5 +1,5 @@
 var express = require('express');
-const {check, validationResult} = require('express-validator/check');
+const { check, validationResult } = require('express-validator/check');
 var statics = require('../constant/static.js');
 var messages = require('../constant/message.js');
 var ar_messages = require('../constant/arabic_messages.js');
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
         cb(null, new Date().toISOString() + '_' + file.originalname);
     }
 });
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 var router = express.Router();
@@ -209,8 +209,8 @@ router.post('/filter', function (req, res) {
         var monthly_new = data.monthly_new ? data.monthly_new : ''; // 1 => monthly , 2 => new
         var sort_by = data.sort_by ? data.sort_by : ''; // 1 => price low to high , 2 => price high to low , 3 => distance
         var rating = data.rating ? data.rating : '';
-        var page = req.body.page  ; // start from 0
-        var keyword = req.body.keyword  ? req.body.keyword : 0;
+        var page = req.body.page; // start from 0
+        var keyword = req.body.keyword ? req.body.keyword : 0;
         if (page < 0) {
             languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {
                 res.json({
@@ -222,7 +222,7 @@ router.post('/filter', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                dealServices.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword,latitude,longitude).then(deals => {
+                dealServices.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
                     resolve(deals);
                     if (deals == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -268,9 +268,9 @@ router.post('/rating', function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         return new Promise(function (resolve, reject) {
-           var d = verifyToken(token, res, lang);
+            var d = verifyToken(token, res, lang);
             if (userID) {
-                dealServices.create_rate(userID , data.deal_id, data.rate, data.comment).then(rate => {
+                dealServices.create_rate(userID, data.deal_id, data.rate, data.comment).then(rate => {
                     resolve(rate);
                     if (rate == null) {
                         languageService.get_lang(lang, 'FAILED').then(msg => {
@@ -420,32 +420,32 @@ router.get('/sub_deals/:id', function (req, res) {
     var deal_id = req.params.id;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-            return new Promise(function (resolve, reject) {
-                dealServices.get_sub_deals(deal_id).then(sub_deals => {
-                    resolve(sub_deals);
-                    if (sub_deals == null) {
-                        languageService.get_lang(lang, 'FAILED').then(msg => {
-                            res.json({
-                                status: statics.STATUS_FAILURE,
-                                code: codes.FAILURE,
-                                message: msg.message,
-                                data: [],
-                            });
+        return new Promise(function (resolve, reject) {
+            dealServices.get_sub_deals(deal_id).then(sub_deals => {
+                resolve(sub_deals);
+                if (sub_deals == null) {
+                    languageService.get_lang(lang, 'FAILED').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: [],
                         });
-                    } else {
-                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
-                            res.json({
-                                status: statics.STATUS_SUCCESS,
-                                code: codes.SUCCESS,
-                                message: msg.message,
-                                data: sub_deals,
-                            });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: sub_deals,
                         });
-                    }
-                }, error => {
-                    reject(error);
-                });
+                    });
+                }
+            }, error => {
+                reject(error);
             });
+        });
     } else {
         languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
             res.json({

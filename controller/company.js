@@ -4,41 +4,8 @@ var languageService = require('../validator/language');
 var statics = require('../constant/static.js');
 var codes = require('../constant/code.js');
 var CompanyService = require('../service/company');
-const jwt = require('jsonwebtoken');
-var config = require('../constant/config.js');
 var router = express.Router();
-function verifyToken(token, res, lang) {
-    if (!token) {
-        languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
 
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.TOKEN_MISSING,
-                message: msg.message,
-                auth: false,
-                data: null
-            });
-        });
-        return
-    }
-
-    jwt.verify(token, config.secret, function (err, decoded) {
-        if (err) {
-            languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.TOKEN_INVALID,
-                    message: msg.message,
-                    data: null
-                });
-            });
-            return
-        }
-        email = decoded.email;
-        return decoded.email;
-
-    });
-}
 
 router.get('/filter', function (req, res) {
     var errors = validationResult(req);
