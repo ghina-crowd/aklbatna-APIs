@@ -233,7 +233,7 @@ router.post('/register', function (req, res) {
 
                             }
 
-                            
+
                             var token = jwt.sign(userdata, config.secret, {});
                             user.token = token;
 
@@ -948,6 +948,45 @@ router.post('/reset_password', function (req, res) {
 
 
         }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+    }
+});
+
+
+// get profile
+router.get('/checktoken', function (req, res) {
+    var lang = req.headers.language;
+    var token = req.headers.authorization;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        jwt.verify(token, config.secret, function (err, decoded) {
+            if (err) {
+                languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.TOKEN_INVALID,
+                        message: msg.message,
+                    });
+                });
+                return
+            } else {
+                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                    });
+                });
+            }
+        });
     } else {
         languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
             res.json({
