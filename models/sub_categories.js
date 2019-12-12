@@ -1,5 +1,5 @@
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define('shop_sub_category', {
         sub_category_id: {
             type: DataTypes.STRING(225),
@@ -19,6 +19,9 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING(225),
         },
         created_time: {
+            type: DataTypes.STRING(225),
+        },
+        active: {
             type: DataTypes.STRING(225),
         },
 

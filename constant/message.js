@@ -49,7 +49,24 @@ var message = {
     INVALID_DEAL_ID: 'invalid deal id',
     INVALID_STATUS: 'invalid status',
     INVALID_DATE: 'invalid date',
-    EMPTY_FIELD_ACCOUNT_ID: 'invalid account id'
+    EMPTY_FIELD_ACCOUNT_ID: 'invalid account id',
+
+    EMPTY_FIELD_NAME_AR: 'invalid name in arabic',
+    EMPTY_FIELD_NAME_EN: 'invalid name in english',
+    EMPTY_FIELD_KEYWORD: 'invalid keyword',
+    EMPTY_FIELD_SHORT_DEC: 'invalid short description',
+    EMPTY_FIELD_IMAGE: 'please provide image',
+    EMPTY_FIELD_SHOP_CATEGORY_ID: 'category id is missing',
+
+
+    EMPTY_FIELD_ACTIVE: 'invalid field active',
+    EMPTY_FIELD_SHOP_CATEGORY: 'invalid shop category id',
+    EMPTY_FIELD_SHORT_DETAILS: 'invalid short details',
+    EMPTY_FIELD_SUB_CATEGORY_NAME_AR: 'invalid name in arabic',
+    EMPTY_FIELD_SUB_NAME_EN: 'invalid name in english',
+    EMPTY_FIELD_SUB_CATEGORY_ID: 'invalid sub category id',
+    EMPTY_FIELD_DEAL_ID: 'invalid deal id',
+    EMPTY_FIELD_SUB_DEAL_ID: 'invalid sub deal id'
 
 
 };

@@ -4,17 +4,8 @@ var models = require('../models/models.js');
 module.exports = {
     GetAllUser: function () {
         return new Promise(function (resolve, reject) {
-            UserRepository.FindAllByDeleted(false).then(existingCountries => {
-                var countries = [];
-                existingCountries.forEach(existingUser => {
-                    var User = {};
-                    User[fields.ID] = existingUser.pk_User_id;
-                    User[fields.NAME] = existingUser.name;
-                    User[fields.SHORT_NAME] = existingUser.short_name;
-                    User[fields.MOBILE_CODE] = existingUser.mobile_code;
-                    countries.push(User);
-                });
-                resolve(countries);
+            UserRepository.GetAll().then(existingCountries => {
+                resolve(existingCountries);
             }, error => {
                 reject(error);
             });
@@ -23,6 +14,15 @@ module.exports = {
     GetUser: function (email) {
         return new Promise(function (resolve, reject) {
             UserRepository.getUser(email).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    DeleteUser: function (id) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.deleteUser(id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
@@ -54,7 +54,7 @@ module.exports = {
             });
         });
     },
-    Update: function ( first_name, last_name, phone, email) {
+    Update: function (first_name, last_name, phone, email) {
         return new Promise(function (resolve, reject) {
             UserRepository.update_profile(first_name, last_name, phone, email).then(user => {
                 resolve(user);

@@ -425,8 +425,6 @@ var dealsRepository = {
         });
     },
 
-
-
     get_sub_deals: function (deal_id) {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
@@ -448,6 +446,111 @@ var dealsRepository = {
             });
         });
     },
+    create_deal: function (newDealData) {
+        return new Promise(function (resolve, reject) {
+            models.Deals.create({
+                user_id: newDealData.user_id,
+                sub_category_id: newDealData.sub_category_id,
+                shop_category_id: newDealData.shop_category_id,
+                company_id: newDealData.company_id,
+                deal_title_en: newDealData.deal_title_en,
+                deal_title_ar: newDealData.deal_title_ar,
+                short_detail: newDealData.short_detail,
+                details_en: newDealData.details_en,
+                details_ar: newDealData.details_ar,
+                pre_price: newDealData.pre_price,
+                new_price: newDealData.new_price,
+                start_time: newDealData.start_time,
+                end_time: newDealData.end_time,
+                active: newDealData.active,
+                main_image: newDealData.main_image,
+                premium: newDealData.premium,
+                location_address: newDealData.location_address,
+                is_monthly: newDealData.is_monthly,
+                final_rate: newDealData.final_rate,
+
+            }).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    create_sub_deal: function (newSubCategoryData) {
+        return new Promise(function (resolve, reject) {
+            sub_deals.SubDeals.create({
+                sub_name_en: newSubCategoryData.sub_name_en,
+                sub_name_ar: newSubCategoryData.sub_name_ar,
+                short_details: newSubCategoryData.short_details,
+                shop_category_id: newSubCategoryData.shop_category_id
+            }).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    update_deal: function (newSubCategoryData) {
+        console.log(newSubCategoryData.active);
+        return new Promise(function (resolve, reject) {
+            models.Deals.update({
+                sub_name_en: newSubCategoryData.sub_name_en,
+                sub_name_ar: newSubCategoryData.sub_name_ar,
+                short_details: newSubCategoryData.short_details,
+                active: newSubCategoryData.active,
+                shop_category_id: newSubCategoryData.shop_category_id,
+            }, { where: { sub_category_id: newSubCategoryData.sub_category_id } }).then(function (result) {
+                models.Deals.findOne({ where: { sub_category_id: newSubCategoryData.sub_category_id } }).then(deal => {
+                    resolve(deal);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+
+    update_sub_deal: function (newSubCategoryData) {
+        console.log(newSubCategoryData.active);
+        return new Promise(function (resolve, reject) {
+            sub_deals.SubDeals.update({
+                sub_name_en: newSubCategoryData.sub_name_en,
+                sub_name_ar: newSubCategoryData.sub_name_ar,
+                short_details: newSubCategoryData.short_details,
+                active: newSubCategoryData.active,
+                shop_category_id: newSubCategoryData.shop_category_id,
+            }, { where: { sub_category_id: newSubCategoryData.sub_category_id } }).then(function (result) {
+                models.Deals.findOne({ where: { sub_category_id: newSubCategoryData.sub_category_id } }).then(deal => {
+                    resolve(deal);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    delete_deal: function (deal_id) {
+        return new Promise(function (resolve, reject) {
+            models.Deals.destroy({ where: { deal_id: deal_id } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_sub_deal: function (id) {
+        return new Promise(function (resolve, reject) {
+            sub_deals.SubDeals.destroy({ where: { id: id } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
 };
 
 

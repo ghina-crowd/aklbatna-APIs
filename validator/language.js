@@ -105,6 +105,39 @@ var language = {
                 resolve({ message: messages.INVALID_STATUS });
             } else if (type == 'INVALID_DATE') {
                 resolve({ message: messages.INVALID_DATE });
+            } else if (type == 'EMPTY_FIELD_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_KEYWORD') {
+                resolve({ message: messages.EMPTY_FIELD_KEYWORD });
+            } else if (type == 'EMPTY_FIELD_SHORT_DEC') {
+                resolve({ message: messages.EMPTY_FIELD_SHORT_DEC });
+            } else if (type == 'EMPTY_FIELD_ICON') {
+                resolve({ message: messages.EMPTY_FIELD_ICON });
+            } else if (type == 'EMPTY_FIELD_IMAGE') {
+                resolve({ message: messages.EMPTY_FIELD_IMAGE });
+            } else if (type == 'EMPTY_FIELD_SHOP_CATEGORY_ID') {
+                resolve({ message: messages.EMPTY_FIELD_SHOP_CATEGORY_ID });
+            }
+
+
+            else if (type == 'EMPTY_FIELD_SUB_NAME_EN') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_NAME_EN });
+            } else if (type == 'EMPTY_FIELD_SUB_CATEGORY_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_CATEGORY_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_SHORT_DETAILS') {
+                resolve({ message: messages.EMPTY_FIELD_SHORT_DETAILS });
+            } else if (type == 'EMPTY_FIELD_SHOP_CATEGORY') {
+                resolve({ message: messages.EMPTY_FIELD_SHOP_CATEGORY });
+            } else if (type == 'EMPTY_FIELD_ACTIVE') {
+                resolve({ message: messages.EMPTY_FIELD_ACTIVE });
+            } else if (type == 'EMPTY_FIELD_SUB_CATEGORY_ID') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_CATEGORY_ID });
+            } else if (type == 'EMPTY_FIELD_DEAL_ID') {
+                resolve({ message: messages.EMPTY_FIELD_DEAL_ID });
+            } else if (type == 'EMPTY_FIELD_SUB_DEAL_ID') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_DEAL_ID });
             }
 
         });

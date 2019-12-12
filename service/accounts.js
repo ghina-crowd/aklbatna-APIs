@@ -1,6 +1,8 @@
 var AccountRepository = require('../repository/accounts.js');
 var fields = require('../constant/field.js');
 var models = require('../models/models.js');
+
+
 module.exports = {
     GetAccount: function (user_id) {
         return new Promise(function (resolve, reject) {
@@ -22,8 +24,8 @@ module.exports = {
     },
     Delete: function (AccountData) {
         return new Promise(function (resolve, reject) {
-            AccountRepository.deleteAccount(AccountData).then(deleteresponse => {
-                resolve(deleteresponse);
+            AccountRepository.deleteAccount(AccountData).then(delete_response => {
+                resolve(delete_response);
             }, error => {
                 reject(error);
             });

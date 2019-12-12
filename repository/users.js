@@ -4,9 +4,9 @@ var commonRepository = require('./common.js');
 var bcrypt = require('bcryptjs');
 
 var UserRepository = {
-    FindAllByDeleted: function (deleted) {
+    GetAll: function () {
         return new Promise(function (resolve, reject) {
-            models.User.findAll({ where: { deleted: deleted } }).then(existingCountries => {
+            models.User.findAll().then(existingCountries => {
                 resolve(existingCountries);
             }, error => {
                 reject(error);
@@ -25,6 +25,19 @@ var UserRepository = {
                     if (isDeleted && isDeletedOTP) {
                         resolve(user);
                     }
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    deleteUser: function (id) {
+        return new Promise(function (resolve, reject) {
+            models.User.destroy({ where: { user_admin_id: id } }).then(data => {
+                if (data) {
+                    resolve(null);
+                } else {
+                    resolve(data);
                 }
             }, error => {
                 reject(error);
@@ -155,11 +168,10 @@ var UserRepository = {
             });
         });
     },
-    Activate: function (token, otp) {
+    Activate: function (id, otp) {
         return new Promise(function (resolve, reject) {
-            models.User.update({ active: 1 }, { where: { session_id: token } }).then(function (result) {
+            models.User.update({ active: 1 }, { where: { user_admin_id: id } }).then(function (result) {
                 resolve(result);
-            }, function (error) {
             }, function (error) {
                 reject(error);
             });
@@ -169,7 +181,6 @@ var UserRepository = {
         return new Promise(function (resolve, reject) {
             models.User.update({ password: password }, { where: { session_id: token } }).then(function (result) {
                 resolve(result);
-            }, function (error) {
             }, function (error) {
                 reject(error);
             });
