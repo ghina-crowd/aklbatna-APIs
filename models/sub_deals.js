@@ -21,6 +21,9 @@ module.exports = function(sequelize, DataTypes) {
         new_price: {
             type: DataTypes.INTEGER,
         },
+        count_bought: {
+            type: DataTypes.INTEGER,
+        },
 
     }, {
         tableName: 'sub_deals'

@@ -65,8 +65,25 @@ var message = {
     EMPTY_FIELD_SUB_NAME_EN: 'invalid name in english',
     EMPTY_FIELD_SUB_CATEGORY_ID: 'invalid sub category id',
     EMPTY_FIELD_DEAL_ID: 'invalid deal id',
-    EMPTY_FIELD_SUB_DEAL_ID: 'invalid sub deal id'
+    EMPTY_FIELD_SUB_DEAL_ID: 'invalid sub deal id',
 
+    EMPTY_FIELD_TITLE_EN: 'invalid title in english',
+    EMPTY_FIELD_TITLE_AR: 'invalid title in arabic',
+    EMPTY_FIELD_PRE_PRICE: 'invalid pre price',
+    EMPTY_FIELD_NEW_PRICE: 'invalid new price',
+    EMPTY_FIELD_COUNT_BOUGHT: 'invalid count bought',
+    EMPTY_FIELD_IMG_ID:'invalid image id',
+
+    EMPTY_FIELD_USER_ID: 'invalid deal id',
+    EMPTY_FIELD_COMPANY_NAME_EN: 'invalid company name in english',
+    EMPTY_FIELD_COMPANY_NAME_AR: 'invalid company name in arabic',
+    EMPTY_FIELD_DEC_EN: 'invalid description in english',
+    EMPTY_FIELD_DEC_AR: 'invalid description in arabic',
+    EMPTY_FIELD_LATITUDE: 'invalid latitude for company',
+    EMPTY_FIELD_LONGITUDE: 'invalid longitude for company',
+    EMPTY_FIELD_LOCATION:'invalid location for company',
+    EMPTY_FIELD_WEBSITE_LINK:'invalid website link',
+    EMPTY_FIELD_COMPANY_ID: 'invalid company id'
 };
 
 module.exports = message;

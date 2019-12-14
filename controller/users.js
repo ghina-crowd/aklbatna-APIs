@@ -97,7 +97,6 @@ router.post('/create', [
         });
     }
 });
-
 router.put('/edit_profile', function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
@@ -176,7 +175,6 @@ router.put('/edit_profile', function (req, res) {
 
 }
 );
-
 // get profile info
 router.get('/profile', function (req, res) {
     var lang = req.headers.language;

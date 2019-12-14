@@ -456,10 +456,61 @@ router.get('/sub_deals/:id', function (req, res) {
 });
 
 
-// 12 december 
-
-
-
+//Deal Routers
+router.get('/admin/get_deals', function (req, res) {
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var page = req.body.page; // start from 0
+        var keyword = req.body.keyword ? req.body.keyword : 0;
+        if (!page || page < 0) {
+            languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: [],
+                })
+            })
+        } else {
+            return new Promise(function (resolve, reject) {
+                dealServices.get_deals(page, keyword).then(deals => {
+                    resolve(deals);
+                    if (deals == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: [],
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deals,
+                            });
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.post('/admin/create', upload.single('main_image'), async function (req, res) {
 
 
@@ -667,7 +718,7 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
                 });
 
             } else {
-                credentials['main_image'] = relative_ptah + '/' + filename;
+                credentials['main_image'] = relative_ptah + filename;
                 console.log(JSON.stringify(credentials));
                 dealServices.create_deal(credentials).then(deal => {
                     resolve(deal);
@@ -707,9 +758,263 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
     }
 
 });
+router.post('/admin/update', upload.single('main_image'), async function (req, res) {
 
 
+    var lang = req.headers.language;
+    var credentials = req.body;
+    var token = req.headers.authorization;
+    verifyToken(token, res, lang);
 
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+
+        //check if there is any file update
+        if (req.file) {
+            const relative_ptah = '/images/deals/';
+            const imagePath = path.join(__dirname, '..' + relative_ptah);
+            const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+            const filename = await fileUpload.save(req.file.buffer);
+            credentials['main_image'] = relative_ptah + filename;
+        }
+
+
+        return new Promise(function (resolve, reject) {
+
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.user_id || credentials.user_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_USER_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.deal_id || credentials.deal_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.user_id || credentials.user_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_NAME_EN').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.sub_category_id || credentials.sub_category_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_NAME_AR').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.shop_category_id || credentials.shop_category_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_KEYWORD').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.company_id || credentials.company_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.deal_title_en || credentials.deal_title_en == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.deal_title_ar || credentials.deal_title_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.short_detail || credentials.short_detail == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.details_en || credentials.details_en == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.details_ar || credentials.details_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.pre_price || credentials.pre_price == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.new_price || credentials.new_price == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.start_time || credentials.start_time == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.active || credentials.active == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.premium || credentials.premium == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.location_address || credentials.location_address == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.is_monthly || credentials.is_monthly == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.final_rate || credentials.final_rate == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else {
+                dealServices.update_deal(credentials).then(deal => {
+                    resolve(deal);
+                    if (deal == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
 router.delete('/admin/delete', function (req, res) {
 
     var errors = validationResult(req);
@@ -776,6 +1081,495 @@ router.delete('/admin/delete', function (req, res) {
     }
 }
 );
+
+// Deal Images
+router.delete('/admin/image/delete', function (req, res) {
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var credentials = req.body;
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+
+        if (!credentials || !credentials.img_id || credentials.img_id == '') {
+            languageService.get_lang(lang, 'EMPTY_FIELD_IMG_ID').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                })
+            });
+
+        } else {
+            return new Promise(function (resolve, reject) {
+                dealServices.delete_deal(credentials.img_id).then(response => {
+                    resolve(response);
+                    if (response == 0) {
+                        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: null
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: response
+                            });
+                        });
+                    }
+
+                }
+                    ,
+                    error => {
+                        reject(error);
+                    }
+                );
+            });
+        }
+
+
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+}
+);
+router.post('/admin/image/create', upload.single('image'), async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var credentials = req.body;
+    var token = req.headers.authorization;
+    verifyToken(token, res, lang);
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+        if (!req.file) {
+            languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+            return;
+        }
+        const relative_ptah = '/images/deals/';
+        const imagePath = path.join(__dirname, '..' + relative_ptah);
+        const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+        const filename = await fileUpload.save(req.file.buffer);
+
+
+        return new Promise(function (resolve, reject) {
+
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.deal_id || credentials.deal_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else {
+                credentials['source'] = relative_ptah + filename;
+                console.log(JSON.stringify(credentials));
+                dealServices.create_deal_image(credentials).then(deal => {
+                    resolve(deal);
+                    if (deal == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+
+router.post('/admin/image/update', upload.single('image'), async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var credentials = req.body;
+    var token = req.headers.authorization;
+    verifyToken(token, res, lang);
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+        if (!req.file) {
+            languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+            return;
+        }
+        const relative_ptah = '/images/deals/';
+        const imagePath = path.join(__dirname, '..' + relative_ptah);
+        const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+        const filename = await fileUpload.save(req.file.buffer);
+
+
+        return new Promise(function (resolve, reject) {
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.deal_id || credentials.deal_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.img_id || credentials.img_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_IMG_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else {
+                credentials['source'] = relative_ptah + filename;
+                console.log(JSON.stringify(credentials));
+                dealServices.update_deal_image(credentials).then(deal => {
+                    resolve(deal);
+                    if (deal == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+
+//Sub Deals Routers
+router.post('/admin/Sub_create', async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var credentials = req.body;
+    var token = req.headers.authorization;
+    verifyToken(token, res, lang);
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+
+        return new Promise(function (resolve, reject) {
+
+            console.log(credentials);
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.deal_id || credentials.deal_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.title_en || credentials.title_en == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_TITLE_EN').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.title_ar || credentials.title_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_TITLE_AR').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.pre_price || credentials.pre_price == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_PRE_PRICE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.new_price || credentials.new_price == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_NEW_PRICE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else {
+                dealServices.create_sub_deal(credentials).then(deal => {
+                    resolve(deal);
+                    if (deal == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+
+router.post('/admin/Sub_update', async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var credentials = req.body;
+    var token = req.headers.authorization;
+    verifyToken(token, res, lang);
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+
+        return new Promise(function (resolve, reject) {
+
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.id || credentials.id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SUB_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.deal_id || credentials.deal_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.title_en || credentials.title_en == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_TITLE_EN').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.title_ar || credentials.title_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_TITLE_AR').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.pre_price || credentials.pre_price == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_PRE_PRICE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.new_price || credentials.new_price == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_NEW_PRICE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else {
+
+                dealServices.update_sub_deal(credentials).then(deal => {
+                    resolve(deal);
+                    if (deal == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deal,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+
 router.delete('/admin/Sub_delete', function (req, res) {
 
     var errors = validationResult(req);
@@ -784,6 +1578,8 @@ router.delete('/admin/Sub_delete', function (req, res) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
+
+
         if (!credentials.id || credentials.id == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_SUB_DEAL_ID').then(msg => {
                 res.json({

@@ -1,5 +1,5 @@
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define('companies', {
         company_id: {
             type: DataTypes.INTEGER,
@@ -32,6 +32,8 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING(225),
         },
         website_link: {
+            type: DataTypes.STRING(225),
+        }, icon: {
             type: DataTypes.STRING(225),
         },
     }, {

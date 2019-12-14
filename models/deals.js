@@ -23,12 +23,6 @@ module.exports = function (sequelize, DataTypes) {
         deal_title_ar: {
             type: DataTypes.STRING(225),
         },
-        latitude: {
-            type: DataTypes.STRING(225),
-        },
-        longitude: {
-            type: DataTypes.STRING(225),
-        },
         company_id: {
             type: DataTypes.STRING(225),
             foreignKey: true,
