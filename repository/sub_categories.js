@@ -27,10 +27,10 @@ var SubCategoryRepository = {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
-                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'latitude', 'longitude', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'active', 'premium', 'location_address'];
+                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'active', 'premium', 'location_address'];
             } else {
                 cat_attributes = ['shop_category_id', ['name_ar', 'name'], 'icon'];
-                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'active', 'premium', 'location_address'];
+                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'active', 'premium', 'location_address'];
             }
 
             category_model.Categories.hasMany(deals_model.Deals, { foreignKey: 'shop_category_id' })

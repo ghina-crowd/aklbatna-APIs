@@ -1,4 +1,5 @@
 var models = require('../models/models.js');
+var model_deal = require('../models/deals_model');
 var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
 var bcrypt = require('bcryptjs');
@@ -6,8 +7,8 @@ var bcrypt = require('bcryptjs');
 var UserRepository = {
     GetAll: function () {
         return new Promise(function (resolve, reject) {
-            models.User.findAll().then(existingCountries => {
-                resolve(existingCountries);
+            models.User.findAll().then(existingUsers => {
+                resolve(existingUsers);
             }, error => {
                 reject(error);
             });
@@ -33,11 +34,43 @@ var UserRepository = {
     },
     deleteUser: function (id) {
         return new Promise(function (resolve, reject) {
-            models.User.destroy({ where: { user_admin_id: id } }).then(data => {
-                if (data) {
+            models.User.destroy({ where: { user_admin_id: id } }).then(response => {
+                if (response) {
                     resolve(null);
                 } else {
-                    resolve(data);
+                    resolve(response);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
+
+    getAllUserData: function (id) {
+        return new Promise(function (resolve, reject) {
+            models.User.hasMany(models.Account, { foreignKey: 'fk_user_id' });
+            models.User.hasMany(model_deal.Deals, { foreignKey: 'user_id' });
+            models.User.hasMany(models.Purchase, { foreignKey: 'user_id' });
+            models.User.hasMany(models.Advertising, { foreignKey: 'user_id' });
+            models.User.findOne({
+                where: { user_admin_id: id },
+                include: [{
+                    model: models.Account
+                }, {
+                    model: model_deal.Deals
+                }, {
+                    model: models.Purchase
+                }, {
+                    model: models.Advertising
+                }]
+            }).then(user => {
+                if (!user) {
+                    resolve(null);
+                } else {
+                    delete user.dataValues['password'];
+                    resolve(user);
                 }
             }, error => {
                 reject(error);

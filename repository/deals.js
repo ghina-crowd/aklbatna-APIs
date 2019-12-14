@@ -267,24 +267,24 @@ var dealsRepository = {
                             attributes: company_attributes,
                         }]
                     }]
-                }).then(categoty => {
-                    var filterdeals = [];
-                    categoty[0].deals.forEach(item => {
+                }).then(category => {
+                    var filter_deals = [];
+                    category[0].deals.forEach(item => {
                         if (latitude && longitude) {
                             var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
                             // console.log(distance);
                             if (distance <= 10) {
                                 item["dataValues"].distance = distance;
-                                filterdeals.push(item);
+                                filter_deals.push(item);
                                 delete item["dataValues"].company;
                             }
                         } else {
                             delete item["dataValues"].company;
-                            filterdeals.push(item);
+                            filter_deals.push(item);
                         }
                     });
-                    categoty[0].deals = filterdeals;
-                    resolve(categoty[0]);
+                    category[0].deals = filter_deals;
+                    resolve(category[0]);
                 }, error => {
                     reject(error);
                 });
@@ -300,23 +300,23 @@ var dealsRepository = {
                     if (deals == null) {
                         resolve([]);
                     } else {
-                        var filterdeals = [];
+                        var filter_deals = [];
                         deals.forEach(item => {
                             if (latitude && longitude) {
                                 var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
                                 console.log(distance);
                                 if (distance <= 10) {
                                     item["dataValues"].distance = distance;
-                                    filterdeals.push(item);
+                                    filter_deals.push(item);
                                     delete item["dataValues"].company;
                                 }
                             } else {
                                 delete item["dataValues"].company;
-                                filterdeals.push(item);
+                                filter_deals.push(item);
                             }
                         });
-                        filterdeals.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
-                        resolve(filterdeals);
+                        filter_deals.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
+                        resolve(filter_deals);
                     }
                 }, error => {
                     reject(error);

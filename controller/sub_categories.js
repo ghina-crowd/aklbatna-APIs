@@ -173,8 +173,6 @@ router.get('/admin/sub_categories', function (req, res) {
         })
     }
 });
-
-
 router.post('/admin/create', async function (req, res) {
 
     var lang = req.headers.language;

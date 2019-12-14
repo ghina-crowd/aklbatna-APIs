@@ -97,6 +97,19 @@ var PurchaseRepository = {
                 reject(error)
             });
         });
+    },
+    DeletePurchase: function (purchase_id) {
+        return new Promise(function (resolve, reject) {
+            models.Purchase.destroy({ where: { purchase_id: purchase_id } }).then(response => {
+                if (response) {
+                    resolve(null);
+                } else {
+                    resolve(response);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
     }
 
 

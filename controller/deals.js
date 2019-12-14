@@ -517,10 +517,11 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+        verifyToken(token, res, lang);
+
 
         if (!req.file) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
@@ -764,11 +765,11 @@ router.post('/admin/update', upload.single('main_image'), async function (req, r
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
+        verifyToken(token, res, lang);
 
         //check if there is any file update
         if (req.file) {
@@ -1156,11 +1157,11 @@ router.post('/admin/image/create', upload.single('image'), async function (req, 
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
+
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-
+        verifyToken(token, res, lang);
         if (!req.file) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
                 res.json({
@@ -1246,10 +1247,10 @@ router.post('/admin/image/update', upload.single('image'), async function (req, 
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+        verifyToken(token, res, lang);
 
         if (!req.file) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
@@ -1345,10 +1346,10 @@ router.post('/admin/Sub_create', async function (req, res) {
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+        verifyToken(token, res, lang);
 
 
         return new Promise(function (resolve, reject) {
@@ -1456,10 +1457,10 @@ router.post('/admin/Sub_update', async function (req, res) {
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+        verifyToken(token, res, lang);
 
 
         return new Promise(function (resolve, reject) {
@@ -1573,6 +1574,7 @@ router.post('/admin/Sub_update', async function (req, res) {
 router.delete('/admin/Sub_delete', function (req, res) {
 
     var errors = validationResult(req);
+    
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;

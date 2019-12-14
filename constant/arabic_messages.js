@@ -83,7 +83,11 @@ var message = {
     EMPTY_FIELD_LONGITUDE: 'invalid longitude for company',
     EMPTY_FIELD_LOCATION:'invalid location for company',
     EMPTY_FIELD_WEBSITE_LINK:'invalid website link',
-    EMPTY_FIELD_COMPANY_ID: 'invalid company id'
+    EMPTY_FIELD_COMPANY_ID: 'invalid company id',
+
+    EMPTY_FIELD_ADVERTISING_ID: 'invalid advertising id',
+    EMPTY_FIELD_TYPE: 'invalid type of advertising',
+    EMPTY_FIELD_STATUS: 'invalid advertising status'
 };
 
 module.exports = message;

@@ -100,8 +100,8 @@ var service = {
     },
     update_deal: function (credentials) {
         return new Promise(function (resolve, reject) {
-            dealRepository.update_sub_deal(credentials).then(categories => {
-                resolve(categories);
+            dealRepository.update_sub_deal(credentials).then(deal => {
+                resolve(deal);
             }, error => {
                 reject(error);
             });
@@ -118,8 +118,8 @@ var service = {
     },
     create_sub_deal: function (credentials) {
         return new Promise(function (resolve, reject) {
-            dealRepository.create_sub_deal(credentials).then(categories => {
-                resolve(categories);
+            dealRepository.create_sub_deal(credentials).then(deal => {
+                resolve(deal);
             }, error => {
                 reject(error);
             });
@@ -128,8 +128,8 @@ var service = {
 
     create_deal_image: function (credentials) {
         return new Promise(function (resolve, reject) {
-            dealRepository.create_deal_image(credentials).then(categories => {
-                resolve(categories);
+            dealRepository.create_deal_image(credentials).then(deal => {
+                resolve(deal);
             }, error => {
                 reject(error);
             });
@@ -137,8 +137,8 @@ var service = {
     },
     update_deal_image: function (credentials) {
         return new Promise(function (resolve, reject) {
-            dealRepository.update_deal_image(credentials).then(categories => {
-                resolve(categories);
+            dealRepository.update_deal_image(credentials).then(deal => {
+                resolve(deal);
             }, error => {
                 reject(error);
             });
@@ -155,8 +155,8 @@ var service = {
     },
     update_sub_deal: function (credentials) {
         return new Promise(function (resolve, reject) {
-            dealRepository.update_sub_deal(credentials).then(categories => {
-                resolve(categories);
+            dealRepository.update_sub_deal(credentials).then(subDeal => {
+                resolve(subDeal);
             }, error => {
                 reject(error);
             });

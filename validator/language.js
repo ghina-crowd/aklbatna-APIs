@@ -164,6 +164,21 @@ var language = {
             }
 
 
+            else if (type == 'EMPTY_FIELD_ADVERTISING_ID') {
+                resolve({ message: messages.EMPTY_FIELD_ADVERTISING_ID });
+            } else if (type == 'EMPTY_FIELD_DEAL_ID') {
+                resolve({ message: messages.EMPTY_FIELD_DEAL_ID });
+            } else if (type == 'EMPTY_FIELD_USER_ID') {
+                resolve({ message: messages.EMPTY_FIELD_USER_ID });
+            } else if (type == 'EMPTY_FIELD_TYPE') {
+                resolve({ message: messages.EMPTY_FIELD_TYPE });
+            } else if (type == 'EMPTY_FIELD_STATUS') {
+                resolve({ message: messages.EMPTY_FIELD_STATUS });
+            }
+
+
+
+
 
 
 

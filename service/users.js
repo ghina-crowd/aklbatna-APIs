@@ -29,6 +29,15 @@ module.exports = {
             });
         });
     },
+    GetAllUserData: function (id) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.getAllUserData(id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     Create: function (newUserData) {
         return new Promise(function (resolve, reject) {
             var newUserModel = {};

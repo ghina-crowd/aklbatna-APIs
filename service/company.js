@@ -2,8 +2,8 @@ var CompanyRepository = require('../repository/company');
 module.exports = {
     filter_companies: function (latitude, longitude, location_name, page) {
         return new Promise(function (resolve, reject) {
-            CompanyRepository.filter_companies(latitude, longitude, location_name, page).then(deals => {
-                resolve(deals);
+            CompanyRepository.filter_companies(latitude, longitude, location_name, page).then(companies => {
+                resolve(companies);
             }, error => {
                 reject(error);
             });
@@ -13,8 +13,8 @@ module.exports = {
 
     get_companies: function (page, keyword) {
         return new Promise(function (resolve, reject) {
-            CompanyRepository.get_companies(page, keyword).then(deals => {
-                resolve(deals);
+            CompanyRepository.get_companies(page, keyword).then(companies => {
+                resolve(companies);
             }, error => {
                 reject(error);
             });
@@ -22,8 +22,8 @@ module.exports = {
     },
     update_company: function (credentials) {
         return new Promise(function (resolve, reject) {
-            CompanyRepository.update_company(credentials).then(categories => {
-                resolve(categories);
+            CompanyRepository.update_company(credentials).then(company => {
+                resolve(company);
             }, error => {
                 reject(error);
             });
@@ -40,8 +40,8 @@ module.exports = {
     },
     create_company: function (credentials) {
         return new Promise(function (resolve, reject) {
-            CompanyRepository.create_company(credentials).then(categories => {
-                resolve(categories);
+            CompanyRepository.create_company(credentials).then(company => {
+                resolve(company);
             }, error => {
                 reject(error);
             });

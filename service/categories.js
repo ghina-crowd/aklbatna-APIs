@@ -27,7 +27,7 @@ var service = {
                 resolve(categories);
             }, error => {
                 reject(error);
-            });Î
+            });
         });
     },
     update_category: function (credentials) {

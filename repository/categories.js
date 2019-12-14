@@ -39,8 +39,6 @@ var CategoryRepository = {
             });
         });
     },
-
-
     Update_category: function (newCategoryData) {
         return new Promise(function (resolve, reject) {
             models.Categories.update({
@@ -96,26 +94,6 @@ var CategoryRepository = {
             }, error => {
                 reject(error);
             });
-            // models.Categories.findAll({attributes: cat_attributes
-            // }).then(categories => {
-            //     sub_category_model.SubCategory.findAll({
-            //         attributes: sub_cat_attributes
-            //     }, {where: {active: 1}}).then(sub_categories => {
-            //         categories.forEach(item => {
-            //             var subArray = [];
-            //             sub_categories.forEach(sub => {
-            //                 if (sub.dataValues.shop_category_id == item.dataValues.shop_category_id) {
-            //                     subArray.push(sub.dataValues);
-            //                 }
-            //             })
-            //             item.dataValues['sub_category'] = subArray;
-            //         });
-            //         resolve(categories);
-            //     });
-            //
-            // }, error => {
-            //     reject(error);
-            // });
 
         });
     },

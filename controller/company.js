@@ -53,7 +53,7 @@ function verifyToken(token, res, lang) {
 }
 
 
-// get filter of all companies with their deals
+// get filter of all companies with their companies
 router.get('/filter', function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -76,9 +76,9 @@ router.get('/filter', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                companyService.filter_companies(latitude, longitude, location_name, page).then(deals => {
-                    resolve(deals);
-                    if (deals == null) {
+                companyService.filter_companies(latitude, longitude, location_name, page).then(companies => {
+                    resolve(companies);
+                    if (companies == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
                             res.json({
                                 status: statics.STATUS_FAILURE,
@@ -93,7 +93,7 @@ router.get('/filter', function (req, res) {
                                 status: statics.STATUS_SUCCESS,
                                 code: codes.SUCCESS,
                                 message: msg.message,
-                                data: deals,
+                                data: companies,
                             });
                         });
                     }
@@ -121,6 +121,10 @@ router.get('/admin/get_companies', function (req, res) {
     if (errors.array().length == 0) {
 
         var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+
+
         var page = req.body.page; // start from 0
         var keyword = req.body.keyword ? req.body.keyword : 0;
         if (!page || page < 0) {
@@ -134,9 +138,9 @@ router.get('/admin/get_companies', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                companyService.get_companies(page, keyword).then(deals => {
-                    resolve(deals);
-                    if (deals == null) {
+                companyService.get_companies(page, keyword).then(companies => {
+                    resolve(companies);
+                    if (companies == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
                             res.json({
                                 status: statics.STATUS_FAILURE,
@@ -151,7 +155,7 @@ router.get('/admin/get_companies', function (req, res) {
                                 status: statics.STATUS_SUCCESS,
                                 code: codes.SUCCESS,
                                 message: msg.message,
-                                data: deals,
+                                data: companies,
                             });
                         });
                     }
@@ -176,11 +180,11 @@ router.post('/admin/create', upload.single('icon'), async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
-    var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
 
         if (!req.file) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
@@ -300,15 +304,15 @@ router.post('/admin/create', upload.single('icon'), async function (req, res) {
             } else {
                 credentials['icon'] = relative_ptah + filename;
                 console.log(JSON.stringify(credentials));
-                companyService.create_company(credentials).then(deal => {
-                    resolve(deal);
-                    if (deal == null) {
+                companyService.create_company(credentials).then(company => {
+                    resolve(company);
+                    if (company == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
                             res.json({
                                 status: statics.STATUS_FAILURE,
                                 code: codes.FAILURE,
                                 message: msg.message,
-                                data: deal,
+                                data: company,
                             });
                         })
                     } else {
@@ -317,7 +321,7 @@ router.post('/admin/create', upload.single('icon'), async function (req, res) {
                                 status: statics.STATUS_SUCCESS,
                                 code: codes.SUCCESS,
                                 message: msg.message,
-                                data: deal,
+                                data: company,
                             });
                         })
                     }
@@ -343,12 +347,11 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
-    var token = req.headers.authorization;
-    verifyToken(token, res, lang);
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
 
         //check if there is any file update
         if (req.file) {
@@ -470,15 +473,15 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
             } else {
 
                 console.log(JSON.stringify(credentials));
-                companyService.update_company(credentials).then(deal => {
-                    resolve(deal);
-                    if (deal == null) {
+                companyService.update_company(credentials).then(company => {
+                    resolve(company);
+                    if (company == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
                             res.json({
                                 status: statics.STATUS_FAILURE,
                                 code: codes.FAILURE,
                                 message: msg.message,
-                                data: deal,
+                                data: company,
                             });
                         })
                     } else {
@@ -487,7 +490,7 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
                                 status: statics.STATUS_SUCCESS,
                                 code: codes.SUCCESS,
                                 message: msg.message,
-                                data: deal,
+                                data: company,
                             });
                         })
                     }
@@ -514,8 +517,10 @@ router.delete('/admin/delete', function (req, res) {
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;
+
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
+
         if (!credentials.company_id || credentials.company_id == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY_ID').then(msg => {
                 res.json({

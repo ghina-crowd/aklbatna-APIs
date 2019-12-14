@@ -149,7 +149,8 @@ router.post('/create', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var creqentials = req.body;
+
+        var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
@@ -157,8 +158,8 @@ router.post('/create', function (req, res) {
 
         return new Promise(function (resolve, reject) {
 
-            if (!creqentials.user_id || !isNumber(creqentials.user_id)) {
-                console.log(isNumber(creqentials.user_id))
+            if (!credentials.user_id || !isNumber(credentials.user_id)) {
+                console.log(isNumber(credentials.user_id))
                 languageService.get_lang(lang, 'INVALID_USER_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -168,7 +169,7 @@ router.post('/create', function (req, res) {
                     })
                 });
 
-            } else if (!creqentials.deal_id || !isNumber(creqentials.deal_id)) {
+            } else if (!credentials.deal_id || !isNumber(credentials.deal_id)) {
                 languageService.get_lang(lang, 'INVALID_DEAL_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -177,7 +178,7 @@ router.post('/create', function (req, res) {
                         data: null
                     });
                 });
-            } else if (!creqentials.status || !isNumber(creqentials.status)) {
+            } else if (!credentials.status || !isNumber(credentials.status)) {
                 languageService.get_lang(lang, 'INVALID_STATUS').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -186,9 +187,8 @@ router.post('/create', function (req, res) {
                         data: null
                     });
                 });
-            } else if (!creqentials.date || !isDate(creqentials.date)) {
+            } else if (!credentials.date || !isDate(credentials.date)) {
                 languageService.get_lang(lang, 'INVALID_DATE').then(msg => {
-
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -197,9 +197,8 @@ router.post('/create', function (req, res) {
                     });
                 });
             } else {
-
                 return new Promise(function (resolve, reject) {
-                    PurchaseService.CreatePurchase(creqentials).then(purchase => {
+                    PurchaseService.CreatePurchase(credentials).then(purchase => {
                         resolve(purchase);
                         languageService.get_lang(lang, 'SUCCESS').then(msg => {
                             res.json({
@@ -317,6 +316,53 @@ router.get('/user/getused', function (req, res) {
                         data: purchases
                     });
                 });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+
+
+router.delete('/admin/delete/:purchase_id', function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        verifyToken(token, res, lang);
+        return new Promise(function (resolve, reject) {
+            console.log(req.params.purchase_id);
+            PurchaseService.DeletePurchase(req.params.purchase_id).then(response => {
+                resolve(response);
+                if (response == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: response
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: response
+                        });
+                    });
+                }
             }, error => {
                 reject(error);
             });
