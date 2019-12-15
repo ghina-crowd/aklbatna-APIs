@@ -1,11 +1,14 @@
 var express = require('express');
-const { check, validationResult } = require('express-validator/check');
+const {check, validationResult} = require('express-validator/check');
 var statics = require('../constant/static.js');
+var messages = require('../constant/message.js');
+var ar_messages = require('../constant/arabic_messages.js');
 var codes = require('../constant/code.js');
 var authenticationService = require('../service/authentication.js');
 var languageService = require('../validator/language');
 const multer = require('multer');
 var config = require('../constant/config.js');
+var bcrypt = require('bcryptjs');
 var blacklist = require('express-jwt-blacklist');
 
 const storage = multer.diskStorage({
@@ -16,17 +19,17 @@ const storage = multer.diskStorage({
         cb(null, new Date().toISOString() + '_' + file.originalname);
     }
 });
-const upload = multer({ storage: storage });
+const upload = multer({storage: storage});
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 var router = express.Router();
-var email;
-var id;
+var email
 
 function verifyToken(token, res, lang) {
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
-            res.send({
+
+            res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.TOKEN_MISSING,
                 message: msg.message,
@@ -40,7 +43,7 @@ function verifyToken(token, res, lang) {
     jwt.verify(token, config.secret, function (err, decoded) {
         if (err) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
-                res.send({
+                res.json({
                     status: statics.STATUS_FAILURE,
                     code: codes.TOKEN_INVALID,
                     message: msg.message,
@@ -49,12 +52,11 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        id = decoded.id;
         email = decoded.email;
-        return decoded.id;
+        return decoded.email;
+
     });
 }
-
 
 
 //login
@@ -63,9 +65,9 @@ router.post('/login', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credential = req.body;
+        var creqentials = req.body;
 
-        if (credential.email == '') {
+        if (creqentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -74,7 +76,7 @@ router.post('/login', function (req, res) {
                     data: null
                 });
             });
-        } else if (credential.password == '') {
+        } else if (creqentials.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -85,7 +87,7 @@ router.post('/login', function (req, res) {
             });
         } else {
             return new Promise(function (resolve, reject) {
-                authenticationService.login(credential.email, credential.password).then(user => {
+                authenticationService.login(creqentials.email, creqentials.password).then(user => {
                     resolve(user);
                     if (user == null) {
                         languageService.get_lang(lang, 'INCORRECT_PASSWORD_USER').then(msg => {
@@ -101,9 +103,10 @@ router.post('/login', function (req, res) {
                         var userData = {
                             id: user.user_admin_id,
                             password: user.password,
-                            email: user.email,
+                            email: user.email
                         }
                         var token = jwt.sign(userData, config.secret, {});
+                        // authenticationService.login_token(user.user_admin_id);
 
                         if (user.active == 0) {
                             languageService.get_lang(lang, 'ACTIVATION').then(msg => {
@@ -149,149 +152,270 @@ router.post('/login', function (req, res) {
 });
 
 //register
-router.post('/register', function (req, res) {
-    var lang = req.headers.language;
-    var errors = validationResult(req);
-    if (errors.array().length == 0) {
-        var credential = req.body;
+router.post('/social', function (req, res) {
         var lang = req.headers.language;
+        var errors = validationResult(req);
+        if (errors.array().length == 0) {
+            var creqentials = req.body;
+            var lang = req.headers.language;
 
-        return new Promise(function (resolve, reject) {
-            if (credential.email == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    })
-                });
+            return new Promise(function (resolve, reject) {
+                if (creqentials.email == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        })
+                    });
 
-            } else if (credential.password == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
+                } else if (creqentials.firstName == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
                     });
-                });
-            } else if (credential.first_name == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (credential.last_name == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
+                } else if (creqentials.lastName == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
                     });
-                });
-            } else if (credential.phone == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else {
-                return new Promise(function (resolve, reject) {
-                    authenticationService.check_user(credential.email, credential.password, credential.first_name, credential.last_name, credential.phone, credential.user_type).then(user => {
-                        resolve(user);
-                        if (user == null) {
-                            languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
-                                res.json({
-                                    status: statics.STATUS_FAILURE,
-                                    code: codes.FAILURE,
-                                    message: msg.message,
-                                    data: null
-                                });
-                            });
-                        } else {
-                            var userdata = {
-                                id: user.id,
-                                email: user.email,
-                                password: user.password,
+                } else {
+
+                    return new Promise(function (resolve, reject) {
+
+                        authenticationService.check_user_social(creqentials.email, '123456789', creqentials.firstName, creqentials.lastName).then(user => {
+
+                                resolve(user);
+
+                                if (user == null) {
+                                    languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
+                                        res.json({
+                                            status: statics.STATUS_FAILURE,
+                                            code: codes.FAILURE,
+                                            message: msg.message,
+                                            data: null
+                                        });
+                                    });
+                                } else {
+
+                                    var userdata = {
+                                        id: user.id,
+                                        email: user.email,
+                                        password: user.password,
+
+                                    }
+
+
+                                    var token = jwt.sign(userdata, config.secret, {});
+                                    user.token = token;
+
+                                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                                        console.log(user);
+                                        var tempuser = {
+                                            user_admin_id: user.user_admin_id,
+                                            email: user.email,
+                                            first_name: user.first_name,
+                                            last_name: user.last_name,
+                                            token: user.token,
+                                        }
+
+                                        res.json({
+                                            status: statics.STATUS_SUCCESS,
+                                            code: codes.SUCCESS,
+                                            message: msg.message,
+                                            data: tempuser,
+                                        });
+                                    });
+                                }
+
+
                             }
-                            var token = jwt.sign(userdata, config.secret, {});
-                            user.token = token;
-
-                            var transporter = nodemailer.createTransport({
-                                service: 'gmail',
-                                auth: {
-                                    user: 'acoponey@gmail.com',
-                                    pass: 'muhammadcrowd'
-                                }
-                            });
-                            const mailOptions = {
-                                from: 'Coboney <coboney@admin.com>', // sender address
-                                to: [user.email], // list of receivers
-                                subject: 'OTP', // Subject line
-                                html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
-                            };
-
-                            transporter.sendMail(mailOptions, function (err, info) {
-                                if (err)
-                                    console.log(err)
-                                else
-                                    console.log(info);
-                            });
-                            languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
-
-                                var tempuser = {
-                                    user_admin_id: user.user_admin_id,
-                                    email: user.email,
-                                    first_name: user.first_name,
-                                    last_name: user.last_name,
-                                    phone: user.phone,
-                                    user_type: user.user_type,
-                                    photo: user.photo,
-                                    token: user.token,
-                                }
-
-                                res.json({
-                                    status: statics.STATUS_SUCCESS,
-                                    code: codes.SUCCESS,
-                                    message: msg.message,
-                                    data: tempuser,
-                                });
-                            });
-                        }
+                            ,
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    });
 
 
-                    }
-                        ,
-                        error => {
-                            reject(error);
-                        }
-                    );
+                }
+            })
+        } else {
+            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.INVALID_DATA,
+                    message: msg.message,
+                    data: errors.array()
                 });
-
-
-            }
-        })
-    } else {
-        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.INVALID_DATA,
-                message: msg.message,
-                data: errors.array()
             });
-        });
 
+        }
     }
-}
+);
+
+//register
+router.post('/register', function (req, res) {
+        var lang = req.headers.language;
+        var errors = validationResult(req);
+        if (errors.array().length == 0) {
+            var creqentials = req.body;
+            var lang = req.headers.language;
+
+            return new Promise(function (resolve, reject) {
+                if (creqentials.email == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        })
+                    });
+
+                } else if (creqentials.password == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else if (creqentials.first_name == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else if (creqentials.last_name == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
+
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else if (creqentials.phone == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else {
+
+                    return new Promise(function (resolve, reject) {
+
+                        authenticationService.check_user(creqentials.email, creqentials.password, creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type).then(user => {
+
+                                resolve(user);
+
+                                if (user == null) {
+                                    languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
+                                        res.json({
+                                            status: statics.STATUS_FAILURE,
+                                            code: codes.FAILURE,
+                                            message: msg.message,
+                                            data: null
+                                        });
+                                    });
+                                } else {
+
+                                    var userdata = {
+                                        id: user.id,
+                                        email: user.email,
+                                        password: user.password,
+
+                                    }
+
+
+                                    var token = jwt.sign(userdata, config.secret, {});
+                                    user.token = token;
+
+                                    var transporter = nodemailer.createTransport({
+                                        service: 'gmail',
+                                        auth: {
+                                            user: 'acoponey@gmail.com',
+                                            pass: 'muhammadcrowd'
+                                        }
+                                    });
+                                    const mailOptions = {
+                                        from: 'acoponey@gmail.com', // sender address
+                                        to: [user.email], // list of receivers
+                                        subject: 'Coponey', // Subject line
+                                        html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
+                                    };
+
+                                    transporter.sendMail(mailOptions, function (err, info) {
+                                        if (err)
+                                            console.log(err)
+                                        else
+                                            console.log(info);
+                                    });
+                                    languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
+
+                                        var tempuser = {
+                                            user_admin_id: user.user_admin_id,
+                                            email: user.email,
+                                            first_name: user.first_name,
+                                            last_name: user.last_name,
+                                            phone: user.phone,
+                                            user_type: user.user_type,
+                                            photo: user.photo,
+                                            token: user.token,
+                                        }
+
+                                        res.json({
+                                            status: statics.STATUS_SUCCESS,
+                                            code: codes.SUCCESS,
+                                            message: msg.message,
+                                            data: tempuser,
+                                        });
+                                    });
+                                }
+
+
+                            }
+                            ,
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    });
+
+
+                }
+            })
+        } else {
+            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.INVALID_DATA,
+                    message: msg.message,
+                    data: errors.array()
+                });
+            });
+
+        }
+    }
 );
 
 //activate
@@ -302,7 +426,6 @@ router.put('/activate', function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var otp = req.body;
-        verifyToken(token, res, lang);
 
         if (otp.otp == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_OTP').then(msg => {
@@ -313,12 +436,16 @@ router.put('/activate', function (req, res) {
                     data: null
                 });
             });
-
         } else {
+
             return new Promise(function (resolve, reject) {
+
+                verifyToken(token, res, lang);
                 if (email) {
                     authenticationService.check_otp(email, otp.otp).then(user => {
+
                         resolve(user);
+
                         if (user == null) {
                             languageService.get_lang(lang, 'INVALID_OTP').then(msg => {
                                 res.json({
@@ -330,7 +457,8 @@ router.put('/activate', function (req, res) {
                             });
 
                         } else {
-                            authenticationService.activate_user(id, otp.otp).then(user => {
+                            authenticationService.activate_user(headerdata.token, otp.otp).then(user => {
+
                                 resolve(user);
                                 languageService.get_lang(lang, 'ACTIVATED_USER').then(msg => {
                                     res.json({
@@ -377,7 +505,7 @@ router.put('/change_pass', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var header_data = req.headers;
+        var headerdata = req.headers;
         var data = req.body;
 
         if (data.password == '') {
@@ -401,8 +529,10 @@ router.put('/change_pass', function (req, res) {
             });
 
         } else {
+
             return new Promise(function (resolve, reject) {
-                authenticationService.check_token(header_data.token).then(user => {
+
+                authenticationService.check_token(headerdata.token).then(user => {
 
                     resolve(user);
                     if (user == null) {
@@ -417,7 +547,7 @@ router.put('/change_pass', function (req, res) {
                         });
 
                     } else {
-                        authenticationService.change_pass(header_data.token, password.password).then(user => {
+                        authenticationService.change_pass(headerdata.token, password.password).then(user => {
 
                             resolve(user);
                             languageService.get_lang(lang, 'CHANGE_PASS').then(msg => {
@@ -463,9 +593,9 @@ router.put('/change_pass', function (req, res) {
 router.post('/logout', function (req, res) {
     var lang = req.headers.language;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
+
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.TOKEN_MISSING,
@@ -492,12 +622,12 @@ router.post('/logout', function (req, res) {
 router.get('/profile', function (req, res) {
     var lang = req.headers.language;
 
-    var header_data = req.headers;
+    var headerdata = req.headers;
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         return new Promise(function (resolve, reject) {
-            authenticationService.check_token(header_data.token).then(user => {
+            authenticationService.check_token(headerdata.token).then(user => {
                 resolve(user);
                 if (user == null) {
                     languageService.get_lang(lang, 'INVALID_TOKEN').then(msg => {
@@ -511,7 +641,7 @@ router.get('/profile', function (req, res) {
                     });
 
                 } else {
-                    authenticationService.get_user(header_data.token).then(user => {
+                    authenticationService.get_user(headerdata.token).then(user => {
                         resolve(user);
                         languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
 
@@ -555,7 +685,7 @@ router.put('/update_profile', upload.single('picture'), function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var header_data = req.headers;
+        var headerdata = req.headers;
         var data = req.body;
 
         if (data.first_name == '') {
@@ -632,7 +762,7 @@ router.put('/update_profile', upload.single('picture'), function (req, res) {
 
             return new Promise(function (resolve, reject) {
 
-                authenticationService.check_token(header_data.authorization).then(user => {
+                authenticationService.check_token(headerdata.authorization).then(user => {
 
 
                     resolve(user);
@@ -648,7 +778,7 @@ router.put('/update_profile', upload.single('picture'), function (req, res) {
                         });
 
                     } else {
-                        authenticationService.update_profile(header_data.token, data.first_name, data.last_name, data.address, data.phone, path, data.lattitude, data.longitude, data.company_name).then(user => {
+                        authenticationService.update_profile(headerdata.token, data.first_name, data.last_name, data.address, data.phone, path, data.lattitude, data.longitude, data.company_name).then(user => {
 
                             resolve(user);
                             languageService.get_lang(lang, 'PROFILE_UPDATE').then(msg => {
@@ -765,9 +895,9 @@ router.post('/sent_otp_by_email', function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credential = req.body;
+        var creqentials = req.body;
 
-        if (credential.email == '') {
+        if (creqentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
 
                 res.json({
@@ -780,7 +910,7 @@ router.post('/sent_otp_by_email', function (req, res) {
         } else {
 
             return new Promise(function (resolve, reject) {
-                authenticationService.check_email(credential.email).then(user => {
+                authenticationService.check_email(creqentials.email).then(user => {
                     resolve(user);
                     if (!user) {
                         languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
@@ -858,10 +988,11 @@ router.post('/sent_otp_by_email', function (req, res) {
 // update reset password
 router.post('/reset_password', function (req, res) {
     var lang = req.headers.language;
+
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var data = req.body;
-        if (data.email || data.email == '') {
+        if (data.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
 
                 res.json({
@@ -871,7 +1002,7 @@ router.post('/reset_password', function (req, res) {
                     data: null
                 });
             });
-        } else if (data.password || data.password == '') {
+        } else if (data.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -880,7 +1011,7 @@ router.post('/reset_password', function (req, res) {
                     data: null
                 });
             });
-        } else if (data.otp || data.otp == '') {
+        } else if (data.otp == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_OTP').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -980,5 +1111,6 @@ router.get('/checktoken', function (req, res) {
         });
     }
 });
+
 
 module.exports = router;

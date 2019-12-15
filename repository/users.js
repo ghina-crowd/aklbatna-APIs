@@ -1,14 +1,13 @@
 var models = require('../models/models.js');
-var model_deal = require('../models/deals_model');
 var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
 var bcrypt = require('bcryptjs');
 
 var UserRepository = {
-    GetAll: function () {
+    FindAllByDeleted: function (deleted) {
         return new Promise(function (resolve, reject) {
-            models.User.findAll().then(existingUsers => {
-                resolve(existingUsers);
+            models.User.findAll({ where: { deleted: deleted } }).then(existingCountries => {
+                resolve(existingCountries);
             }, error => {
                 reject(error);
             });
@@ -26,51 +25,6 @@ var UserRepository = {
                     if (isDeleted && isDeletedOTP) {
                         resolve(user);
                     }
-                }
-            }, error => {
-                reject(error);
-            });
-        });
-    },
-    deleteUser: function (id) {
-        return new Promise(function (resolve, reject) {
-            models.User.destroy({ where: { user_admin_id: id } }).then(response => {
-                if (response) {
-                    resolve(null);
-                } else {
-                    resolve(response);
-                }
-            }, error => {
-                reject(error);
-            });
-        });
-    },
-
-
-
-    getAllUserData: function (id) {
-        return new Promise(function (resolve, reject) {
-            models.User.hasMany(models.Account, { foreignKey: 'fk_user_id' });
-            models.User.hasMany(model_deal.Deals, { foreignKey: 'user_id' });
-            models.User.hasMany(models.Purchase, { foreignKey: 'user_id' });
-            models.User.hasMany(models.Advertising, { foreignKey: 'user_id' });
-            models.User.findOne({
-                where: { user_admin_id: id },
-                include: [{
-                    model: models.Account
-                }, {
-                    model: model_deal.Deals
-                }, {
-                    model: models.Purchase
-                }, {
-                    model: models.Advertising
-                }]
-            }).then(user => {
-                if (!user) {
-                    resolve(null);
-                } else {
-                    delete user.dataValues['password'];
-                    resolve(user);
                 }
             }, error => {
                 reject(error);
@@ -147,6 +101,35 @@ var UserRepository = {
 
         });
     },
+
+    CheckSocial: function (email, password, first_name, last_name) {
+        return new Promise(function (resolve, reject) {
+            models.User.findOne({ attributes: ['user_admin_id' , 'email' , 'first_name' , 'last_name'], where: { email: email } }).then(users => {
+                if (users == null) {
+                    var otp_val = Math.floor(1000 + Math.random() * 9000);
+                    models.User.create({
+                        email: email,
+                        password: password,
+                        first_name: first_name,
+                        last_name: last_name,
+                        active: 1,
+                    }).then(users => {
+
+                            resolve(users);
+
+                    }, error => {
+                        reject(error)
+                    });
+                } else {
+                    resolve(users)
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
     Check: function (email, password, first_name, last_name, phone, user_type) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({ attributes: ['user_admin_id'], where: { email: email } }).then(users => {
@@ -183,6 +166,7 @@ var UserRepository = {
             });
         });
     },
+
     Check_otp: function (email, otp) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({ attributes: ['otp', 'email'], where: { email: email, otp: otp } }).then(users => {
@@ -201,10 +185,11 @@ var UserRepository = {
             });
         });
     },
-    Activate: function (id, otp) {
+    Activate: function (token, otp) {
         return new Promise(function (resolve, reject) {
-            models.User.update({ active: 1 }, { where: { user_admin_id: id } }).then(function (result) {
+            models.User.update({ active: 1 }, { where: { session_id: token } }).then(function (result) {
                 resolve(result);
+            }, function (error) {
             }, function (error) {
                 reject(error);
             });
@@ -214,6 +199,7 @@ var UserRepository = {
         return new Promise(function (resolve, reject) {
             models.User.update({ password: password }, { where: { session_id: token } }).then(function (result) {
                 resolve(result);
+            }, function (error) {
             }, function (error) {
                 reject(error);
             });
@@ -266,21 +252,6 @@ var UserRepository = {
 
 
             }, function (error) {
-            }, function (error) {
-                reject(error);
-            });
-        });
-    },
-    update_user_status: function (body) {
-        return new Promise(function (resolve, reject) {
-            models.User.update({
-                user_type: body.user_type,
-            }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
-                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_type'] }).then(users => {
-                    resolve(users);
-                }, error => {
-                    reject(error);
-                });
             }, function (error) {
                 reject(error);
             });
