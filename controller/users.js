@@ -184,7 +184,7 @@ router.get('/profile', function (req, res) {
     var lang = req.headers.language;
     var token = req.headers.authorization;
     console.log(lang);
-    verifyToken(token, res, lang);
+     verifyToken(token, res, lang);
     if (email) {
         UserService.GetUser(email).then(user => {
             var errors = validationResult(req);
@@ -495,29 +495,9 @@ router.put('/edit_profile', function (req, res) {
 
     }
 
-}
-);
-                            status: statics.STATUS_SUCCESS,
-                            code: codes.SUCCESS,
-                            message: msg.message,
-                            data: user
-                        });
-                    });
-                }
-            } else {
-                languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.INVALID_DATA,
-                        message: msg.message,
-                        data: errors.array()
-                    });
-                })
-            }
+});
 
-        });
-    }
-})
+
 
 // get profile info
 router.delete('/delete/:id', function (req, res) {
