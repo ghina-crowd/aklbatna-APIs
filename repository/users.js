@@ -147,6 +147,35 @@ var UserRepository = {
 
         });
     },
+
+    CheckSocial: function (email, password, first_name, last_name) {
+        return new Promise(function (resolve, reject) {
+            models.User.findOne({ attributes: ['user_admin_id' , 'email' , 'first_name' , 'last_name'], where: { email: email } }).then(users => {
+                if (users == null) {
+                    var otp_val = Math.floor(1000 + Math.random() * 9000);
+                    models.User.create({
+                        email: email,
+                        password: password,
+                        first_name: first_name,
+                        last_name: last_name,
+                        active: 1,
+                    }).then(users => {
+
+                            resolve(users);
+
+                    }, error => {
+                        reject(error)
+                    });
+                } else {
+                    resolve(users)
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
     Check: function (email, password, first_name, last_name, phone, user_type) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({ attributes: ['user_admin_id'], where: { email: email } }).then(users => {
@@ -182,6 +211,7 @@ var UserRepository = {
             });
         });
     },
+
     Check_otp: function (email, otp) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({ attributes: ['otp', 'email'], where: { email: email, otp: otp } }).then(users => {

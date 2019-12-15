@@ -1,5 +1,5 @@
 var express = require('express');
-const { check, validationResult } = require('express-validator/check');
+const {check, validationResult} = require('express-validator/check');
 var statics = require('../constant/static.js');
 var codes = require('../constant/code.js');
 var authenticationService = require('../service/authentication.js');
@@ -153,6 +153,119 @@ router.post('/login', function (req, res) {
 });
 
 //register
+router.post('/social', function (req, res) {
+        var lang = req.headers.language;
+        var errors = validationResult(req);
+        if (errors.array().length == 0) {
+            var creqentials = req.body;
+            var lang = req.headers.language;
+
+            return new Promise(function (resolve, reject) {
+                if (creqentials.email == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        })
+                    });
+
+                } else if (creqentials.firstName == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else if (creqentials.lastName == '') {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
+
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else {
+
+                    return new Promise(function (resolve, reject) {
+
+                        authenticationService.check_user_social(creqentials.email, '123456789', creqentials.firstName, creqentials.lastName).then(user => {
+
+                                resolve(user);
+
+                                if (user == null) {
+                                    languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
+                                        res.json({
+                                            status: statics.STATUS_FAILURE,
+                                            code: codes.FAILURE,
+                                            message: msg.message,
+                                            data: null
+                                        });
+                                    });
+                                } else {
+
+                                    var userdata = {
+                                        id: user.id,
+                                        email: user.email,
+                                        password: user.password,
+
+                                    }
+
+
+                                    var token = jwt.sign(userdata, config.secret, {});
+                                    user.token = token;
+
+                                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                                        console.log(user);
+                                        var tempuser = {
+                                            user_admin_id: user.user_admin_id,
+                                            email: user.email,
+                                            first_name: user.first_name,
+                                            last_name: user.last_name,
+                                            token: user.token,
+                                        }
+
+                                        res.json({
+                                            status: statics.STATUS_SUCCESS,
+                                            code: codes.SUCCESS,
+                                            message: msg.message,
+                                            data: tempuser,
+                                        });
+                                    });
+                                }
+
+
+                            }
+                            ,
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    });
+
+
+                }
+            })
+        } else {
+            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.INVALID_DATA,
+                    message: msg.message,
+                    data: errors.array()
+                });
+            });
+
+        }
+    }
+);
+
+//register
 router.post('/register', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
@@ -171,7 +284,7 @@ router.post('/register', function (req, res) {
                     })
                 });
 
-            } else if (credential.password == '') {
+            } else if (creqentials.password == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -180,7 +293,7 @@ router.post('/register', function (req, res) {
                         data: null
                     });
                 });
-            } else if (credential.first_name == '') {
+            } else if (creqentials.first_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -189,7 +302,7 @@ router.post('/register', function (req, res) {
                         data: null
                     });
                 });
-            } else if (credential.last_name == '') {
+            } else if (creqentials.last_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
                     res.json({
@@ -340,7 +453,6 @@ router.put('/activate', function (req, res) {
                     data: null
                 });
             });
-
         } else {
             return new Promise(function (resolve, reject) {
                 if (email) {
@@ -404,7 +516,7 @@ router.put('/change_pass', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var header_data = req.headers;
+        var headerdata = req.headers;
         var data = req.body;
 
         if (data.password == '') {
@@ -519,7 +631,7 @@ router.post('/logout', function (req, res) {
 router.get('/profile', function (req, res) {
     var lang = req.headers.language;
 
-    var header_data = req.headers;
+    var headerdata = req.headers;
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -792,9 +904,9 @@ router.post('/sent_otp_by_email', function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credential = req.body;
+        var creqentials = req.body;
 
-        if (credential.email == '') {
+        if (creqentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
 
                 res.json({
@@ -807,7 +919,7 @@ router.post('/sent_otp_by_email', function (req, res) {
         } else {
 
             return new Promise(function (resolve, reject) {
-                authenticationService.check_email(credential.email).then(user => {
+                authenticationService.check_email(creqentials.email).then(user => {
                     resolve(user);
                     if (!user) {
                         languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {

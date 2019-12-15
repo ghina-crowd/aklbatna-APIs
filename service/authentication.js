@@ -93,6 +93,29 @@ var service = {
             });
         });
     },
+<<<<<<< HEAD
+=======
+
+    check_user_social:function(email,password,first_name,last_name){
+
+        var password = bcrypt.hashSync(password, 8);
+        return new Promise(function(resolve,reject){
+            UserRepository.CheckSocial(email,password ,first_name,last_name).then(users=>{
+                if(users == null){
+                    resolve(null);
+                }else{
+                    resolve(users['dataValues']);
+                }
+
+            },error=>{
+                reject(error);
+            });
+        });
+    },
+
+
+
+>>>>>>> 2b705cee1718e29e2497a709dd581153e59caf61
     check_user: function (email, password, first_name, last_name, phone, user_type) {
 
         var password = bcrypt.hashSync(password, 8);
