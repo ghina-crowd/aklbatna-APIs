@@ -1,5 +1,5 @@
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
     return sequelize.define('deals', {
         deal_id: {
             type: DataTypes.STRING(225),
@@ -9,6 +9,10 @@ module.exports = function(sequelize, DataTypes) {
         user_id: {
             type: DataTypes.STRING(225),
         },
+        sub_category_id: {
+            type: DataTypes.STRING(225),
+            foreignKey: true
+        },
         shop_category_id: {
             type: DataTypes.STRING(225),
             foreignKey: true
@@ -17,12 +21,6 @@ module.exports = function(sequelize, DataTypes) {
             type: DataTypes.STRING(225),
         },
         deal_title_ar: {
-            type: DataTypes.STRING(225),
-        },
-        latitude: {
-            type: DataTypes.STRING(225),
-        },
-        longitude: {
             type: DataTypes.STRING(225),
         },
         company_id: {

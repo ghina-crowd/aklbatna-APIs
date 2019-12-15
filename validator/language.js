@@ -105,7 +105,110 @@ var language = {
                 resolve({ message: messages.INVALID_STATUS });
             } else if (type == 'INVALID_DATE') {
                 resolve({ message: messages.INVALID_DATE });
+            } else if (type == 'EMPTY_FIELD_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_KEYWORD') {
+                resolve({ message: messages.EMPTY_FIELD_KEYWORD });
+            } else if (type == 'EMPTY_FIELD_SHORT_DEC') {
+                resolve({ message: messages.EMPTY_FIELD_SHORT_DEC });
+            } else if (type == 'EMPTY_FIELD_ICON') {
+                resolve({ message: messages.EMPTY_FIELD_ICON });
+            } else if (type == 'EMPTY_FIELD_IMAGE') {
+                resolve({ message: messages.EMPTY_FIELD_IMAGE });
+            } else if (type == 'EMPTY_FIELD_SHOP_CATEGORY_ID') {
+                resolve({ message: messages.EMPTY_FIELD_SHOP_CATEGORY_ID });
             }
+
+
+            else if (type == 'EMPTY_FIELD_SUB_NAME_EN') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_NAME_EN });
+            } else if (type == 'EMPTY_FIELD_SUB_CATEGORY_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_CATEGORY_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_SHORT_DETAILS') {
+                resolve({ message: messages.EMPTY_FIELD_SHORT_DETAILS });
+            } else if (type == 'EMPTY_FIELD_SHOP_CATEGORY') {
+                resolve({ message: messages.EMPTY_FIELD_SHOP_CATEGORY });
+            } else if (type == 'EMPTY_FIELD_ACTIVE') {
+                resolve({ message: messages.EMPTY_FIELD_ACTIVE });
+            } else if (type == 'EMPTY_FIELD_SUB_CATEGORY_ID') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_CATEGORY_ID });
+            } else if (type == 'EMPTY_FIELD_DEAL_ID') {
+                resolve({ message: messages.EMPTY_FIELD_DEAL_ID });
+            }
+
+
+
+
+            else if (type == 'EMPTY_FIELD_WEBSITE_LINK') {
+                resolve({ message: messages.EMPTY_FIELD_WEBSITE_LINK });
+            } else if (type == 'EMPTY_FIELD_LOCATION') {
+                resolve({ message: messages.EMPTY_FIELD_LOCATION });
+            } else if (type == 'EMPTY_FIELD_LONGITUDE') {
+                resolve({ message: messages.EMPTY_FIELD_LONGITUDE });
+            } else if (type == 'EMPTY_FIELD_LATITUDE') {
+                resolve({ message: messages.EMPTY_FIELD_LATITUDE });
+            } else if (type == 'EMPTY_FIELD_DEC_EN') {
+                resolve({ message: messages.EMPTY_FIELD_DEC_EN });
+            } else if (type == 'EMPTY_FIELD_COMPANY_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_COMPANY_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_COMPANY_NAME_EN') {
+                resolve({ message: messages.EMPTY_FIELD_COMPANY_NAME_EN });
+            } else if (type == 'EMPTY_FIELD_USER_ID') {
+                resolve({ message: messages.EMPTY_FIELD_USER_ID });
+            } else if (type == 'EMPTY_FIELD_DEC_AR') {
+                resolve({ message: messages.EMPTY_FIELD_DEC_AR });
+            } else if (type == 'EMPTY_FIELD_COMPANY_ID') {
+                resolve({ message: messages.EMPTY_FIELD_COMPANY_ID });
+            }
+
+
+            else if (type == 'EMPTY_FIELD_ADVERTISING_ID') {
+                resolve({ message: messages.EMPTY_FIELD_ADVERTISING_ID });
+            } else if (type == 'EMPTY_FIELD_DEAL_ID') {
+                resolve({ message: messages.EMPTY_FIELD_DEAL_ID });
+            } else if (type == 'EMPTY_FIELD_USER_ID') {
+                resolve({ message: messages.EMPTY_FIELD_USER_ID });
+            } else if (type == 'EMPTY_FIELD_TYPE') {
+                resolve({ message: messages.EMPTY_FIELD_TYPE });
+            } else if (type == 'EMPTY_FIELD_STATUS') {
+                resolve({ message: messages.EMPTY_FIELD_STATUS });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            else if (type == 'EMPTY_FIELD_SUB_DEAL_ID') {
+                resolve({ message: messages.EMPTY_FIELD_SUB_DEAL_ID });
+            } else if (type == 'EMPTY_FIELD_TITLE_EN') {
+                resolve({ message: messages.EMPTY_FIELD_TITLE_EN });
+            } else if (type == 'EMPTY_FIELD_TITLE_AR') {
+                resolve({ message: messages.EMPTY_FIELD_TITLE_AR });
+            } else if (type == 'EMPTY_FIELD_PRE_PRICE') {
+                resolve({ message: messages.EMPTY_FIELD_PRE_PRICE });
+            } else if (type == 'EMPTY_FIELD_NEW_PRICE') {
+                resolve({ message: messages.EMPTY_FIELD_NEW_PRICE });
+            } else if (type == 'EMPTY_FIELD_COUNT_BOUGHT') {
+                resolve({ message: messages.EMPTY_FIELD_COUNT_BOUGHT });
+            } else if (type == 'EMPTY_FIELD_IMG_ID') {
+                resolve({ message: messages.EMPTY_FIELD_IMG_ID });
+            } else {
+                resolve({ message: messages.INVALID_DATA });
+            }
+
 
         });
     }

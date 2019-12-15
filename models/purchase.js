@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define('purchases', {
-    pk_account_id: {
+    purchase_id: {
       type: DataTypes.STRING(11),
       primaryKey: true,
       allowNull: false,
@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
     status: {
       type: DataTypes.STRING(1),
       allowNull: false,
-    }, 
+    },
     date: {
       type: DataTypes.STRING(100),
       allowNull: false,

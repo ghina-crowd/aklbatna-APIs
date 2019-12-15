@@ -30,6 +30,9 @@ module.exports = function(sequelize, DataTypes) {
         lang_iso: {
             type: DataTypes.STRING(225),
         },
+        icon: {
+            type: DataTypes.STRING(225),
+        },
         timestamp_create: {
             type: DataTypes.STRING(225),
         },

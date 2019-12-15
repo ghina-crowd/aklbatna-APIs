@@ -8,7 +8,7 @@ var category_model = require('../models/categories_model.js');
 var commonRepository = require('./common.js');
 const sequelize = require('sequelize');
 var lang = require('../app');
-var companymodel = require('../models/company_model');
+var company_model = require('../models/company_model');
 
 const Op = sequelize.Op;
 var deal_attributes, company_attributes, sub_deals_attributes, cat_attributes;
@@ -19,9 +19,9 @@ var dealsRepository = {
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
             } else {
-                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
             }
             models.Deals.findAll({
                 limit: pageSize,
@@ -39,14 +39,13 @@ var dealsRepository = {
             });
         });
     },
-
     get_deal_by_id: function (id) {
         if (lang.acceptedLanguage == 'en') {
-            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
             company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link'];
             sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
         } else {
-            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
             company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link'];
             sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
         }
@@ -153,13 +152,12 @@ var dealsRepository = {
             });
         });
     },
-
     get_deals_by_sub_category: function (id) {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
             } else {
-                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
             }
             models.Deals.findAll({
                 attributes: deal_attributes,
@@ -175,17 +173,16 @@ var dealsRepository = {
             });
         });
     },
-
     filter_deals: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude) {
         var pageSize = 12; // page start from 0
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
             } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
             }
@@ -259,67 +256,67 @@ var dealsRepository = {
 
             if (category_id) {
                 category_model.Categories.hasMany(models.Deals, { foreignKey: 'shop_category_id' })
-                models.Deals.belongsTo(companymodel.Company, { foreignKey: 'company_id' });
+                models.Deals.belongsTo(company_model.Company, { foreignKey: 'company_id' });
                 category_model.Categories.findAll({
                     attributes: cat_attributes, limit: pageSize, offset: offset, order: order, where: data,
                     include: [{
                         model: models.Deals,
                         attributes: deal_attributes,
                         include: [{
-                            model: companymodel.Company,
+                            model: company_model.Company,
                             attributes: company_attributes,
                         }]
                     }]
-                }).then(categoty => {
-                    var filterdeals = [];
-                    categoty[0].deals.forEach(item => {
+                }).then(category => {
+                    var filter_deals = [];
+                    category[0].deals.forEach(item => {
                         if (latitude && longitude) {
                             var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
-                            console.log(distance);
+                            // console.log(distance);
                             if (distance <= 10) {
                                 item["dataValues"].distance = distance;
-                                filterdeals.push(item);
+                                filter_deals.push(item);
                                 delete item["dataValues"].company;
                             }
                         } else {
                             delete item["dataValues"].company;
-                            filterdeals.push(item);
+                            filter_deals.push(item);
                         }
                     });
-                    categoty[0].deals = filterdeals;
-                    resolve(categoty[0]);
+                    category[0].deals = filter_deals;
+                    resolve(category[0]);
                 }, error => {
                     reject(error);
                 });
             } else {
-                models.Deals.belongsTo(companymodel.Company, { foreignKey: 'company_id' })
+                models.Deals.belongsTo(company_model.Company, { foreignKey: 'company_id' })
                 models.Deals.findAll({
                     limit: pageSize, offset: offset, order: order, where: data, attributes: deal_attributes,
                     include: [{
-                        model: companymodel.Company,
+                        model: company_model.Company,
                         attributes: company_attributes,
                     }]
                 }).then(deals => {
                     if (deals == null) {
                         resolve([]);
                     } else {
-                        var filterdeals = [];
+                        var filter_deals = [];
                         deals.forEach(item => {
                             if (latitude && longitude) {
                                 var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
                                 console.log(distance);
                                 if (distance <= 10) {
                                     item["dataValues"].distance = distance;
-                                    filterdeals.push(item);
+                                    filter_deals.push(item);
                                     delete item["dataValues"].company;
                                 }
                             } else {
                                 delete item["dataValues"].company;
-                                filterdeals.push(item);
+                                filter_deals.push(item);
                             }
                         });
-                        filterdeals.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
-                        resolve(filterdeals);
+                        filter_deals.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
+                        resolve(filter_deals);
                     }
                 }, error => {
                     reject(error);
@@ -329,12 +326,54 @@ var dealsRepository = {
         )
             ;
     },
+    get_deals: function (page, keyword) {
+        var pageSize = 12; // page start from 0
+        const offset = page * pageSize;
+        return new Promise(function (resolve, reject) {
+            if (lang.acceptedLanguage == 'en') {
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
+            } else {
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
+
+            }
+            var data = {}
+            if (keyword) {
+                if (lang.acceptedLanguage == 'en') {
+                    data.deal_title_en = {
+                        [Op.like]: '%' + keyword + '%'
+                    }
+                } else {
+                    data.deal_title_ar = {
+                        [Op.like]: '%' + keyword + '%'
+                    }
+                }
+            }
+            models.Deals.hasMany(model_images.Images, { foreignKey: 'deal_id' })
+            models.Deals.findAll({
+                limit: pageSize, offset: offset, attributes: deal_attributes,
+                include: [{
+                    model: model_images.Images
+                }]
+            }).then(deals => {
+                if (deals == null) {
+                    resolve([]);
+                } else {
+                    resolve(deals);
+                }
+            }, error => {
+                reject(error);
+            });
+        }
+        );
+    },
     get_related_deals: function (category_id, deal_id) {
         if (lang.acceptedLanguage == 'en') {
-            deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
         } else {
-            deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'latitude', 'longitude', 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
         }
         return new Promise(function (resolve, reject) {
             models.Deals.findAll({
@@ -351,9 +390,7 @@ var dealsRepository = {
                 reject(error);
             });
         });
-    }
-    ,
-
+    },
     create_rate: function (user_id, deal_id, rate, comment) {
         console.log(user_id);
         return new Promise(function (resolve, reject) {
@@ -396,9 +433,7 @@ var dealsRepository = {
                 reject(error);
             });
         });
-    }
-    ,
-
+    },
     get_Reviews: function (page, deal_id) {
         var pageSize = 12; // page start from 0
         const offset = page * pageSize;
@@ -424,9 +459,6 @@ var dealsRepository = {
             });
         });
     },
-
-
-
     get_sub_deals: function (deal_id) {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
@@ -443,6 +475,159 @@ var dealsRepository = {
                 } else {
                     resolve(reviews);
                 }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    create_deal: function (newDealData) {
+        return new Promise(function (resolve, reject) {
+            models.Deals.create({
+                user_id: newDealData.user_id,
+                sub_category_id: newDealData.sub_category_id,
+                shop_category_id: newDealData.shop_category_id,
+                company_id: newDealData.company_id,
+                deal_title_en: newDealData.deal_title_en,
+                deal_title_ar: newDealData.deal_title_ar,
+                short_detail: newDealData.short_detail,
+                details_en: newDealData.details_en,
+                details_ar: newDealData.details_ar,
+                pre_price: newDealData.pre_price,
+                new_price: newDealData.new_price,
+                start_time: newDealData.start_time,
+                end_time: newDealData.end_time,
+                active: newDealData.active,
+                main_image: newDealData.main_image,
+                premium: newDealData.premium,
+                location_address: newDealData.location_address,
+                is_monthly: newDealData.is_monthly,
+                final_rate: newDealData.final_rate,
+
+            }).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    create_sub_deal: function (newSubDealData) {
+        return new Promise(function (resolve, reject) {
+            sub_deals.SubDeals.create({
+                deal_id: newSubDealData.deal_id,
+                title_en: newSubDealData.title_en,
+                title_ar: newSubDealData.title_ar,
+                pre_price: newSubDealData.pre_price,
+                new_price: newSubDealData.new_price,
+            }).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    update_deal: function (newDealData) {
+        console.log(newDealData.active);
+        return new Promise(function (resolve, reject) {
+            models.Deals.update({
+                user_id: newDealData.user_id,
+                sub_category_id: newDealData.sub_category_id,
+                shop_category_id: newDealData.shop_category_id,
+                company_id: newDealData.company_id,
+                deal_title_en: newDealData.deal_title_en,
+                deal_title_ar: newDealData.deal_title_ar,
+                short_detail: newDealData.short_detail,
+                details_en: newDealData.details_en,
+                details_ar: newDealData.details_ar,
+                pre_price: newDealData.pre_price,
+                new_price: newDealData.new_price,
+                start_time: newDealData.start_time,
+                end_time: newDealData.end_time,
+                active: newDealData.active,
+                main_image: newDealData.main_image,
+                premium: newDealData.premium,
+                location_address: newDealData.location_address,
+                is_monthly: newDealData.is_monthly,
+                final_rate: newDealData.final_rate,
+            }, { where: { deal_id: newDealData.deal_id } }).then(function (result) {
+                models.Deals.findOne({ where: { deal_id: newDealData.deal_id } }).then(deal => {
+                    resolve(deal);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    update_sub_deal: function (newSubDealData) {
+        return new Promise(function (resolve, reject) {
+            sub_deals.SubDeals.update({
+                deal_id: newSubDealData.deal_id,
+                title_en: newSubDealData.title_en,
+                title_ar: newSubDealData.title_ar,
+                pre_price: newSubDealData.pre_price,
+                new_price: newSubDealData.new_price,
+            }, { where: { id: newSubDealData.id } }).then(function (result) {
+                sub_deals.SubDeals.findOne({ where: { id: newSubDealData.id } }).then(deal => {
+                    resolve(deal);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    delete_deal: function (deal_id) {
+        return new Promise(function (resolve, reject) {
+            models.Deals.destroy({ where: { deal_id: deal_id } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    create_deal_image: function (newDealData) {
+        return new Promise(function (resolve, reject) {
+            model_images.Images.create({
+                source: newDealData.source,
+                deal_id: newDealData.deal_id
+            }).then(image => {
+                resolve(image);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    update_deal_image: function (newImageData) {
+        return new Promise(function (resolve, reject) {
+            model_images.Images.update({
+                source: newImageData.source,
+                deal_id: newImageData.deal_id
+            }, { where: { img_id: newImageData.img_id } }).then(function (result) {
+                model_images.Images.findOne({ where: { img_id: newImageData.img_id } }).then(image => {
+                    resolve(image);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    delete_deal_image: function (img_id) {
+        return new Promise(function (resolve, reject) {
+            model_images.Images.destroy({ where: { img_id: img_id } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_sub_deal: function (id) {
+        return new Promise(function (resolve, reject) {
+            sub_deals.SubDeals.destroy({ where: { id: id } }).then(deleted => {
+                resolve(deleted);
             }, error => {
                 reject(error);
             });

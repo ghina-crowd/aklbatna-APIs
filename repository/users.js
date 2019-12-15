@@ -1,13 +1,14 @@
 var models = require('../models/models.js');
+var model_deal = require('../models/deals_model');
 var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
 var bcrypt = require('bcryptjs');
 
 var UserRepository = {
-    FindAllByDeleted: function (deleted) {
+    GetAll: function () {
         return new Promise(function (resolve, reject) {
-            models.User.findAll({ where: { deleted: deleted } }).then(existingCountries => {
-                resolve(existingCountries);
+            models.User.findAll().then(existingUsers => {
+                resolve(existingUsers);
             }, error => {
                 reject(error);
             });
@@ -25,6 +26,51 @@ var UserRepository = {
                     if (isDeleted && isDeletedOTP) {
                         resolve(user);
                     }
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    deleteUser: function (id) {
+        return new Promise(function (resolve, reject) {
+            models.User.destroy({ where: { user_admin_id: id } }).then(response => {
+                if (response) {
+                    resolve(null);
+                } else {
+                    resolve(response);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
+
+    getAllUserData: function (id) {
+        return new Promise(function (resolve, reject) {
+            models.User.hasMany(models.Account, { foreignKey: 'fk_user_id' });
+            models.User.hasMany(model_deal.Deals, { foreignKey: 'user_id' });
+            models.User.hasMany(models.Purchase, { foreignKey: 'user_id' });
+            models.User.hasMany(models.Advertising, { foreignKey: 'user_id' });
+            models.User.findOne({
+                where: { user_admin_id: id },
+                include: [{
+                    model: models.Account
+                }, {
+                    model: model_deal.Deals
+                }, {
+                    model: models.Purchase
+                }, {
+                    model: models.Advertising
+                }]
+            }).then(user => {
+                if (!user) {
+                    resolve(null);
+                } else {
+                    delete user.dataValues['password'];
+                    resolve(user);
                 }
             }, error => {
                 reject(error);
@@ -155,11 +201,10 @@ var UserRepository = {
             });
         });
     },
-    Activate: function (token, otp) {
+    Activate: function (id, otp) {
         return new Promise(function (resolve, reject) {
-            models.User.update({ active: 1 }, { where: { session_id: token } }).then(function (result) {
+            models.User.update({ active: 1 }, { where: { user_admin_id: id } }).then(function (result) {
                 resolve(result);
-            }, function (error) {
             }, function (error) {
                 reject(error);
             });
@@ -169,7 +214,6 @@ var UserRepository = {
         return new Promise(function (resolve, reject) {
             models.User.update({ password: password }, { where: { session_id: token } }).then(function (result) {
                 resolve(result);
-            }, function (error) {
             }, function (error) {
                 reject(error);
             });
@@ -222,6 +266,21 @@ var UserRepository = {
 
 
             }, function (error) {
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    update_user_status: function (body) {
+        return new Promise(function (resolve, reject) {
+            models.User.update({
+                user_type: body.user_type,
+            }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
+                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_type'] }).then(users => {
+                    resolve(users);
+                }, error => {
+                    reject(error);
+                });
             }, function (error) {
                 reject(error);
             });

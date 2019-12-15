@@ -36,4 +36,13 @@ module.exports = {
             });
         });
     },
+    DeletePurchase: function (newPurchaseData) {
+        return new Promise(function (resolve, reject) {
+            PurchaseRepository.DeletePurchase(newPurchaseData).then(function (result) {
+                resolve(result);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
 };
