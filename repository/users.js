@@ -271,6 +271,21 @@ var UserRepository = {
             });
         });
     },
+    update_user_status: function (body) {
+        return new Promise(function (resolve, reject) {
+            models.User.update({
+                user_type: body.user_type,
+            }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
+                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_type'] }).then(users => {
+                    resolve(users);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
 
 
     Get_user: function (token) {

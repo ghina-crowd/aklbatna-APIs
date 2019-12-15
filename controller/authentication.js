@@ -102,7 +102,6 @@ router.post('/login', function (req, res) {
                             id: user.user_admin_id,
                             password: user.password,
                             email: user.email,
-                            exp: user.email
                         }
                         var token = jwt.sign(userData, config.secret, {});
 
@@ -235,9 +234,9 @@ router.post('/register', function (req, res) {
                                 }
                             });
                             const mailOptions = {
-                                from: 'acoponey@gmail.com', // sender address
+                                from: 'Coboney <coboney@admin.com>', // sender address
                                 to: [user.email], // list of receivers
-                                subject: 'Coponey', // Subject line
+                                subject: 'OTP', // Subject line
                                 html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
                             };
 
@@ -859,11 +858,10 @@ router.post('/sent_otp_by_email', function (req, res) {
 // update reset password
 router.post('/reset_password', function (req, res) {
     var lang = req.headers.language;
-
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var data = req.body;
-        if (data.email == '') {
+        if (data.email || data.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
 
                 res.json({
@@ -873,7 +871,7 @@ router.post('/reset_password', function (req, res) {
                     data: null
                 });
             });
-        } else if (data.password == '') {
+        } else if (data.password || data.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -882,7 +880,7 @@ router.post('/reset_password', function (req, res) {
                     data: null
                 });
             });
-        } else if (data.otp == '') {
+        } else if (data.otp || data.otp == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_OTP').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,

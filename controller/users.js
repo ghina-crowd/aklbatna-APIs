@@ -101,13 +101,13 @@ router.put('/edit_profile', function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var creqentials = req.body;
+        var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
         verifyToken(token, res, lang);
         if (email) {
             // var email = 'acoponey@gmail.com';
-            if (creqentials.first_name == '') {
+            if (credentials.first_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -116,7 +116,7 @@ router.put('/edit_profile', function (req, res) {
                         data: null
                     });
                 });
-            } else if (creqentials.last_name == '') {
+            } else if (credentials.last_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
                     res.json({
@@ -126,7 +126,7 @@ router.put('/edit_profile', function (req, res) {
                         data: null
                     });
                 });
-            } else if (creqentials.phone == '') {
+            } else if (credentials.phone == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -139,7 +139,7 @@ router.put('/edit_profile', function (req, res) {
 
                 return new Promise(function (resolve, reject) {
 
-                    UserService.Update(creqentials.first_name, creqentials.last_name, creqentials.phone, email).then(user => {
+                    UserService.Update(credentials.first_name, credentials.last_name, credentials.phone, credentials.email).then(user => {
 
                         resolve(user);
 
@@ -304,6 +304,47 @@ router.get('/details/:id', function (req, res) {
         }
 
     });
+})
+
+router.put('/admin/user_type', function (req, res) {
+    var lang = req.headers.language;
+    var token = req.headers.authorization;
+    var credentials = req.body;
+    var errors = validationResult(req);
+
+    if (errors.array().length == 0) {
+        verifyToken(token, res, lang);
+
+
+
+
+        return new Promise(function (resolve, reject) {
+            UserService.UpdateUserStatus(credentials).then(user => {
+                resolve(user);
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: user
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+
+    
+
+
+    } else {
+        res.json({
+            status: statics.STATUS_FAILURE,
+            code: codes.INVALID_DATA,
+            message: messages.INVALID_DATA,
+            data: errors.array()
+        });
+    }
 })
 
 

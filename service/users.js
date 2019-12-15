@@ -75,5 +75,18 @@ module.exports = {
             reject(error);
         });
 
+    },
+    UpdateUserStatus: function (body) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.update_user_status(body).then(user => {
+                resolve(user);
+            }, function (error) {
+                reject(error);
+            });
+
+        }, error => {
+            reject(error);
+        });
+
     }
 };
