@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     }
 });
 const upload = multer({ storage: storage });
-const nodemailer = require('nodemailer');
+const utils = require('../util/utils');
 const jwt = require('jsonwebtoken');
 var router = express.Router();
 var email;
@@ -210,6 +210,16 @@ router.post('/register', function (req, res) {
                 });
             } else {
                 return new Promise(function (resolve, reject) {
+
+                    // checking if user has no password means this request is from Sales Representative for service provider account.
+                    var temp_password = ""
+                    if (!credential.password) {
+                        temp_password = Math.floor(1000 + Math.random() * 9000) + '';
+                        credential.password = temp_password;
+                    } else {
+                        temp_password = credential.password;
+                    }
+                    
                     authenticationService.check_user(credential.email, credential.password, credential.first_name, credential.last_name, credential.phone, credential.user_type).then(user => {
                         resolve(user);
                         if (user == null) {
@@ -224,7 +234,6 @@ router.post('/register', function (req, res) {
                         } else {
 
                             if (!user.user_type || user.user_type === 'normal') {
-
                                 //normal user after
                                 user.user_type = 'normal';
                                 var user_data = {
@@ -232,10 +241,10 @@ router.post('/register', function (req, res) {
                                     email: user.email,
                                     password: user.password,
                                 }
-                                var token = jwt.sign(useuser_datardata, config.secret, {});
+                                var token = jwt.sign(user_data, config.secret, {});
                                 user.token = token;
 
-                                SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+                                utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
 
                             } else if (user.user_type === 'servicePro') {
 
@@ -249,10 +258,9 @@ router.post('/register', function (req, res) {
                                 var token = jwt.sign(user_data, config.secret, {});
                                 user.token = token;
 
-                                SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+                                utils.SendEmail(user.email, 'Coboney', 'Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "https://www.coboney.com" target = "_self"> link </a> to see more details.</p>      <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
 
                             } else if (user.user_type === 'salesRep') {
-
                                 //normal user after
                                 var user_data = {
                                     id: user.id,
@@ -262,7 +270,7 @@ router.post('/register', function (req, res) {
                                 }
                                 var token = jwt.sign(user_data, config.secret, {});
                                 user.token = token;
-                                SendEmail(user.email, 'Coboney', '<p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_admin_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
+                                utils.SendEmail(user.email, 'Coboney', '<p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_admin_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
                             }
 
                             languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
@@ -1000,29 +1008,5 @@ router.get('/checktoken', function (req, res) {
     }
 });
 
-
-function SendEmail(to, subject, message) {
-
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'acoponey@gmail.com',
-            pass: 'muhammadcrowd'
-        }
-    });
-    const mailOptions = {
-        from: 'Coboney <coboney@admin.com>', // sender address
-        to: to, // list of receivers
-        subject: subject,
-        html: message
-    };
-
-    transporter.sendMail(mailOptions, function (err, info) {
-        if (err)
-            console.log(err)
-        else
-            console.log(info);
-    });
-}
 
 module.exports = router;

@@ -154,6 +154,7 @@ var UserRepository = {
                     var otp_val = Math.floor(1000 + Math.random() * 9000);
                     models.User.create({
                         email: email,
+                        account_status: 'Pending',
                         password: password,
                         first_name: first_name,
                         last_name: last_name,

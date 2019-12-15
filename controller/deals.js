@@ -15,7 +15,6 @@ const upload = multer({
     }
 });
 
-const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 var router = express.Router();
 
@@ -511,7 +510,7 @@ router.get('/admin/get_deals', function (req, res) {
         })
     }
 });
-router.post('/admin/create', upload.single('main_image'), async function (req, res) {
+router.post('/admin/create', upload.array('main_image'), async function (req, res) {
 
 
     var lang = req.headers.language;
@@ -522,8 +521,7 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
     if (errors.array().length == 0) {
         verifyToken(token, res, lang);
 
-
-        if (!req.file) {
+        if (!req.files) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -534,12 +532,27 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
             });
             return;
         }
+
         const relative_ptah = '/images/deals/';
         const imagePath = path.join(__dirname, '..' + relative_ptah);
         const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
-        const filename = await fileUpload.save(req.file.buffer);
+        const filename = await fileUpload.save(req.files[0].buffer);
 
 
+
+        //uploading other images and save into array
+        var temp_images = [];
+        if (req.files.length > 1) {
+            for (let k in req.files) {
+                if (k != 0) {
+                    const relative_ptah = '/images/deals/';
+                    const imagePath = path.join(__dirname, '..' + relative_ptah);
+                    const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+                    const filename = await fileUpload.save(req.files[k].buffer);
+                    temp_images.push(relative_ptah + filename)
+                }
+            }
+        }
         return new Promise(function (resolve, reject) {
 
             if (!credentials) {
@@ -719,9 +732,10 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
                 });
 
             } else {
+
                 credentials['main_image'] = relative_ptah + filename;
-                console.log(JSON.stringify(credentials));
-                dealServices.create_deal(credentials).then(deal => {
+                dealServices.create_deal(credentials, temp_images).then(deal => {
+
                     resolve(deal);
                     if (deal == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -732,6 +746,7 @@ router.post('/admin/create', upload.single('main_image'), async function (req, r
                                 data: deal,
                             });
                         })
+
                     } else {
                         languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
                             res.json({
@@ -1574,7 +1589,7 @@ router.post('/admin/Sub_update', async function (req, res) {
 router.delete('/admin/Sub_delete', function (req, res) {
 
     var errors = validationResult(req);
-    
+
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;

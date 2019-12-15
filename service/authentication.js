@@ -1,13 +1,5 @@
-var models = require('../models/models.js');
 var UserRepository = require('../repository/users.js');
-var fields = require('../constant/field.js');
 var bcrypt = require('bcryptjs');
-var config = require('../constant/config.js');
-
-
-
-
-
 var service = {
     login: function (email, password) {
         return new Promise(function (resolve, reject) {
@@ -87,8 +79,6 @@ var service = {
             });
         });
     },
-
-
     update_SessionID: function (email, session_id) {
         return new Promise(function (resolve, reject) {
             UserRepository.Update_sessionID(email, session_id).then(users => {
@@ -103,7 +93,6 @@ var service = {
             });
         });
     },
-
     check_user: function (email, password, first_name, last_name, phone, user_type) {
 
         var password = bcrypt.hashSync(password, 8);

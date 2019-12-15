@@ -80,10 +80,10 @@ var service = {
             });
         });
     },
-    create_deal: function (credentials) {
+    create_deal: function (credentials,temp_images) {
         return new Promise(function (resolve, reject) {
-            dealRepository.create_deal(credentials).then(categories => {
-                resolve(categories);
+            dealRepository.create_deal(credentials,temp_images).then(deal => {
+                resolve(deal);
             }, error => {
                 reject(error);
             });

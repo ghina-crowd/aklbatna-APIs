@@ -480,7 +480,7 @@ var dealsRepository = {
             });
         });
     },
-    create_deal: function (newDealData) {
+    create_deal: async function (newDealData, temp_images) {
         return new Promise(function (resolve, reject) {
             models.Deals.create({
                 user_id: newDealData.user_id,
@@ -502,8 +502,28 @@ var dealsRepository = {
                 location_address: newDealData.location_address,
                 is_monthly: newDealData.is_monthly,
                 final_rate: newDealData.final_rate,
-
             }).then(deal => {
+
+                for (let k in temp_images) {
+                    var temp_data = {};
+                    temp_data['deal_id'] = deal.deal_id;
+                    temp_data['source'] = temp_images[k];
+                    this.create_deal_image(temp_data)
+                }
+
+
+                if (credentials.sub_deal) {
+                    for (let k in credentials.sub_deal) {
+                        credentials.sub_deal[k]['deal_id'] = deal.deal_id;
+                        console.log(credentials.sub_deal[k]);
+                        console.log(credentials.sub_deal[k].title_er);
+                        create_sub_deal(credentials.sub_deal[k]);
+                    }
+                }
+
+                this.get_deal_by_id(deal.deal_id);
+
+
                 resolve(deal);
             }, error => {
                 reject(error)
