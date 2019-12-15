@@ -28,6 +28,7 @@ app.use(function (req, res, next) {
     } else {
         exports.acceptedLanguage = 'en'
     }
+
     defaultMiddleware(req, res);
     next();
 });
@@ -49,5 +50,6 @@ app.use('/categories', categoriesRouter);
 app.use('/deals', dealsRouter);
 app.use('/maps', MapsRouter);
 //Register routers
+
 
 module.exports = app;
