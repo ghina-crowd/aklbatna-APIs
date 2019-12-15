@@ -160,18 +160,16 @@ var UserRepository = {
                         phone: phone,
                         otp: otp_val,
                         user_type: user_type,
-                        photo: first_name + '.png'
+                        photo: first_name
                     }).then(users => {
                         console.log(users['dataValues']);
                         var isDeleted = delete users.dataValues['password'];
-                        // var isDeletedOTP = delete users.dataValues['otp'];
                         console.log(users['dataValues']);
                         if (isDeleted) {
                             resolve(users);
                         } else {
                             resolve(null);
                         }
-
                     }, error => {
                         reject(error)
                     });
@@ -271,12 +269,27 @@ var UserRepository = {
             });
         });
     },
-    update_user_status: function (body) {
+    update_user_type: function (body) {
         return new Promise(function (resolve, reject) {
             models.User.update({
                 user_type: body.user_type,
             }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
                 models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_type'] }).then(users => {
+                    resolve(users);
+                }, error => {
+                    reject(error);
+                });
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    update_account_status: function (body) {
+        return new Promise(function (resolve, reject) {
+            models.User.update({
+                account_status: body.account_status,
+            }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
+                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['account_status'] }).then(users => {
                     resolve(users);
                 }, error => {
                     reject(error);

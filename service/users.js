@@ -76,9 +76,22 @@ module.exports = {
         });
 
     },
-    UpdateUserStatus: function (body) {
+    UpdateUserType: function (body) {
         return new Promise(function (resolve, reject) {
-            UserRepository.update_user_status(body).then(user => {
+            UserRepository.update_user_type(body).then(user => {
+                resolve(user);
+            }, function (error) {
+                reject(error);
+            });
+
+        }, error => {
+            reject(error);
+        });
+
+    },
+    UpdateAccountStatus: function (body) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.update_account_status(body).then(user => {
                 resolve(user);
             }, function (error) {
                 reject(error);

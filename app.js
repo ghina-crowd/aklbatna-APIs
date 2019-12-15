@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyparser = require('body-parser');
 var morgan = require('morgan');
+
 var UserRouter = require('./controller/users.js');
 var MapsRouter = require('./controller/maps');
 var AccountRouter = require('./controller/accounts');
@@ -11,6 +12,7 @@ var authenticationRouter = require('./controller/authentication.js');
 var subcategoriesRouter = require('./controller/sub_categories.js');
 var categoriesRouter = require('./controller/categories.js');
 var dealsRouter = require('./controller/deals.js');
+
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
 
@@ -39,6 +41,8 @@ app.get("/", function (req, res) {
 
 //Register routers
 app.use('/user', UserRouter);
+// app.use('/salesRep', SalesRepRouter);
+// app.use('/servicePro', ServiceProRouter);
 app.use('/account', AccountRouter);
 app.use('/company', CompanyRouter);
 app.use('/purchase', PurchaseRouter);
@@ -48,6 +52,8 @@ app.use('/sub_categories', subcategoriesRouter);
 app.use('/categories', categoriesRouter);
 app.use('/deals', dealsRouter);
 app.use('/maps', MapsRouter);
+
+
 //Register routers
 
 module.exports = app;

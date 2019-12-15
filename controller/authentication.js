@@ -22,6 +22,8 @@ const jwt = require('jsonwebtoken');
 var router = express.Router();
 var email;
 var id;
+var servicePro;
+var salesRep;
 
 function verifyToken(token, res, lang) {
     if (!token) {
@@ -49,6 +51,8 @@ function verifyToken(token, res, lang) {
             });
             return
         }
+        salesRep = decoded.salesRep;;
+        servicePro = decoded.servicePro;;
         id = decoded.id;
         email = decoded.email;
         return decoded.id;
@@ -218,34 +222,49 @@ router.post('/register', function (req, res) {
                                 });
                             });
                         } else {
-                            var userdata = {
-                                id: user.id,
-                                email: user.email,
-                                password: user.password,
-                            }
-                            var token = jwt.sign(userdata, config.secret, {});
-                            user.token = token;
 
-                            var transporter = nodemailer.createTransport({
-                                service: 'gmail',
-                                auth: {
-                                    user: 'acoponey@gmail.com',
-                                    pass: 'muhammadcrowd'
+                            if (!user.user_type || user.user_type === 'normal') {
+
+                                //normal user after
+                                user.user_type = 'normal';
+                                var user_data = {
+                                    id: user.id,
+                                    email: user.email,
+                                    password: user.password,
                                 }
-                            });
-                            const mailOptions = {
-                                from: 'Coboney <coboney@admin.com>', // sender address
-                                to: [user.email], // list of receivers
-                                subject: 'OTP', // Subject line
-                                html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
-                            };
+                                var token = jwt.sign(useuser_datardata, config.secret, {});
+                                user.token = token;
 
-                            transporter.sendMail(mailOptions, function (err, info) {
-                                if (err)
-                                    console.log(err)
-                                else
-                                    console.log(info);
-                            });
+                                SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+
+                            } else if (user.user_type === 'servicePro') {
+
+                                //normal user after
+                                var user_data = {
+                                    id: user.id,
+                                    email: user.email,
+                                    password: user.password,
+                                    servicePro: true
+                                }
+                                var token = jwt.sign(user_data, config.secret, {});
+                                user.token = token;
+
+                                SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+
+                            } else if (user.user_type === 'salesRep') {
+
+                                //normal user after
+                                var user_data = {
+                                    id: user.id,
+                                    email: user.email,
+                                    password: user.password,
+                                    salesRep: true
+                                }
+                                var token = jwt.sign(user_data, config.secret, {});
+                                user.token = token;
+                                SendEmail(user.email, 'Coboney', '<p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_admin_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
+                            }
+
                             languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
                                 var tempuser = {
@@ -980,5 +999,30 @@ router.get('/checktoken', function (req, res) {
         });
     }
 });
+
+
+function SendEmail(to, subject, message) {
+
+    var transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'acoponey@gmail.com',
+            pass: 'muhammadcrowd'
+        }
+    });
+    const mailOptions = {
+        from: 'Coboney <coboney@admin.com>', // sender address
+        to: to, // list of receivers
+        subject: subject,
+        html: message
+    };
+
+    transporter.sendMail(mailOptions, function (err, info) {
+        if (err)
+            console.log(err)
+        else
+            console.log(info);
+    });
+}
 
 module.exports = router;
