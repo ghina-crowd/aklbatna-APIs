@@ -87,7 +87,13 @@ var message = {
 
     EMPTY_FIELD_ADVERTISING_ID: 'invalid advertising id',
     EMPTY_FIELD_TYPE: 'invalid type of advertising',
-    EMPTY_FIELD_STATUS: 'invalid advertising status'
+    EMPTY_FIELD_STATUS: 'invalid advertising status',
+    MISSING_COMPANY_DETAILS: 'missing company details',
+    EMPTY_FIELD_USER_TYPE:'user type is missing',
+    ONLY_SALES_CAN_CREATE_ACCOUNT: 'only sales representative can create sp accounts',
+    COMPANY_DETAILS_IS_MISSING: 'company details is missing while creating sp account',
+    EMPTY_FIELD_MAIN_IMAGE: 'main image for deal is required'
+
 };
 
 module.exports = message;

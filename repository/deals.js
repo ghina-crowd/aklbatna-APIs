@@ -119,11 +119,26 @@ var dealsRepository = {
                                                 } else {
                                                     deals.dataValues['sub_deals_count'] = sub_deals_count[0].dataValues['sub_deals_count'];
                                                     var all_sub_deals = [];
+
+                                                    var pre_price_total = 0;
+                                                    var new_price_subtotal = 0;
+
                                                     sub_deal.forEach(item => {
+                                                        pre_price_total = pre_price_total + item.dataValues.pre_price;
+                                                        new_price_subtotal = new_price_subtotal + item.dataValues.new_price;
                                                         all_sub_deals.push(item.dataValues);
                                                     });
-                                                    deals.dataValues['sub_deals'] = all_sub_deals;
 
+
+
+                                                    var diff = pre_price_total - new_price_subtotal;
+                                                    var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
+                                                    deals.dataValues['pre_price_total'] = pre_price_total;
+                                                    deals.dataValues['new_price_subtotal'] = new_price_subtotal;
+                                                    deals.dataValues['diff'] = diff;
+                                                    deals.dataValues['percDiff'] = percDiff;
+
+                                                    deals.dataValues['sub_deals'] = all_sub_deals;
                                                     resolve(deals);
 
                                                 }
@@ -301,10 +316,18 @@ var dealsRepository = {
                         resolve([]);
                     } else {
                         var filter_deals = [];
+
+                        var pre_price_total = 0;
+                        var new_price_subtotal = 0;
                         deals.forEach(item => {
+
+                            //calculating pre price and new price so later we can get %
+                            pre_price_total = pre_price_total + item["dataValues"].pre_price;
+                            new_price_subtotal = new_price_subtotal + item["dataValues"].new_price;
+
+                            //checking if lat lng are not null then we are going to calculate the distance with company location
                             if (latitude && longitude) {
                                 var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
-                                console.log(distance);
                                 if (distance <= 10) {
                                     item["dataValues"].distance = distance;
                                     filter_deals.push(item);
@@ -315,8 +338,19 @@ var dealsRepository = {
                                 filter_deals.push(item);
                             }
                         });
+
+                        var diff = pre_price_total - new_price_subtotal;
+                        var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
+                        //sort the deals on with distance
                         filter_deals.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
-                        resolve(filter_deals);
+                        var response = {};
+                        response.pre_price_total = pre_price_total;
+                        response.new_price_subtotal = new_price_subtotal;
+                        response.diff = diff;
+                        response.percDiff = percDiff;
+                        response.deals = filter_deals;
+
+                        resolve(response);
                     }
                 }, error => {
                     reject(error);
@@ -480,7 +514,7 @@ var dealsRepository = {
             });
         });
     },
-    create_deal: async function (newDealData, temp_images) {
+    create_deal: async function (newDealData) {
         return new Promise(function (resolve, reject) {
             models.Deals.create({
                 user_id: newDealData.user_id,
@@ -504,27 +538,27 @@ var dealsRepository = {
                 final_rate: newDealData.final_rate,
             }).then(deal => {
 
-                for (let k in temp_images) {
+                for (let k in newDealData.images) {
                     var temp_data = {};
                     temp_data['deal_id'] = deal.deal_id;
-                    temp_data['source'] = temp_images[k];
-                    this.create_deal_image(temp_data)
+                    temp_data['source'] = newDealData.images[k];
+                    dealsRepository.create_deal_image(temp_data)
                 }
 
 
-                if (credentials.sub_deal) {
-                    for (let k in credentials.sub_deal) {
-                        credentials.sub_deal[k]['deal_id'] = deal.deal_id;
-                        console.log(credentials.sub_deal[k]);
-                        console.log(credentials.sub_deal[k].title_er);
-                        create_sub_deal(credentials.sub_deal[k]);
+                if (newDealData.sub_deal) {
+                    for (let k in newDealData.sub_deal) {
+                        newDealData.sub_deal[k]['deal_id'] = deal.deal_id;
+                        console.log(newDealData.sub_deal[k]);
+                        console.log(newDealData.sub_deal[k].title_er);
+                        dealsRepository.create_sub_deal(newDealData.sub_deal[k]);
                     }
                 }
+                dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
+                    console.log(deal);
+                    resolve(deal);
+                });
 
-                this.get_deal_by_id(deal.deal_id);
-
-
-                resolve(deal);
             }, error => {
                 reject(error)
             });

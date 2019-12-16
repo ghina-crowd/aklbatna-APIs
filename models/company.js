@@ -9,7 +9,6 @@ module.exports = function (sequelize, DataTypes) {
         user_id: {
             type: DataTypes.INTEGER,
         },
-
         company_name_en: {
             type: DataTypes.STRING(225),
         },
@@ -31,9 +30,58 @@ module.exports = function (sequelize, DataTypes) {
         location_name: {
             type: DataTypes.STRING(225),
         },
+        icon: {
+            type: DataTypes.STRING(225),
+        },
+        company_role: {
+            type: DataTypes.STRING(225),
+        },
+        landline_number: {
+            type: DataTypes.STRING(225),
+        },
+        trade_name: {
+            type: DataTypes.STRING(225),
+        },
+        licence_number: {
+            type: DataTypes.STRING(225),
+        },
+        expiry_date: {
+            type: DataTypes.STRING(225),
+        },
+        tax_number: {
+            type: DataTypes.STRING(225),
+        },
         website_link: {
             type: DataTypes.STRING(225),
-        }, icon: {
+        },
+        facebook_page: {
+            type: DataTypes.STRING(225),
+        },
+        instagram_page: {
+            type: DataTypes.STRING(225),
+        },
+        city_location: {
+            type: DataTypes.STRING(225),
+        },
+        number_of_locations: {
+            type: DataTypes.INTEGER,
+        },
+        nature_of_business: {
+            type: DataTypes.STRING(225),
+        },
+        url_owner_photo_with_id: {
+            type: DataTypes.STRING(225),
+        },
+        url_service_provider_id: {
+            type: DataTypes.STRING(225),
+        },
+        url_trade_license: {
+            type: DataTypes.STRING(225),
+        },
+        url_signed_company_form: {
+            type: DataTypes.STRING(225),
+        },
+        nature_of_business: {
             type: DataTypes.STRING(225),
         },
     }, {

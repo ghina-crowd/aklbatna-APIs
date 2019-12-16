@@ -110,6 +110,24 @@ var CompanyRepository = {
                 location_name: newCompanyData.location_name,
                 website_link: newCompanyData.website_link,
                 icon: newCompanyData.icon,
+
+                trade_name: newCompanyData.trade_name,
+                licence_number: newCompanyData.licence_number,
+                expiry_date: newCompanyData.expiry_date,
+                tax_number: newCompanyData.tax_number,
+                city_location: newCompanyData.city_location,
+                facebook_page: newCompanyData.facebook_page,
+                instagram_page: newCompanyData.instagram_page,
+                number_of_locations: newCompanyData.number_of_locations,
+                nature_of_business: newCompanyData.nature_of_business,
+
+
+                url_signed_company_form: newCompanyData.url_signed_company_form,
+                url_trade_license: newCompanyData.url_trade_license,
+                url_service_provider_id: newCompanyData.url_service_provider_id,
+                url_owner_photo_with_id: newCompanyData.url_owner_photo_with_id,
+                landline_number: newCompanyData.landline_number,
+                company_role: newCompanyData.company_role,
             }).then(company => {
                 resolve(company);
             }, error => {
@@ -131,6 +149,23 @@ var CompanyRepository = {
                 location_name: newCompanyData.location_name,
                 website_link: newCompanyData.website_link,
                 icon: newCompanyData.icon,
+
+                trade_name: newCompanyData.trade_name,
+                licence_number: newCompanyData.licence_number,
+                expiry_date: newCompanyData.expiry_date,
+                tax_number: newCompanyData.tax_number,
+                city_location: newCompanyData.city_location,
+                facebook_page: newCompanyData.facebook_page,
+                instagram_page: newCompanyData.instagram_page,
+                number_of_locations: newCompanyData.number_of_locations,
+                nature_of_business: newCompanyData.nature_of_business,
+                url_signed_company_form: newCompanyData.url_signed_company_form,
+                url_trade_license: newCompanyData.url_trade_license,
+                url_service_provider_id: newCompanyData.url_service_provider_id,
+                url_owner_photo_with_id: newCompanyData.url_owner_photo_with_id,
+                landline_number: newCompanyData.landline_number,
+                company_role: newCompanyData.company_role,
+                
             }, { where: { company_id: newCompanyData.company_id } }).then(function (result) {
                 company_model.Company.findOne({ where: { company_id: newCompanyData.company_id } }).then(deal => {
                     resolve(deal);

@@ -137,6 +137,16 @@ var language = {
             } else if (type == 'EMPTY_FIELD_DEAL_ID') {
                 resolve({ message: messages.EMPTY_FIELD_DEAL_ID });
             }
+            else if (type == 'EMPTY_FIELD_USER_TYPE') {
+                resolve({ message: messages.EMPTY_FIELD_USER_TYPE });
+            } else if (type == 'ONLY_SALES_CAN_CREATE_ACCOUNT') {
+                resolve({ message: messages.ONLY_SALES_CAN_CREATE_ACCOUNT });
+            } else if (type == 'COMPANY_DETAILS_IS_MISSING') {
+                resolve({ message: messages.COMPANY_DETAILS_IS_MISSING });
+            } else if (type == 'EMPTY_FIELD_MAIN_IMAGE') {
+                resolve({ message: messages.EMPTY_FIELD_MAIN_IMAGE });
+            }
+
 
 
 
@@ -161,6 +171,8 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_DEC_AR });
             } else if (type == 'EMPTY_FIELD_COMPANY_ID') {
                 resolve({ message: messages.EMPTY_FIELD_COMPANY_ID });
+            } else if (type == 'MISSING_COMPANY_DETAILS') {
+                resolve({ message: messages.MISSING_COMPANY_DETAILS });
             }
 
 

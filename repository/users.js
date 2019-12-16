@@ -1,6 +1,5 @@
 var models = require('../models/models.js');
 var model_deal = require('../models/deals_model');
-var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
 var bcrypt = require('bcryptjs');
 
@@ -45,15 +44,15 @@ var UserRepository = {
             });
         });
     },
-
-
-
     getAllUserData: function (id) {
         return new Promise(function (resolve, reject) {
+
             models.User.hasMany(models.Account, { foreignKey: 'fk_user_id' });
             models.User.hasMany(model_deal.Deals, { foreignKey: 'user_id' });
             models.User.hasMany(models.Purchase, { foreignKey: 'user_id' });
             models.User.hasMany(models.Advertising, { foreignKey: 'user_id' });
+            models.User.hasMany(models.Activities, { foreignKey: 'user_id' });
+
             models.User.findOne({
                 where: { user_admin_id: id },
                 include: [{
@@ -64,6 +63,8 @@ var UserRepository = {
                     model: models.Purchase
                 }, {
                     model: models.Advertising
+                }, {
+                    model: models.Activities
                 }]
             }).then(user => {
                 if (!user) {
@@ -150,7 +151,7 @@ var UserRepository = {
 
     CheckSocial: function (email, password, first_name, last_name) {
         return new Promise(function (resolve, reject) {
-            models.User.findOne({ attributes: ['user_admin_id' , 'email' , 'first_name' , 'last_name'], where: { email: email } }).then(users => {
+            models.User.findOne({ attributes: ['user_admin_id', 'email', 'first_name', 'last_name'], where: { email: email } }).then(users => {
                 if (users == null) {
                     var otp_val = Math.floor(1000 + Math.random() * 9000);
                     models.User.create({
@@ -161,7 +162,7 @@ var UserRepository = {
                         active: 1,
                     }).then(users => {
 
-                            resolve(users);
+                        resolve(users);
 
                     }, error => {
                         reject(error)
@@ -171,6 +172,29 @@ var UserRepository = {
                 }
             }, error => {
                 reject(error);
+            });
+        });
+    },
+    
+    CreateActivity: function (user_id, type, status, created_deal_id, created_user_id) {
+        console.log(user_id);
+        console.log(type);
+        console.log(status);
+        console.log(created_deal_id);
+        console.log(created_user_id);
+        
+        return new Promise(function (resolve, reject) {
+            models.Activities.create({
+                user_id: user_id,
+                type: type,
+                status: status,
+                created_user_id: created_user_id,
+                created_deal_id: created_deal_id
+            }).then(activity => {
+                resolve(activity);
+
+            }, error => {
+                reject(error)
             });
         });
     },
@@ -190,7 +214,8 @@ var UserRepository = {
                         phone: phone,
                         otp: otp_val,
                         user_type: user_type,
-                        photo: first_name
+                        photo: first_name,
+                        active: 1,
                     }).then(users => {
                         console.log(users['dataValues']);
                         var isDeleted = delete users.dataValues['password'];

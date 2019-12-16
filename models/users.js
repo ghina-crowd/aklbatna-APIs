@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('user_admin', {
     user_admin_id: {
       type: DataTypes.STRING(45),
@@ -20,59 +20,10 @@ module.exports = function(sequelize, DataTypes) {
     username: {
       type: DataTypes.STRING(45),
     },
-
-
-
-
     full_name: {
       type: DataTypes.STRING(45),
     },
     joining_date: {
-      type: DataTypes.STRING(45),
-    },
-    company_rule: {
-      type: DataTypes.STRING(45),
-    },
-    landline_number: {
-      type: DataTypes.STRING(45),
-    },
-
-
-
-    company_name: {
-      type: DataTypes.STRING(45),
-    },
-    trade_name: {
-      type: DataTypes.STRING(45),
-    },
-    trade_licence_number: {
-      type: DataTypes.STRING(45),
-    },
-    trade_expiry_date: {
-      type: DataTypes.STRING(45),
-    },
-    tax_number: {
-      type: DataTypes.STRING(45),
-    },
-    website_link: {
-      type: DataTypes.STRING(45),
-    },
-    facebook_page: {
-      type: DataTypes.STRING(45),
-    },
-    instagram_page: {
-      type: DataTypes.STRING(45),
-    },
-    city_location: {
-      type: DataTypes.STRING(45),
-    },
-    location_of_trade: {
-      type: DataTypes.STRING(45),
-    },
-    number_of_locations: {
-      type: DataTypes.STRING(45),
-    },
-    primary_nature_of_business: {
       type: DataTypes.STRING(45),
     },
     account_status: {

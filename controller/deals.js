@@ -1,5 +1,5 @@
 var express = require('express');
-const { check, validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator/check');
 var statics = require('../constant/static.js');
 var codes = require('../constant/code.js');
 var dealServices = require('../service/deals.js');
@@ -203,6 +203,7 @@ router.post('/filter', function (req, res) {
         var monthly_new = data.monthly_new ? data.monthly_new : ''; // 1 => monthly , 2 => new
         var sort_by = data.sort_by ? data.sort_by : ''; // 1 => price low to high , 2 => price high to low , 3 => distance
         var rating = data.rating ? data.rating : '';
+        
         var page = req.body.page; // start from 0
         var keyword = req.body.keyword ? req.body.keyword : 0;
         if (page < 0) {
@@ -521,38 +522,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
     if (errors.array().length == 0) {
         verifyToken(token, res, lang);
 
-        if (!req.files) {
-            languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-            return;
-        }
 
-        const relative_ptah = '/images/deals/';
-        const imagePath = path.join(__dirname, '..' + relative_ptah);
-        const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
-        const filename = await fileUpload.save(req.files[0].buffer);
-
-
-
-        //uploading other images and save into array
-        var temp_images = [];
-        if (req.files.length > 1) {
-            for (let k in req.files) {
-                if (k != 0) {
-                    const relative_ptah = '/images/deals/';
-                    const imagePath = path.join(__dirname, '..' + relative_ptah);
-                    const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
-                    const filename = await fileUpload.save(req.files[k].buffer);
-                    temp_images.push(relative_ptah + filename)
-                }
-            }
-        }
         return new Promise(function (resolve, reject) {
 
             if (!credentials) {
@@ -731,11 +701,18 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                     });
                 });
 
+            } else if (!credentials.main_image || credentials.main_image == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_MAIN_IMAGE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
             } else {
-
-                credentials['main_image'] = relative_ptah + filename;
-                dealServices.create_deal(credentials, temp_images).then(deal => {
-
+                dealServices.create_deal(credentials).then(deal => {
                     resolve(deal);
                     if (deal == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {

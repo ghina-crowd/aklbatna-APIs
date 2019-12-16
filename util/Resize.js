@@ -20,6 +20,7 @@ class Resize {
         return filename;
     }
     file_path(filename) {
+        console.warn(`${this.folder}/${filename}`);
         return path.resolve(`${this.folder}/${filename}`)
     }
 }

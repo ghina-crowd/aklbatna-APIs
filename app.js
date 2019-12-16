@@ -4,6 +4,7 @@ var morgan = require('morgan');
 var UserRouter = require('./controller/users.js');
 var MapsRouter = require('./controller/maps');
 var AccountRouter = require('./controller/accounts');
+var UploadRouter = require('./controller/upload');
 var PurchaseRouter = require('./controller/purchase');
 var CompanyRouter = require('./controller/company');
 var AdvertisingRouter = require('./controller/advertising');
@@ -41,6 +42,7 @@ app.get("/", function (req, res) {
 //Register routers
 app.use('/user', UserRouter);
 app.use('/account', AccountRouter);
+app.use('/upload', UploadRouter);
 app.use('/company', CompanyRouter);
 app.use('/purchase', PurchaseRouter);
 app.use('/advertising', AdvertisingRouter);

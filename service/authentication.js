@@ -93,30 +93,26 @@ var service = {
             });
         });
     },
-<<<<<<< HEAD
-=======
 
-    check_user_social:function(email,password,first_name,last_name){
+    check_user_social: function (email, password, first_name, last_name) {
 
         var password = bcrypt.hashSync(password, 8);
-        return new Promise(function(resolve,reject){
-            UserRepository.CheckSocial(email,password ,first_name,last_name).then(users=>{
-                if(users == null){
+        return new Promise(function (resolve, reject) {
+            UserRepository.CheckSocial(email, password, first_name, last_name).then(users => {
+                if (users == null) {
                     resolve(null);
-                }else{
+                } else {
                     resolve(users['dataValues']);
                 }
 
-            },error=>{
+            }, error => {
                 reject(error);
             });
         });
     },
 
 
-
->>>>>>> 2b705cee1718e29e2497a709dd581153e59caf61
-    check_user: function (email, password, first_name, last_name, phone, user_type) {
+    check_user: function (email, password, first_name, last_name, phone, user_type, creator_user_id) {
 
         var password = bcrypt.hashSync(password, 8);
         return new Promise(function (resolve, reject) {
@@ -124,7 +120,16 @@ var service = {
                 if (users == null) {
                     resolve(null);
                 } else {
-                    resolve(users['dataValues']);
+                    UserRepository.CreateActivity(creator_user_id, 'create account', 'pending', null, users['dataValues'].user_admin_id).then((activity => {
+                        if (users == null) {
+                            resolve(null);
+                        } else {
+                            resolve(users['dataValues']);
+                        }
+                    })).catch((err) => {
+                        reject(error);
+                    });
+
                 }
 
             }, error => {

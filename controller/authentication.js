@@ -1,8 +1,9 @@
 var express = require('express');
-const {check, validationResult} = require('express-validator/check');
+const { check, validationResult } = require('express-validator/check');
 var statics = require('../constant/static.js');
 var codes = require('../constant/code.js');
 var authenticationService = require('../service/authentication.js');
+var companyService = require('../service/company');
 var languageService = require('../validator/language');
 const multer = require('multer');
 var config = require('../constant/config.js');
@@ -67,9 +68,9 @@ router.post('/login', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credential = req.body;
+        var creqentials = req.body;
 
-        if (credential.email == '') {
+        if (creqentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -78,7 +79,7 @@ router.post('/login', function (req, res) {
                     data: null
                 });
             });
-        } else if (credential.password == '') {
+        } else if (creqentials.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -89,7 +90,7 @@ router.post('/login', function (req, res) {
             });
         } else {
             return new Promise(function (resolve, reject) {
-                authenticationService.login(credential.email, credential.password).then(user => {
+                authenticationService.login(creqentials.email, creqentials.password).then(user => {
                     resolve(user);
                     if (user == null) {
                         languageService.get_lang(lang, 'INCORRECT_PASSWORD_USER').then(msg => {
@@ -152,129 +153,16 @@ router.post('/login', function (req, res) {
     }
 });
 
-//register
+//register Social
 router.post('/social', function (req, res) {
-        var lang = req.headers.language;
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            var creqentials = req.body;
-            var lang = req.headers.language;
-
-            return new Promise(function (resolve, reject) {
-                if (creqentials.email == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        })
-                    });
-
-                } else if (creqentials.firstName == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        });
-                    });
-                } else if (creqentials.lastName == '') {
-                    languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
-
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: null
-                        });
-                    });
-                } else {
-
-                    return new Promise(function (resolve, reject) {
-
-                        authenticationService.check_user_social(creqentials.email, '123456789', creqentials.firstName, creqentials.lastName).then(user => {
-
-                                resolve(user);
-
-                                if (user == null) {
-                                    languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
-                                        res.json({
-                                            status: statics.STATUS_FAILURE,
-                                            code: codes.FAILURE,
-                                            message: msg.message,
-                                            data: null
-                                        });
-                                    });
-                                } else {
-
-                                    var userdata = {
-                                        id: user.id,
-                                        email: user.email,
-                                        password: user.password,
-
-                                    }
-
-
-                                    var token = jwt.sign(userdata, config.secret, {});
-                                    user.token = token;
-
-                                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-                                        console.log(user);
-                                        var tempuser = {
-                                            user_admin_id: user.user_admin_id,
-                                            email: user.email,
-                                            first_name: user.first_name,
-                                            last_name: user.last_name,
-                                            token: user.token,
-                                        }
-
-                                        res.json({
-                                            status: statics.STATUS_SUCCESS,
-                                            code: codes.SUCCESS,
-                                            message: msg.message,
-                                            data: tempuser,
-                                        });
-                                    });
-                                }
-
-
-                            }
-                            ,
-                            error => {
-                                reject(error);
-                            }
-                        );
-                    });
-
-
-                }
-            })
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
-                });
-            });
-
-        }
-    }
-);
-
-//register
-router.post('/register', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credential = req.body;
+        var creqentials = req.body;
         var lang = req.headers.language;
 
         return new Promise(function (resolve, reject) {
-            if (credential.email == '') {
+            if (creqentials.email == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -284,16 +172,7 @@ router.post('/register', function (req, res) {
                     })
                 });
 
-            } else if (creqentials.password == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (creqentials.first_name == '') {
+            } else if (creqentials.firstName == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -302,7 +181,7 @@ router.post('/register', function (req, res) {
                         data: null
                     });
                 });
-            } else if (creqentials.last_name == '') {
+            } else if (creqentials.lastName == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
                     res.json({
@@ -312,29 +191,14 @@ router.post('/register', function (req, res) {
                         data: null
                     });
                 });
-            } else if (credential.phone == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else {
+
                 return new Promise(function (resolve, reject) {
 
-                    // checking if user has no password means this request is from Sales Representative for service provider account.
-                    var temp_password = ""
-                    if (!credential.password) {
-                        temp_password = Math.floor(1000 + Math.random() * 9000) + '';
-                        credential.password = temp_password;
-                    } else {
-                        temp_password = credential.password;
-                    }
-                    
-                    authenticationService.check_user(credential.email, credential.password, credential.first_name, credential.last_name, credential.phone, credential.user_type).then(user => {
+                    authenticationService.check_user_social(creqentials.email, '123456789', creqentials.firstName, creqentials.lastName).then(user => {
+
                         resolve(user);
+
                         if (user == null) {
                             languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
                                 res.json({
@@ -346,56 +210,24 @@ router.post('/register', function (req, res) {
                             });
                         } else {
 
-                            if (!user.user_type || user.user_type === 'normal') {
-                                //normal user after
-                                user.user_type = 'normal';
-                                var user_data = {
-                                    id: user.id,
-                                    email: user.email,
-                                    password: user.password,
-                                }
-                                var token = jwt.sign(user_data, config.secret, {});
-                                user.token = token;
+                            var userdata = {
+                                id: user.id,
+                                email: user.email,
+                                password: user.password,
 
-                                utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
-
-                            } else if (user.user_type === 'servicePro') {
-
-                                //normal user after
-                                var user_data = {
-                                    id: user.id,
-                                    email: user.email,
-                                    password: user.password,
-                                    servicePro: true
-                                }
-                                var token = jwt.sign(user_data, config.secret, {});
-                                user.token = token;
-
-                                utils.SendEmail(user.email, 'Coboney', 'Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "https://www.coboney.com" target = "_self"> link </a> to see more details.</p>      <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
-
-                            } else if (user.user_type === 'salesRep') {
-                                //normal user after
-                                var user_data = {
-                                    id: user.id,
-                                    email: user.email,
-                                    password: user.password,
-                                    salesRep: true
-                                }
-                                var token = jwt.sign(user_data, config.secret, {});
-                                user.token = token;
-                                utils.SendEmail(user.email, 'Coboney', '<p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_admin_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
                             }
 
-                            languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
+                            var token = jwt.sign(userdata, config.secret, {});
+                            user.token = token;
+
+                            languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                                console.log(user);
                                 var tempuser = {
                                     user_admin_id: user.user_admin_id,
                                     email: user.email,
                                     first_name: user.first_name,
                                     last_name: user.last_name,
-                                    phone: user.phone,
-                                    user_type: user.user_type,
-                                    photo: user.photo,
                                     token: user.token,
                                 }
 
@@ -411,6 +243,247 @@ router.post('/register', function (req, res) {
 
                     }
                         ,
+                        error => {
+                            reject(error);
+                        }
+                    );
+                });
+
+
+            }
+        })
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+}
+);
+
+//register
+router.post('/register', upload.single('photo'), async function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var creqentials = req.body;
+        var lang = req.headers.language;
+
+        return new Promise(function (resolve, reject) {
+            if (creqentials.user_type == 'servicePro' && !creqentials.salesRep_id) {
+                languageService.get_lang(lang, 'ONLY_SALES_CAN_CREATE_ACCOUNT').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    })
+                });
+            } else if (creqentials.user_type == 'servicePro' && !creqentials.company) {
+                languageService.get_lang(lang, 'COMPANY_DETAILS_IS_MISSING').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    })
+                });
+            }
+            else if (!creqentials.email || creqentials.email == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    })
+                });
+
+            } else if (!creqentials.password || creqentials.password == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!creqentials.first_name || creqentials.first_name == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!creqentials.last_name || creqentials.last_name == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
+
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!creqentials.phone || creqentials.phone == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else {
+                return new Promise(function (resolve, reject) {
+                    // checking if user has no password means this request is from Sales Representative for service provider account.
+
+                    var temp_password = ""
+                    if (!creqentials.password) {
+                        temp_password = Math.floor(1000 + Math.random() * 9000) + '';
+                        creqentials.password = temp_password;
+                    } else {
+                        temp_password = creqentials.password;
+                    }
+
+                    authenticationService.check_user(creqentials.email, creqentials.password, creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type, creqentials.salesRep_id).then(user => {
+                        resolve(user);
+                        if (user == null) {
+                            languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.FAILURE,
+                                    message: msg.message,
+                                    data: null
+                                });
+                            });
+                        } else {
+
+                            if (!user.user_type || user.user_type === 'normal') {
+                                //normal user after
+
+                                languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
+
+                                    var tempuser = {
+                                        user_admin_id: user.user_admin_id,
+                                        email: user.email,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        phone: user.phone,
+                                        user_type: user.user_type,
+                                        photo: user.photo,
+                                        token: user.token,
+                                    }
+
+                                    res.json({
+                                        status: statics.STATUS_SUCCESS,
+                                        code: codes.SUCCESS,
+                                        message: msg.message,
+                                        data: tempuser,
+                                    });
+                                });
+                                user.user_type = 'normal';
+                                var user_data = {
+                                    id: user.id,
+                                    email: user.email,
+                                    password: user.password,
+                                }
+                                var token = jwt.sign(user_data, config.secret, {});
+                                user.token = token;
+
+                                utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+
+                            } else if (user.user_type === 'servicePro') {
+                                creqentials.company['user_id'] = user.user_admin_id;
+                                console.log(creqentials.company);
+                                companyService.create_company(creqentials.company).then(company => {
+
+
+
+
+                                    languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
+
+                                        var tempuser = {
+                                            user_admin_id: user.user_admin_id,
+                                            email: user.email,
+                                            first_name: user.first_name,
+                                            last_name: user.last_name,
+                                            phone: user.phone,
+                                            user_type: user.user_type,
+                                            photo: user.photo,
+                                            token: user.token,
+                                            company: company
+                                        }
+
+                                        res.json({
+                                            status: statics.STATUS_SUCCESS,
+                                            code: codes.SUCCESS,
+                                            message: msg.message,
+                                            data: tempuser,
+                                        });
+                                    });
+
+
+
+                                    //normal user after
+                                    var user_data = {
+                                        id: user.id,
+                                        email: user.email,
+                                        password: user.password,
+                                        servicePro: true
+                                    }
+                                    var token = jwt.sign(user_data, config.secret, {});
+                                    user.token = token;
+
+                                    utils.SendEmail(user.email, 'Coboney', 'Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "https://www.coboney.com" target = "_self"> link </a> to see more details.</p>      <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
+
+
+                                }).catch(err => {
+
+                                });
+
+
+                            } else if (user.user_type === 'salesRep') {
+                                //normal user after
+                                var user_data = {
+                                    id: user.id,
+                                    email: user.email,
+                                    password: user.password,
+                                    salesRep: true
+                                }
+                                var token = jwt.sign(user_data, config.secret, {});
+                                user.token = token;
+                                utils.SendEmail(user.email, 'Coboney', '<p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_admin_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
+                                languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
+
+                                    var tempuser = {
+                                        user_admin_id: user.user_admin_id,
+                                        email: user.email,
+                                        first_name: user.first_name,
+                                        last_name: user.last_name,
+                                        phone: user.phone,
+                                        user_type: user.user_type,
+                                        photo: user.photo,
+                                        token: user.token,
+                                    }
+
+                                    res.json({
+                                        status: statics.STATUS_SUCCESS,
+                                        code: codes.SUCCESS,
+                                        message: msg.message,
+                                        data: tempuser,
+                                    });
+                                });
+                            }
+                        }
+                    },
                         error => {
                             reject(error);
                         }
