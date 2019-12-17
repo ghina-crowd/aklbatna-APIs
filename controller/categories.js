@@ -20,7 +20,8 @@ var router = express.Router();
 
 
 var id;
-function verifyToken(token, res, lang) {
+async function verifyToken(token, res, lang) {
+    id = undefined;
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
             res.send({
@@ -46,7 +47,19 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        id = decoded.id;
+         id = decoded.id;
+        if (!id) {
+            languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
+                res.send({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.TOKEN_MISSING,
+                    message: msg.message,
+                    auth: false,
+                    data: null
+                });
+            });
+            return
+        }
         return decoded.id;
 
     });
@@ -99,13 +112,16 @@ router.get('/get_categories_subCategories', function (req, res) {
 
 
 });
-router.get('/admin/get_categories_subCategories', function (req, res) {
+router.get('/admin/get_categories_subCategories', async function (req, res) {
 
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             categoryServices.get_categories_sub_categories().then(categories => {
                 resolve(categories);
@@ -193,13 +209,16 @@ router.get('/categories', function (req, res) {
     }
 
 });
-router.get('/admin/categories', function (req, res) {
+router.get('/admin/categories', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
         return new Promise(function (resolve, reject) {
             categoryServices.get_categories().then(categories => {
@@ -248,7 +267,10 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
+    await verifyToken(token, res, lang);
+    if (!id) {
+        return;
+    }
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -363,7 +385,11 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
     var lang = req.headers.language;
     var credentials = req.body;
     var token = req.headers.authorization;
-    verifyToken(token, res, lang);
+    var token = req.headers.authorization;
+    await verifyToken(token, res, lang);
+    if (!id) {
+        return;
+    }
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -453,14 +479,22 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
         })
     }
 });
-router.delete('/admin/delete', function (req, res) {
+router.delete('/admin/delete', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+
+
         var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        console.log('n' + id);
+        if (!id) {
+            return;
+        }
+        console.log('in');
+
         if (!credentials.shop_category_id || credentials.shop_category_id == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_SHOP_CATEGORY_ID').then(msg => {
                 res.json({

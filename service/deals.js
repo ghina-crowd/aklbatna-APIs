@@ -1,4 +1,5 @@
 var dealRepository = require('../repository/deals.js');
+var userRepository = require('../repository/users');
 var service = {
     get_deals_by_categoryID: function (id, page) {
         return new Promise(function (resolve, reject) {
@@ -83,7 +84,9 @@ var service = {
     create_deal: function (credentials) {
         return new Promise(function (resolve, reject) {
             dealRepository.create_deal(credentials).then(deal => {
-                resolve(deal);
+                userRepository.CreateActivity(credentials.user_id, '1', 'pending', deal.deal_id, null).then(activity => {
+                    resolve(deal);
+                })
             }, error => {
                 reject(error);
             });
@@ -166,6 +169,25 @@ var service = {
         return new Promise(function (resolve, reject) {
             dealRepository.delete_sub_deal(id).then(response => {
                 resolve(response);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+    get_servicePro_deals: function (user_id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.get_servicePro_deals(user_id).then(deals => {
+                resolve(deals);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    get_salesRep_deals: function (user_id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.get_salesRep_deals(user_id).then(deals => {
+                resolve(deals);
             }, error => {
                 reject(error);
             });

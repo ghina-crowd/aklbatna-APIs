@@ -10,7 +10,8 @@ var config = require('../constant/config.js');
 
 var router = express.Router();
 var id;
-function verifyToken(token, res, lang) {
+async function verifyToken(token, res, lang) {
+    id = undefined;
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
 
@@ -37,19 +38,36 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        id = decoded.id;
+         id = decoded.id;
+        if (!id) {
+            languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
+                res.send({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.TOKEN_MISSING,
+                    message: msg.message,
+                    auth: false,
+                    data: null
+                });
+            });
+            return
+        }
         return decoded.id;
 
     });
 }
 
-router.get('/getAll', function (req, res) {
+router.get('/getAll',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
+     
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
         return new Promise(function (resolve, reject) {
             PurchaseService.GetAllPurchase(undefined).then(purchases => {
                 resolve(purchases);
@@ -77,13 +95,17 @@ router.get('/getAll', function (req, res) {
     }
 });
 
-router.get('/getunused', function (req, res) {
+router.get('/getunused',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
+  
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             PurchaseService.GetAllUnused(undefined).then(purchases => {
                 resolve(purchases);
@@ -111,13 +133,17 @@ router.get('/getunused', function (req, res) {
     }
 });
 
-router.get('/getused', function (req, res) {
+router.get('/getused',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
+        
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             PurchaseService.GetAllUased(undefined).then(purchases => {
                 resolve(purchases);
@@ -145,7 +171,7 @@ router.get('/getused', function (req, res) {
     }
 });
 
-router.post('/create', function (req, res) {
+router.post('/create',async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -153,7 +179,10 @@ router.post('/create', function (req, res) {
         var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
 
         return new Promise(function (resolve, reject) {
@@ -230,13 +259,16 @@ router.post('/create', function (req, res) {
     }
 });
 
-router.get('/user/getAll', function (req, res) {
+router.get('/user/getAll',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             PurchaseService.GetAllPurchase(id).then(purchases => {
                 resolve(purchases);
@@ -264,13 +296,16 @@ router.get('/user/getAll', function (req, res) {
     }
 });
 
-router.get('/user/getunused', function (req, res) {
+router.get('/user/getunused',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             PurchaseService.GetAllUnused(id).then(purchases => {
                 resolve(purchases);
@@ -298,13 +333,16 @@ router.get('/user/getunused', function (req, res) {
     }
 });
 
-router.get('/user/getused', function (req, res) {
+router.get('/user/getused',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             PurchaseService.GetAllUased(id).then(purchases => {
                 resolve(purchases);
@@ -333,13 +371,16 @@ router.get('/user/getused', function (req, res) {
 });
 
 
-router.delete('/admin/delete/:purchase_id', function (req, res) {
+router.delete('/admin/delete/:purchase_id',async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             console.log(req.params.purchase_id);
             PurchaseService.DeletePurchase(req.params.purchase_id).then(response => {

@@ -15,13 +15,15 @@ var dealsRouter = require('./controller/deals.js');
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
 
-//need to remove this maybe  just for testing in local host.
+//need to remove this maybe just for testing in local host.
 var cors = require('cors')
+
 var app = express();
 app.use(cors())
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 app.use(morgan(config.PROFILE));
+
 
 app.use(function (req, res, next) {
     if (req.headers.language) {

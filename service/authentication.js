@@ -119,8 +119,8 @@ var service = {
             UserRepository.Check(email, password, first_name, last_name, phone, user_type).then(users => {
                 if (users == null) {
                     resolve(null);
-                } else {
-                    UserRepository.CreateActivity(creator_user_id, 'create account', 'pending', null, users['dataValues'].user_admin_id).then((activity => {
+                } else if (creator_user_id) {
+                    UserRepository.CreateActivity(creator_user_id, '1', 'pending', null, users['dataValues'].user_admin_id).then((activity => {
                         if (users == null) {
                             resolve(null);
                         } else {
@@ -130,6 +130,12 @@ var service = {
                         reject(error);
                     });
 
+                } else {
+                    if (users == null) {
+                        resolve(null);
+                    } else {
+                        resolve(users['dataValues']);
+                    }
                 }
 
             }, error => {

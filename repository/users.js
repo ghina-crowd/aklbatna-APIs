@@ -81,7 +81,7 @@ var UserRepository = {
     Login: function (email, password) {
         return new Promise(function (resolve, reject) {
             models.User.findOne({
-                attributes: ['user_admin_id', 'password', 'email', 'phone', 'first_name', 'last_name', 'active'],
+                attributes: ['user_admin_id', 'password', 'email', 'phone', 'first_name', 'last_name', 'active', 'user_type'],
                 where: { email: email }
             }).then(users => {
                 console.log(users);
@@ -175,21 +175,15 @@ var UserRepository = {
             });
         });
     },
-    
+
     CreateActivity: function (user_id, type, status, created_deal_id, created_user_id) {
-        console.log(user_id);
-        console.log(type);
-        console.log(status);
-        console.log(created_deal_id);
-        console.log(created_user_id);
-        
         return new Promise(function (resolve, reject) {
             models.Activities.create({
-                user_id: user_id,
+                admin_user_id: user_id,
                 type: type,
                 status: status,
-                created_user_id: created_user_id,
-                created_deal_id: created_deal_id
+                user_id: created_user_id,
+                deal_id: created_deal_id
             }).then(activity => {
                 resolve(activity);
 
@@ -215,7 +209,7 @@ var UserRepository = {
                         otp: otp_val,
                         user_type: user_type,
                         photo: first_name,
-                        active: 1,
+                        active: 0,
                     }).then(users => {
                         console.log(users['dataValues']);
                         var isDeleted = delete users.dataValues['password'];
@@ -364,6 +358,26 @@ var UserRepository = {
                 where: { session_id: token }
             }).then(users => {
                 resolve(users);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+    getUserActivities: function (user_id) {
+        return new Promise(function (resolve, reject) {
+            models.Activities.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' });
+            models.Activities.belongsTo(models.User, { foreignKey: 'user_id' });
+            models.Activities.findAll({
+                where: {
+                    admin_user_id: user_id
+                }, include: [{
+                    model: model_deal.Deals
+                }, {
+                    model: models.User
+                }]
+            }).then(activitiesDeals => {
+                resolve(activitiesDeals);
             }, error => {
                 reject(error);
             });

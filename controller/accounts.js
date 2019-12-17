@@ -10,7 +10,8 @@ var config = require('../constant/config.js');
 
 var router = express.Router();
 var id;
-function verifyToken(token, res, lang) {
+async function verifyToken(token, res, lang) {
+    id = undefined;
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
             res.json({
@@ -36,17 +37,32 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        id = decoded.id;
+         id = decoded.id;
+        if (!id) {
+            languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
+                res.send({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.TOKEN_MISSING,
+                    message: msg.message,
+                    auth: false,
+                    data: null
+                });
+            });
+            return
+        }
         return decoded.id;
     });
 }
-router.get('/get', function (req, res) {
+router.get('/get', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             AccountService.GetAccount(id).then(account => {
                 resolve(account);
@@ -76,14 +92,17 @@ router.get('/get', function (req, res) {
         })
     }
 });
-router.post('/create', function (req, res) {
+router.post('/create',async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             credentials.fk_user_id = id;
             if (!credentials.owner_name || credentials.owner_name == '') {
@@ -181,14 +200,17 @@ router.post('/create', function (req, res) {
     }
 }
 );
-router.put('/update', function (req, res) {
+router.put('/update', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             credentials.fk_user_id = id;
             if (!credentials.pk_account_id || credentials.pk_account_id == '') {
@@ -281,14 +303,17 @@ router.put('/update', function (req, res) {
     }
 }
 );
-router.delete('/delete', function (req, res) {
+router.delete('/delete', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             if (!credentials.pk_account_id || credentials.pk_account_id == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_ACCOUNT_ID').then(msg => {

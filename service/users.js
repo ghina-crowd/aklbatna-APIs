@@ -55,9 +55,9 @@ module.exports = {
     },
     Login: function (data) {
         return new Promise(function (resolve, reject) {
-            UserRepository.Login(data.email, data.password).then(existinguser => {
-                resolve(existinguser);
-                return existinguser;
+            UserRepository.Login(data.email, data.password).then(existing_user => {
+                resolve(existing_user);
+                return existing_user;
             }, error => {
                 reject(error);
             });
@@ -100,6 +100,14 @@ module.exports = {
         }, error => {
             reject(error);
         });
-
-    }
+    },
+    getUserActivities: function (id) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.getUserActivities(id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
 };

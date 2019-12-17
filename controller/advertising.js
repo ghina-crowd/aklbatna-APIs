@@ -21,8 +21,9 @@ const upload = multer({
 
 const jwt = require('jsonwebtoken');
 var router = express.Router();
-var userID;
-function verifyToken(token, res, lang) {
+var id;
+async function verifyToken(token, res, lang) {
+    id = undefined;
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
 
@@ -49,7 +50,19 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        userID = decoded.id;
+         id = decoded.id;
+        if (!id) {
+            languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
+                res.send({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.TOKEN_MISSING,
+                    message: msg.message,
+                    auth: false,
+                    data: null
+                });
+            });
+            return
+        }
         return decoded.id;
 
     });
@@ -87,12 +100,15 @@ router.get('', function (req, res) {
     }
 });
 
-router.get('/admin/get_advertising', function (req, res) {
+router.get('/admin/get_advertising', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
         return new Promise(function (resolve, reject) {
             AdvertisingService.GetAllAdvertising().then(categories => {
                 resolve(categories);
@@ -139,7 +155,10 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
     if (errors.array().length == 0) {
 
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
         if (!req.file) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
@@ -254,7 +273,10 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
     if (errors.array().length == 0) {
 
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
         //check if there is any file update
         if (req.file) {
@@ -359,14 +381,19 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
         })
     }
 });
-router.delete('/admin/delete', function (req, res) {
+router.delete('/admin/delete', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var credentials = req.body;
         var lang = req.headers.language;
+
         var token = req.headers.authorization;
-        verifyToken(token, res, lang);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
         if (!credentials.add_id || credentials.add_id == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_ADVERTISING_ID').then(msg => {
                 res.json({

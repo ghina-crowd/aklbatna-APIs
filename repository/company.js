@@ -108,6 +108,7 @@ var CompanyRepository = {
                 latitude: newCompanyData.latitude,
                 longitude: newCompanyData.longitude,
                 location_name: newCompanyData.location_name,
+                address: newCompanyData.address,
                 website_link: newCompanyData.website_link,
                 icon: newCompanyData.icon,
 
@@ -147,9 +148,9 @@ var CompanyRepository = {
                 latitude: newCompanyData.latitude,
                 longitude: newCompanyData.longitude,
                 location_name: newCompanyData.location_name,
+                address: newCompanyData.address,
                 website_link: newCompanyData.website_link,
                 icon: newCompanyData.icon,
-
                 trade_name: newCompanyData.trade_name,
                 licence_number: newCompanyData.licence_number,
                 expiry_date: newCompanyData.expiry_date,
@@ -165,7 +166,7 @@ var CompanyRepository = {
                 url_owner_photo_with_id: newCompanyData.url_owner_photo_with_id,
                 landline_number: newCompanyData.landline_number,
                 company_role: newCompanyData.company_role,
-                
+
             }, { where: { company_id: newCompanyData.company_id } }).then(function (result) {
                 company_model.Company.findOne({ where: { company_id: newCompanyData.company_id } }).then(deal => {
                     resolve(deal);

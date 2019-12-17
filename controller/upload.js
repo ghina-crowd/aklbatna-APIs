@@ -44,7 +44,8 @@ const upload = multer({
 
 var router = express.Router();
 var id;
-function verifyToken(token, res, lang) {
+async function verifyToken(token, res, lang) {
+    id = undefined;
     if (!token) {
         languageService.get_lang(lang, 'NO_TOKEN').then(msg => {
             res.json({
@@ -70,7 +71,19 @@ function verifyToken(token, res, lang) {
             });
             return
         }
-        id = decoded.id;
+         id = decoded.id;
+        if (!id) {
+            languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
+                res.send({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.TOKEN_MISSING,
+                    message: msg.message,
+                    auth: false,
+                    data: null
+                });
+            });
+            return
+        }
         return decoded.id;
     });
 }
@@ -84,7 +97,11 @@ router.post('/deal/images', upload.array('images'), async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        verifyToken(token, res, lang);
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
         if (!req.files) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
@@ -150,7 +167,11 @@ router.post('/company/images', upload.array('images'), async function (req, res)
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        verifyToken(token, res, lang);
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
         if (!req.files) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
@@ -218,7 +239,11 @@ router.post('/company/file', upload_file.single('file'), async function (req, re
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        verifyToken(token, res, lang);
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
 
         if (!req.file) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {

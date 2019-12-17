@@ -6,15 +6,15 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true
         },
+        admin_user_id: {
+            type: DataTypes.INTEGER,
+            foreignKey: true
+        },
         user_id: {
             type: DataTypes.INTEGER,
             foreignKey: true
         },
-        created_user_id: {
-            type: DataTypes.INTEGER,
-            foreignKey: true
-        },
-        created_deal_id: {
+        deal_id: {
             type: DataTypes.INTEGER,
             foreignKey: true
         },

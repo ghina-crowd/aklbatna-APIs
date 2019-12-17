@@ -126,10 +126,10 @@ var dealsRepository = {
                                                     sub_deal.forEach(item => {
                                                         pre_price_total = pre_price_total + item.dataValues.pre_price;
                                                         new_price_subtotal = new_price_subtotal + item.dataValues.new_price;
+                                                        var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
+                                                        item.dataValues['percDiff'] = percDiff;
                                                         all_sub_deals.push(item.dataValues);
                                                     });
-
-
 
                                                     var diff = pre_price_total - new_price_subtotal;
                                                     var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
@@ -285,6 +285,10 @@ var dealsRepository = {
                 }).then(category => {
                     var filter_deals = [];
                     category[0].deals.forEach(item => {
+
+                        var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
+                        item.dataValues['percDiff'] = percDiff;
+
                         if (latitude && longitude) {
                             var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
                             // console.log(distance);
@@ -298,6 +302,9 @@ var dealsRepository = {
                             filter_deals.push(item);
                         }
                     });
+
+
+
                     category[0].deals = filter_deals;
                     resolve(category[0]);
                 }, error => {
@@ -324,6 +331,10 @@ var dealsRepository = {
                             //calculating pre price and new price so later we can get %
                             pre_price_total = pre_price_total + item["dataValues"].pre_price;
                             new_price_subtotal = new_price_subtotal + item["dataValues"].new_price;
+
+
+                            var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
+                            item.dataValues['percDiff'] = percDiff;
 
                             //checking if lat lng are not null then we are going to calculate the distance with company location
                             if (latitude && longitude) {
@@ -549,13 +560,12 @@ var dealsRepository = {
                 if (newDealData.sub_deal) {
                     for (let k in newDealData.sub_deal) {
                         newDealData.sub_deal[k]['deal_id'] = deal.deal_id;
-                        console.log(newDealData.sub_deal[k]);
-                        console.log(newDealData.sub_deal[k].title_er);
+                        // console.log(newDealData.sub_deal[k]);
+                        // console.log(newDealData.sub_deal[k].title_er);
                         dealsRepository.create_sub_deal(newDealData.sub_deal[k]);
                     }
                 }
                 dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
-                    console.log(deal);
                     resolve(deal);
                 });
 
@@ -686,6 +696,82 @@ var dealsRepository = {
                 reject(error);
             });
         });
+    },
+
+
+    get_servicePro_deals: function (user_id) {
+
+        return new Promise(function (resolve, reject) {
+            if (lang.acceptedLanguage == 'en') {
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+
+            } else {
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            }
+
+            model_company.Company.findOne({
+                where: {
+                    user_id: user_id
+                }, attributes: ['company_id'],
+
+            }).then(company => {
+                if (company == null || !company['dataValues'].company_id) {
+                    resolve([]);
+                } else {
+                    models.Deals.hasMany(model_images.Images, { foreignKey: 'deal_id' })
+                    models.Deals.findAll({
+                        where: {
+                            company_id: company['dataValues'].company_id
+                        },
+                        attributes: deal_attributes,
+                        include: [{
+                            model: model_images.Images
+                        }]
+                    }).then(deals => {
+                        if (deals == null) {
+                            resolve([]);
+                        } else {
+                            resolve(deals);
+                        }
+                    }, error => {
+                        reject(error);
+                    });
+                }
+            }, error => {
+                reject(error);
+            });
+        }
+        );
+    },
+    get_salesRep_deals: function (user_id) {
+
+        return new Promise(function (resolve, reject) {
+            if (lang.acceptedLanguage == 'en') {
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            } else {
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            }
+
+            models.Deals.hasMany(model_images.Images, { foreignKey: 'deal_id' })
+            models.Deals.findAll({
+                where: {
+                    user_id: user_id
+                },
+                attributes: deal_attributes,
+                include: [{
+                    model: model_images.Images
+                }]
+            }).then(deals => {
+                if (deals == null) {
+                    resolve([]);
+                } else {
+                    resolve(deals);
+                }
+            }, error => {
+                reject(error);
+            });
+        }
+        );
     },
 };
 
