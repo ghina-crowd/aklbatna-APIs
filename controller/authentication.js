@@ -396,7 +396,6 @@ router.post('/register', upload.single('photo'), async function (req, res) {
             } else {
                 return new Promise(function (resolve, reject) {
                     // checking if user has no password means this request is from Sales Representative for service provider account.
-
                     var temp_password = ""
                     if (!creqentials.password) {
                         temp_password = Math.floor(1000 + Math.random() * 9000) + '';
@@ -452,6 +451,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                                 utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
 
                             } else if (user.user_type === 'servicePro' && salesRep) {
+                                
                                 // creating user as service provider when request is from salesRep
 
                                 creqentials.company['user_id'] = user.user_admin_id;

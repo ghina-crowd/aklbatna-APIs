@@ -72,7 +72,7 @@ var message = {
     EMPTY_FIELD_PRE_PRICE: 'invalid pre price',
     EMPTY_FIELD_NEW_PRICE: 'invalid new price',
     EMPTY_FIELD_COUNT_BOUGHT: 'invalid count bought',
-    EMPTY_FIELD_IMG_ID:'invalid image id',
+    EMPTY_FIELD_IMG_ID: 'invalid image id',
 
     EMPTY_FIELD_USER_ID: 'invalid deal id',
     EMPTY_FIELD_COMPANY_NAME_EN: 'invalid company name in english',
@@ -81,18 +81,25 @@ var message = {
     EMPTY_FIELD_DEC_AR: 'invalid description in arabic',
     EMPTY_FIELD_LATITUDE: 'invalid latitude for company',
     EMPTY_FIELD_LONGITUDE: 'invalid longitude for company',
-    EMPTY_FIELD_LOCATION:'invalid location for company',
-    EMPTY_FIELD_WEBSITE_LINK:'invalid website link',
+    EMPTY_FIELD_LOCATION: 'invalid location for company',
+    EMPTY_FIELD_WEBSITE_LINK: 'invalid website link',
     EMPTY_FIELD_COMPANY_ID: 'invalid company id',
 
     EMPTY_FIELD_ADVERTISING_ID: 'invalid advertising id',
     EMPTY_FIELD_TYPE: 'invalid type of advertising',
     EMPTY_FIELD_STATUS: 'invalid advertising status',
     MISSING_COMPANY_DETAILS: 'missing company details',
-    EMPTY_FIELD_USER_TYPE:'user type is missing',
+    EMPTY_FIELD_USER_TYPE: 'user type is missing',
     ONLY_SALES_CAN_CREATE_ACCOUNT: 'only sales representative can create sp accounts',
     COMPANY_DETAILS_IS_MISSING: 'company details is missing while creating sp account',
-    EMPTY_FIELD_MAIN_IMAGE: 'main image for deal is required'
+    EMPTY_FIELD_MAIN_IMAGE: 'main image for deal is required',
+
+    EMPTY_FIELD_BRANCH_NAME_EN: 'invalid branch name in english',
+    EMPTY_FIELD_BRANCH_NAME_AR: 'invalid branch name in arabic',
+    EMPTY_FIELD_BRANCH_LAT: 'invalid gps latitude',
+    EMPTY_FIELD_BRANCH_LNG: 'invalid gps longitude',
+    EMPTY_FIELD_BRANCH_ADDRESS: 'invalid branch address',
+    EMPTY_FIELD_BRANCH_ID: 'invalid branch id',
 
 };
 

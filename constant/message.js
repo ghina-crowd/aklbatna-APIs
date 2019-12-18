@@ -93,7 +93,16 @@ var message = {
     EMPTY_FIELD_USER_TYPE: 'user type is missing',
     ONLY_SALES_CAN_CREATE_ACCOUNT: 'only sales representative can create sp accounts',
     COMPANY_DETAILS_IS_MISSING: 'company details is missing while creating sp account',
-    EMPTY_FIELD_MAIN_IMAGE: 'main image for deal is required'
+    EMPTY_FIELD_MAIN_IMAGE: 'main image for deal is required',
+
+    EMPTY_FIELD_BRANCH_NAME_EN: 'invalid branch name in english',
+    EMPTY_FIELD_BRANCH_NAME_AR: 'invalid branch name in arabic',
+    EMPTY_FIELD_BRANCH_LAT: 'invalid gps latitude',
+    EMPTY_FIELD_BRANCH_LNG: 'invalid gps longitude',
+    EMPTY_FIELD_BRANCH_ADDRESS: 'invalid branch address',
+    EMPTY_FIELD_BRANCH_ID: 'invalid branch id',
+
+
 };
 
 module.exports = message;

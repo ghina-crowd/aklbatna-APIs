@@ -47,7 +47,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -128,7 +128,7 @@ router.get('/filter', function (req, res) {
 });
 
 //get companies by admin
-router.get('/admin/get_companies',async function (req, res) {
+router.get('/admin/get_companies', async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -533,7 +533,7 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
     }
 
 });
-router.delete('/admin/delete',async function (req, res) {
+router.delete('/admin/delete', async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -605,6 +605,328 @@ router.delete('/admin/delete',async function (req, res) {
 }
 );
 
+// companies branches routers
+router.post('/branch/create', async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var credentials = req.body;
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            console.log(JSON.stringify(credentials));
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.company_id || credentials.company_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.name_en || credentials.name_en == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_NAME_EN').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.name_ar || credentials.name_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_NAME_AR').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.latitude || credentials.latitude == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_LAT').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.longitude || credentials.longitude == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_LNG').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.address || credentials.address == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ADDRESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else {
+                
+                companyService.create_company_branch(credentials).then(company_branch => {
+                    resolve(company_branch);
+                    if (company_branch == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: company_branch,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: company_branch,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+router.post('/branch/update', async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var credentials = req.body;
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
+        return new Promise(function (resolve, reject) {
+
+            if (!credentials) {
+                languageService.get_lang(lang, 'EMPTY_FIELDS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.branch_id || credentials.branch_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.company_id || credentials.company_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.name_en || credentials.name_en == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_NAME_EN').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.name_ar || credentials.name_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_NAME_AR').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.latitude || credentials.latitude == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_LAT').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.longitude || credentials.longitude == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_LNG').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else if (!credentials.address || credentials.address == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ADDRESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
+            } else {
+                console.log(JSON.stringify(credentials));
+                companyService.update_company_branch(credentials).then(company_branch => {
+                    resolve(company_branch);
+                    if (company_branch == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: company_branch,
+                            });
+                        })
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: company_branch,
+                            });
+                        })
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+router.delete('/branch/delete', async function (req, res) {
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var credentials = req.body;
+        var lang = req.headers.language;
+
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
+        if (!credentials.branch_id || credentials.branch_id == '') {
+            languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ID').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                })
+            });
+
+        } else {
+            return new Promise(function (resolve, reject) {
+                companyService.delete_company_branch(credentials.branch_id).then(response => {
+                    resolve(response);
+                    if (response == 0) {
+                        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: null
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: response
+                            });
+                        });
+                    }
+
+                }
+                    ,
+                    error => {
+                        reject(error);
+                    }
+                );
+            });
+        }
+
+
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+}
+);
 
 
 

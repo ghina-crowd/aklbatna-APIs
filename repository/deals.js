@@ -52,12 +52,15 @@ var dealsRepository = {
 
         return new Promise(function (resolve, reject) {
             models.Deals.belongsTo(model_company.Company, { foreignKey: 'company_id', targetKey: 'company_id' });
+            models.Deals.belongsTo(model_company.Company_Branches, { foreignKey: 'branch_id', targetKey: 'branch_id' });
             models.Deals.findOne({
                 attributes: deal_attributes,
                 where: { active: 1, deal_id: id },
                 include: [{
                     model: model_company.Company,
                     attributes: company_attributes
+                }, {
+                    model: model_company.Company_Branches,
                 }],
 
             }).then(deals => {
@@ -270,8 +273,10 @@ var dealsRepository = {
             }
 
             if (category_id) {
+
                 category_model.Categories.hasMany(models.Deals, { foreignKey: 'shop_category_id' })
                 models.Deals.belongsTo(company_model.Company, { foreignKey: 'company_id' });
+                models.Deals.belongsTo(company_model.Company_Branches, { foreignKey: 'branch_id' });
                 category_model.Categories.findAll({
                     attributes: cat_attributes, limit: pageSize, offset: offset, order: order, where: data,
                     include: [{
@@ -280,6 +285,9 @@ var dealsRepository = {
                         include: [{
                             model: company_model.Company,
                             attributes: company_attributes,
+                        },
+                        {
+                            model: company_model.Company_Branches,
                         }]
                     }]
                 }).then(category => {
@@ -290,8 +298,8 @@ var dealsRepository = {
                         item.dataValues['percDiff'] = percDiff;
 
                         if (latitude && longitude) {
-                            var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
-                            // console.log(distance);
+                            var distance = calcDistance(item["dataValues"].company_branch.latitude, item["dataValues"].company_branch.longitude, latitude, longitude);
+                            console.log(distance);
                             if (distance <= 10) {
                                 item["dataValues"].distance = distance;
                                 filter_deals.push(item);
@@ -302,9 +310,6 @@ var dealsRepository = {
                             filter_deals.push(item);
                         }
                     });
-
-
-
                     category[0].deals = filter_deals;
                     resolve(category[0]);
                 }, error => {
@@ -312,11 +317,15 @@ var dealsRepository = {
                 });
             } else {
                 models.Deals.belongsTo(company_model.Company, { foreignKey: 'company_id' })
+                models.Deals.belongsTo(company_model.Company_Branches, { foreignKey: 'branch_id' })
                 models.Deals.findAll({
                     limit: pageSize, offset: offset, order: order, where: data, attributes: deal_attributes,
                     include: [{
                         model: company_model.Company,
                         attributes: company_attributes,
+                    },
+                    {
+                        model: company_model.Company_Branches,
                     }]
                 }).then(deals => {
                     if (deals == null) {
@@ -338,7 +347,7 @@ var dealsRepository = {
 
                             //checking if lat lng are not null then we are going to calculate the distance with company location
                             if (latitude && longitude) {
-                                var distance = calcDistance(item["dataValues"].company.latitude, item["dataValues"].company.longitude, latitude, longitude);
+                                var distance = calcDistance(item["dataValues"].company_branch.latitude, item["dataValues"].company_branch.longitude, latitude, longitude);
                                 if (distance <= 10) {
                                     item["dataValues"].distance = distance;
                                     filter_deals.push(item);
@@ -532,6 +541,7 @@ var dealsRepository = {
                 sub_category_id: newDealData.sub_category_id,
                 shop_category_id: newDealData.shop_category_id,
                 company_id: newDealData.company_id,
+                branch_id: newDealData.branch_id,
                 deal_title_en: newDealData.deal_title_en,
                 deal_title_ar: newDealData.deal_title_ar,
                 short_detail: newDealData.short_detail,

@@ -190,6 +190,22 @@ var language = {
 
 
 
+            else if (type == 'EMPTY_FIELD_BRANCH_NAME_EN') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_NAME_EN });
+            } else if (type == 'EMPTY_FIELD_BRANCH_NAME_AR') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_NAME_AR });
+            } else if (type == 'EMPTY_FIELD_BRANCH_LAT') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_LAT });
+            } else if (type == 'EMPTY_FIELD_BRANCH_LNG') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_LNG });
+            } else if (type == 'EMPTY_FIELD_BRANCH_ADDRESS') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_ADDRESS });
+            } else if (type == 'EMPTY_FIELD_BRANCH_ID') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_ID });
+            }
+
+
+
 
 
 

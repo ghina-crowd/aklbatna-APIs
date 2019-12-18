@@ -38,9 +38,36 @@ module.exports = {
             });
         });
     },
+    delete_company_branch: function (branch_id) {
+        return new Promise(function (resolve, reject) {
+            CompanyRepository.delete_company_branch(branch_id).then(response => {
+                resolve(response);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     create_company: function (credentials) {
         return new Promise(function (resolve, reject) {
             CompanyRepository.create_company(credentials).then(company => {
+                resolve(company);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    create_company_branch: function (credentials) {
+        return new Promise(function (resolve, reject) {
+            CompanyRepository.create_company_branch(credentials).then(company => {
+                resolve(company);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    update_company_branch: function (credentials) {
+        return new Promise(function (resolve, reject) {
+            CompanyRepository.update_company_branch(credentials).then(company => {
                 resolve(company);
             }, error => {
                 reject(error);

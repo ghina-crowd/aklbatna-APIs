@@ -670,6 +670,16 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                     });
                 });
 
+            } else if (!credentials.branch_id || credentials.branch_id == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+
             } else if (!credentials.deal_title_en || credentials.deal_title_en == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
                     res.json({

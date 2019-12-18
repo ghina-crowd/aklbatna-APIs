@@ -96,7 +96,43 @@ var CompanyRepository = {
         }
         );
     },
-
+    create_company_branch: function (CompanyBranchData, company_id) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.findOne({ attributes: ['branch_id'], where: { company_id: company_id } }).then(branch_id => {
+                if (branch_id == null) {
+                    company_model.Company_Branches.create({
+                        company_id: company_id,
+                        status: 1,
+                        address: CompanyBranchData.address,
+                        latitude: CompanyBranchData.latitude,
+                        longitude: CompanyBranchData.longitude,
+                        name_ar: CompanyBranchData.name_ar,
+                        name_en: CompanyBranchData.name_en
+                    }).then(branch => {
+                        resolve(branch);
+                    }, error => {
+                        reject(error)
+                    });
+                } else {
+                    company_model.Company_Branches.create({
+                        company_id: company_id,
+                        status: 0,
+                        address: CompanyBranchData.address,
+                        latitude: CompanyBranchData.latitude,
+                        longitude: CompanyBranchData.longitude,
+                        name_ar: CompanyBranchData.name_ar,
+                        name_en: CompanyBranchData.name_en
+                    }).then(branch => {
+                        resolve(branch);
+                    }, error => {
+                        reject(error)
+                    });
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     create_company: function (newCompanyData) {
         return new Promise(function (resolve, reject) {
             company_model.Company.create({
@@ -122,7 +158,6 @@ var CompanyRepository = {
                 number_of_locations: newCompanyData.number_of_locations,
                 nature_of_business: newCompanyData.nature_of_business,
 
-
                 url_signed_company_form: newCompanyData.url_signed_company_form,
                 url_trade_license: newCompanyData.url_trade_license,
                 url_service_provider_id: newCompanyData.url_service_provider_id,
@@ -130,12 +165,111 @@ var CompanyRepository = {
                 landline_number: newCompanyData.landline_number,
                 company_role: newCompanyData.company_role,
             }).then(company => {
-                resolve(company);
+
+                var branch = {};
+                branch['address'] = newCompanyData.address;
+                branch['latitude'] = newCompanyData.latitude;
+                branch['longitude'] = newCompanyData.longitude;
+                branch['name_ar'] = newCompanyData.company_name_ar;
+                branch['name_en'] = newCompanyData.company_name_en;
+                CompanyRepository.create_company_branch(branch, company.company_id).then(companyBranch => {
+                    company['dataValues'].branches = [];
+                    company['dataValues'].branches.push(companyBranch);
+                    resolve(company);
+                }).catch(error => {
+                    reject(error)
+                })
+
             }, error => {
                 reject(error)
             });
         });
     },
+    update_company_main_branch: function (CompanyBranchData, company_id) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.findOne({ attributes: ['branch_id'], where: { status: 1, company_id: company_id } }).then(branch_id => {
+                console.log(branch_id);
+                if (branch_id) {
+                    company_model.Company_Branches.update({
+                        company_id: company_id,
+                        status: 1,
+                        address: CompanyBranchData.address,
+                        latitude: CompanyBranchData.latitude,
+                        longitude: CompanyBranchData.longitude,
+                        name_ar: CompanyBranchData.name_ar,
+                        name_en: CompanyBranchData.name_en
+
+                    }, { where: { branch_id: branch_id['dataValues'].branch_id } }).then(branch => {
+                        company_model.Company_Branches.findAll({ where: { company_id: company_id } }).then(branches => {
+                            resolve(branches);
+                        }, error => {
+                            reject(error);
+                        });
+                    }, error => {
+                        reject(error)
+                    });
+                } else {
+                    reject(null)
+                }
+
+
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
+
+    create_company_branch: function (CompanyBranchData) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.create({
+                company_id: CompanyBranchData.company_id,
+                status: 0,
+                address: CompanyBranchData.address,
+                latitude: CompanyBranchData.latitude,
+                longitude: CompanyBranchData.longitude,
+                name_ar: CompanyBranchData.name_ar,
+                name_en: CompanyBranchData.name_en
+            }).then(branch => {
+                resolve(branch);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+
+    delete_company_branch: function (branch_id) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.destroy({ where: { branch_id: branch_id, status: 0 } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+    update_company_branch: function (CompanyBranchData) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.update({
+                company_id: CompanyBranchData.company_id,
+                address: CompanyBranchData.address,
+                latitude: CompanyBranchData.latitude,
+                longitude: CompanyBranchData.longitude,
+                name_ar: CompanyBranchData.name_ar,
+                name_en: CompanyBranchData.name_en
+            }, { where: { branch_id: CompanyBranchData.branch_id } }).then(response => {
+                company_model.Company_Branches.findOne({ where: { branch_id: CompanyBranchData.branch_id } }).then(branch => {
+                    resolve(branch);
+                }, error => {
+                    reject(error);
+                });
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+
 
     update_company: function (newCompanyData) {
         return new Promise(function (resolve, reject) {
@@ -168,8 +302,24 @@ var CompanyRepository = {
                 company_role: newCompanyData.company_role,
 
             }, { where: { company_id: newCompanyData.company_id } }).then(function (result) {
-                company_model.Company.findOne({ where: { company_id: newCompanyData.company_id } }).then(deal => {
-                    resolve(deal);
+                company_model.Company.findOne({ where: { company_id: newCompanyData.company_id } }).then(company => {
+
+
+                    var branch = {};
+                    branch['address'] = newCompanyData.address;
+                    branch['latitude'] = newCompanyData.latitude;
+                    branch['longitude'] = newCompanyData.longitude;
+                    branch['name_ar'] = newCompanyData.company_name_ar;
+                    branch['name_en'] = newCompanyData.company_name_en;
+                    CompanyRepository.update_company_main_branch(branch, newCompanyData.company_id).then(companyBranch => {
+                        company['dataValues'].branches = [];
+                        company['dataValues'].branches.push(companyBranch);
+                        resolve(company);
+
+                    }).catch(error => {
+                        reject(error)
+                    })
+                    // resolve(company);
                 }, error => {
                     reject(error);
                 });
@@ -182,7 +332,11 @@ var CompanyRepository = {
     delete_company: function (company_id) {
         return new Promise(function (resolve, reject) {
             company_model.Company.destroy({ where: { company_id: company_id } }).then(deleted => {
-                resolve(deleted);
+                company_model.Company_Branches.destroy({ where: { company_id: company_id } }).then(deleted => {
+                    resolve(deleted);
+                }, error => {
+                    reject(error);
+                });
             }, error => {
                 reject(error);
             });

@@ -27,6 +27,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(225),
             foreignKey: true,
         },
+        branch_id: {
+            type: DataTypes.STRING(225),
+            foreignKey: true,
+        },
         short_detail: {
             type: DataTypes.STRING(225),
         },
