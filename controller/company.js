@@ -533,6 +533,8 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
     }
 
 });
+
+//this will delete company also all branches,deals related to that company
 router.delete('/admin/delete', async function (req, res) {
 
     var errors = validationResult(req);
@@ -856,6 +858,8 @@ router.post('/branch/update', async function (req, res) {
     }
 
 });
+
+//this will delete branch also all deals related to that branch
 router.delete('/branch/delete', async function (req, res) {
 
     var errors = validationResult(req);

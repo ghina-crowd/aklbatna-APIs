@@ -172,7 +172,7 @@ var CompanyRepository = {
                 branch['longitude'] = newCompanyData.longitude;
                 branch['name_ar'] = newCompanyData.company_name_ar;
                 branch['name_en'] = newCompanyData.company_name_en;
-                CompanyRepository.create_company_branch(branch, company.company_id).then(companyBranch => {
+                CompanyRepository.create_company_main_branch(branch, company.company_id).then(companyBranch => {
                     company['dataValues'].branches = [];
                     company['dataValues'].branches.push(companyBranch);
                     resolve(company);
@@ -191,6 +191,7 @@ var CompanyRepository = {
                 console.log(branch_id);
                 if (branch_id) {
                     company_model.Company_Branches.update({
+
                         company_id: company_id,
                         status: 1,
                         address: CompanyBranchData.address,
@@ -200,7 +201,7 @@ var CompanyRepository = {
                         name_en: CompanyBranchData.name_en
 
                     }, { where: { branch_id: branch_id['dataValues'].branch_id } }).then(branch => {
-                        company_model.Company_Branches.findAll({ where: { company_id: company_id } }).then(branches => {
+                        company_model.Company_Branches.findOne({ where: { company_id: company_id, status: 1 } }).then(branches => {
                             resolve(branches);
                         }, error => {
                             reject(error);
@@ -210,6 +211,46 @@ var CompanyRepository = {
                     });
                 } else {
                     reject(null)
+                }
+
+
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
+    create_company_main_branch: function (CompanyBranchData, company_id) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.findOne({ where: { status: 1, company_id: company_id } }).then(branch => {
+                console.log("branch");
+                console.log(branch);
+                if (branch) {
+                    resolve(branch);
+                } else {
+                    company_model.Company_Branches.create({
+                        company_id: company_id,
+                        status: 1,
+                        address: CompanyBranchData.address,
+                        latitude: CompanyBranchData.latitude,
+                        longitude: CompanyBranchData.longitude,
+                        name_ar: CompanyBranchData.name_ar,
+                        name_en: CompanyBranchData.name_en
+                    }).then(response => {
+                        if (response) {
+                            company_model.Company_Branches.findOne({ where: { company_id: company_id, status: 1 } }).then(branch => {
+                                resolve(branch);
+                            }, error => {
+                                reject(error);
+                            });
+                        } else {
+                            reject(null);
+                        }
+
+                    }, error => {
+                        reject(error)
+                    });
                 }
 
 
@@ -242,7 +283,11 @@ var CompanyRepository = {
     delete_company_branch: function (branch_id) {
         return new Promise(function (resolve, reject) {
             company_model.Company_Branches.destroy({ where: { branch_id: branch_id, status: 0 } }).then(deleted => {
-                resolve(deleted);
+                deal_model.Deals.destroy({ where: { branch_id: branch_id } }).then(deleted => {
+                    resolve(deleted);
+                }, error => {
+                    reject(error);
+                });
             }, error => {
                 reject(error);
             });
@@ -333,7 +378,11 @@ var CompanyRepository = {
         return new Promise(function (resolve, reject) {
             company_model.Company.destroy({ where: { company_id: company_id } }).then(deleted => {
                 company_model.Company_Branches.destroy({ where: { company_id: company_id } }).then(deleted => {
-                    resolve(deleted);
+                    deal_model.Deals.destroy({ where: { company_id: company_id } }).then(deleted => {
+                        resolve(deleted);
+                    }, error => {
+                        reject(error);
+                    });
                 }, error => {
                     reject(error);
                 });
