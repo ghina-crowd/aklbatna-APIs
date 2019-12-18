@@ -299,7 +299,7 @@ var dealsRepository = {
 
                         if (latitude && longitude) {
                             var distance = calcDistance(item["dataValues"].company_branch.latitude, item["dataValues"].company_branch.longitude, latitude, longitude);
-                            console.log(distance);
+                            // console.log(distance);
                             if (distance <= 10) {
                                 item["dataValues"].distance = distance;
                                 filter_deals.push(item);
