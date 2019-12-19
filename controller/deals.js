@@ -883,7 +883,7 @@ router.post('/admin/update', upload.single('main_image'), async function (req, r
         if (req.file) {
             const relative_ptah = '/images/deals/';
             const imagePath = path.join(__dirname, '..' + relative_ptah);
-            const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+            const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
             const filename = await fileUpload.save(req.file.buffer);
             credentials['main_image'] = relative_ptah + filename;
         }
@@ -1293,7 +1293,7 @@ router.post('/admin/image/create', upload.single('image'), async function (req, 
         }
         const relative_ptah = '/images/deals/';
         const imagePath = path.join(__dirname, '..' + relative_ptah);
-        const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+        const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
         const filename = await fileUpload.save(req.file.buffer);
 
 
@@ -1386,7 +1386,7 @@ router.post('/admin/image/update', upload.single('image'), async function (req, 
         }
         const relative_ptah = '/images/deals/';
         const imagePath = path.join(__dirname, '..' + relative_ptah);
-        const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+        const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
         const filename = await fileUpload.save(req.file.buffer);
 
 

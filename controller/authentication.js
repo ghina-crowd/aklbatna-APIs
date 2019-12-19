@@ -10,15 +10,14 @@ const jwt = require('jsonwebtoken');
 var config = require('../constant/config.js');
 var blacklist = require('express-jwt-blacklist');
 // const blacklist = require("express-jwt-blacklist")(jwt);
-
-
+const nodemailer = require('nodemailer');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads')
     },
     filename: function (req, file, cb) {
-        cb(null, new Date().toISOString() + '_' + file.originalname);
+        cb(null, new Date().getTime() + '_' + file.originalname);
     }
 });
 const upload = multer({ storage: storage });

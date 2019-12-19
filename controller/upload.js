@@ -132,7 +132,77 @@ router.post('/deal/images', upload.array('images'), async function (req, res) {
 
                 const relative_ptah = '/images/deals/';
                 const imagePath = path.join(__dirname, '..' + relative_ptah);
-                const fileUpload = new Resize(imagePath, new Date().toISOString() + '.' + filetype);
+                const fileUpload = new Resize(imagePath, new Date().getTime() + '.' + filetype);
+                const filename = await fileUpload.save(req.files[k].buffer);
+                temp_images.push(relative_ptah + filename);
+            }
+        }
+        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+            var images = {};
+            images['urls'] = temp_images;
+            res.json({
+                status: statics.STATUS_SUCCESS,
+                code: codes.SUCCESS,
+                message: msg.message,
+                data: images,
+            });
+        })
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+
+});
+router.post('/categories/images', upload.array('images'), async function (req, res) {
+
+
+    var lang = req.headers.language;
+    var token = req.headers.authorization;
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
+        if (!req.files) {
+            languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+            return;
+        }
+        req.file
+
+        //uploading images and save into array
+        var temp_images = [];
+        if (req.files.length > 0) {
+            for (let k in req.files) {
+
+
+                var filetype = '';
+                if (req.files[k].mimetype === 'image/png') {
+                    filetype = 'png';
+                }
+                if (req.files[k].mimetype === 'image/jpeg') {
+                    filetype = 'jpg';
+                }
+
+                const relative_ptah = '/images/categories/';
+                const imagePath = path.join(__dirname, '..' + relative_ptah);
+                const fileUpload = new Resize(imagePath, new Date().getTime() + '.' + filetype);
                 const filename = await fileUpload.save(req.files[k].buffer);
                 temp_images.push(relative_ptah + filename);
             }
@@ -186,6 +256,10 @@ router.post('/company/images', upload.array('images'), async function (req, res)
         }
         req.file
 
+
+
+        
+
         //uploading images and save into array
         var temp_images = [];
         if (req.files.length > 0) {
@@ -204,7 +278,7 @@ router.post('/company/images', upload.array('images'), async function (req, res)
 
                 const relative_ptah = '/images/companies/';
                 const imagePath = path.join(__dirname, '..' + relative_ptah);
-                const fileUpload = new Resize(imagePath, new Date().toISOString() + '.' + filetype);
+                const fileUpload = new Resize(imagePath, new Date().getTime() + '.' + filetype);
                 const filename = await fileUpload.save(req.files[k].buffer);
                 temp_images.push(relative_ptah + filename);
             }

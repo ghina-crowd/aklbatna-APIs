@@ -14,11 +14,17 @@ var categoriesRouter = require('./controller/categories.js');
 var dealsRouter = require('./controller/deals.js');
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
+var path = require('path');
+
 
 //need to remove this maybe just for testing in local host.
 var cors = require('cors')
 
+
 var app = express();
+
+
+//for making image folder
 app.use(cors())
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
@@ -53,6 +59,9 @@ app.use('/sub_categories', subcategoriesRouter);
 app.use('/categories', categoriesRouter);
 app.use('/deals', dealsRouter);
 app.use('/maps', MapsRouter);
+
+//for images only
+app.use("/images", express.static(__dirname + "/images", {fallthrough: false}));
 //Register routers
 
 

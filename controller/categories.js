@@ -288,7 +288,7 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
         }
         const relative_ptah = '/images/categories';
         const imagePath = path.join(__dirname, '..' + relative_ptah);
-        const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+        const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
         const filename = await fileUpload.save(req.file.buffer);
 
 
@@ -398,7 +398,7 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
         if (req.file) {
             const relative_ptah = '/images/categories';
             const imagePath = path.join(__dirname, '..' + relative_ptah);
-            const fileUpload = new Resize(imagePath, new Date().toISOString() + '.png');
+            const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
             const filename = await fileUpload.save(req.file.buffer);
             credentials['icon'] = relative_ptah + '/' + filename;
         }
