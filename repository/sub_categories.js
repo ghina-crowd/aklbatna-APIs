@@ -5,8 +5,8 @@ var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
 const Sequelize = require('sequelize');
 var lang = require('../app');
-
-
+var model_rate = require('../models/rating_model.js');
+const sequelize = require('sequelize');
 const Op = Sequelize.Op;
 var SubCategoryRepository = {
     Get_sub_categories: function () {
@@ -27,10 +27,10 @@ var SubCategoryRepository = {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
-                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'premium', 'location_address'];
+                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'premium', 'location_address', 'final_rate'];
             } else {
                 cat_attributes = ['shop_category_id', ['name_ar', 'name'], 'icon'];
-                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'premium', 'location_address'];
+                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'premium', 'location_address', 'final_rate'];
             }
 
             category_model.Categories.hasMany(deals_model.Deals, { foreignKey: 'shop_category_id' })
@@ -44,16 +44,27 @@ var SubCategoryRepository = {
                     where: { active: 1 }
                 }]
             }).then(deals => {
-                deals.forEach(deals => {
-                    deals.deals.forEach(item => {
-                        console.log(item);
-                        var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
-                        item.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";
+
+
+                if (deals != null) {
+                    deals.forEach(deals => {
+                        deals.deals.forEach(item => {
+                            //calculating percentage for new and old price
+                            var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
+                            item.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";
+                        });
                     });
+                    resolve(deals);
 
-                });
 
-                resolve(deals);
+
+                } else {
+                    resolve(null);
+                }
+
+
+
+
 
             }, error => {
                 reject(error);

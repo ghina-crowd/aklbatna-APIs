@@ -130,7 +130,7 @@ var dealsRepository = {
                                                         pre_price_total = pre_price_total + item.dataValues.pre_price;
                                                         new_price_subtotal = new_price_subtotal + item.dataValues.new_price;
                                                         var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
-                                                        item.dataValues['percDiff'] = percDiff;
+                                                        item.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";;
                                                         all_sub_deals.push(item.dataValues);
                                                     });
 
@@ -139,7 +139,7 @@ var dealsRepository = {
                                                     deals.dataValues['pre_price_total'] = pre_price_total;
                                                     deals.dataValues['new_price_subtotal'] = new_price_subtotal;
                                                     deals.dataValues['diff'] = diff;
-                                                    deals.dataValues['percDiff'] = percDiff;
+                                                    deals.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";;
 
                                                     deals.dataValues['sub_deals'] = all_sub_deals;
                                                     resolve(deals);
@@ -221,8 +221,10 @@ var dealsRepository = {
             }
 
             if (date) {
+
+                console.log(new Date(Date.parse(date)).toISOString());
                 data.end_time = {
-                    [Op.lte]: date,
+                    [Op.like]: '%' + (new Date(Date.parse(date)).toISOString()) + '%'
                 }
             }
 
@@ -278,10 +280,12 @@ var dealsRepository = {
                 models.Deals.belongsTo(company_model.Company, { foreignKey: 'company_id' });
                 models.Deals.belongsTo(company_model.Company_Branches, { foreignKey: 'branch_id' });
                 category_model.Categories.findAll({
-                    attributes: cat_attributes, limit: pageSize, offset: offset, order: order, where: data,
+                    attributes: cat_attributes, limit: pageSize, offset: offset,
                     include: [{
                         model: models.Deals,
                         attributes: deal_attributes,
+                        where: data,
+                        order: order,
                         include: [{
                             model: company_model.Company,
                             attributes: company_attributes,
@@ -291,11 +295,21 @@ var dealsRepository = {
                         }]
                     }]
                 }).then(category => {
+                    if (!category || !category[0]) {
+                        resolve([]);
+                        return;
+                    }
+
+                    var pre_price_total = 0;
+                    var new_price_subtotal = 0;
                     var filter_deals = [];
                     category[0].deals.forEach(item => {
 
                         var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
-                        item.dataValues['percDiff'] = percDiff;
+                        item.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";
+
+                        pre_price_total = pre_price_total + item["dataValues"].pre_price;
+                        new_price_subtotal = new_price_subtotal + item["dataValues"].new_price;
 
                         if (latitude && longitude) {
                             var distance = calcDistance(item["dataValues"].company_branch.latitude, item["dataValues"].company_branch.longitude, latitude, longitude);
@@ -311,7 +325,18 @@ var dealsRepository = {
                         }
                     });
                     category[0].deals = filter_deals;
-                    resolve(category[0]);
+
+                    var diff = pre_price_total - new_price_subtotal;
+                    var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
+                    filter_deals.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
+                    var response = {};
+                    response.pre_price_total = pre_price_total;
+                    response.new_price_subtotal = new_price_subtotal;
+                    response.diff = diff;
+                    response.percDiff = percDiff.toString().split('.')[0] + "%";;
+                    response.deals = filter_deals;
+
+                    resolve(response);
                 }, error => {
                     reject(error);
                 });
@@ -343,7 +368,7 @@ var dealsRepository = {
 
 
                             var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
-                            item.dataValues['percDiff'] = percDiff;
+                            item.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";
 
                             //checking if lat lng are not null then we are going to calculate the distance with company location
                             if (latitude && longitude) {
@@ -367,7 +392,7 @@ var dealsRepository = {
                         response.pre_price_total = pre_price_total;
                         response.new_price_subtotal = new_price_subtotal;
                         response.diff = diff;
-                        response.percDiff = percDiff;
+                        response.percDiff = percDiff.toString().split('.')[0] + "%";;
                         response.deals = filter_deals;
 
                         resolve(response);

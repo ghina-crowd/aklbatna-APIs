@@ -74,10 +74,10 @@ var CategoryRepository = {
         var sub_cat_attributes, cat_attributes;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                cat_attributes = ['shop_category_id', ['name_en', 'name']];
+                cat_attributes = ['shop_category_id', ['name_en', 'name'],'icon'];
                 sub_cat_attributes = ['sub_category_id', ['sub_name_en', 'sub_name']];
             } else {
-                cat_attributes = ['shop_category_id', ['name_ar', 'name']];
+                cat_attributes = ['shop_category_id', ['name_ar', 'name'],'icon'];
                 sub_cat_attributes = ['sub_category_id', ['sub_name_ar', 'sub_name']];
             }
             models.Categories.hasMany(sub_category_model.SubCategory, { foreignKey: 'shop_category_id' });
@@ -87,7 +87,6 @@ var CategoryRepository = {
                     model: sub_category_model.SubCategory,
                     attributes: sub_cat_attributes,
                     where: { active: 1 }
-
                 }]
             }).then(deals => {
                 resolve(deals);
