@@ -30,7 +30,7 @@ var message = {
     RESEND: 'OTP SENT',
     DATA_FOR_RESET: 'Security code sent to you email to reset password',
     NO_TOKEN: 'No token provided.',
-    FAILED_AUTHENTICATE_TOKEN: 'Failed to authenticate token.',
+    FAILED_AUTHENTICATE_TOKEN: 'Please Login.',
     INVALID_EMAIL: 'Invalid Email',
     SUCCESS: 'Success',
     FAILED: 'Failed',
