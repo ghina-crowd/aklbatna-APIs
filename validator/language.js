@@ -145,13 +145,27 @@ var language = {
                 resolve({ message: messages.COMPANY_DETAILS_IS_MISSING });
             } else if (type == 'EMPTY_FIELD_MAIN_IMAGE') {
                 resolve({ message: messages.EMPTY_FIELD_MAIN_IMAGE });
+            } else if (type == 'ACCOUNT_ALREADY_EXIST') {
+                resolve({ message: messages.ACCOUNT_ALREADY_EXIST });
+            } else if (type == 'INVALID_ACCOUNT_ID') {
+                resolve({ message: messages.INVALID_ACCOUNT_ID });
+            } else if (type == 'EMPTY_FIELD_END_DATE') {
+                resolve({ message: messages.EMPTY_FIELD_END_DATE });
+            } else if (type == 'EMPTY_FIELD_START_DATE') {
+                resolve({ message: messages.EMPTY_FIELD_START_DATE });
             }
 
-
-
-
-
-            else if (type == 'EMPTY_FIELD_WEBSITE_LINK') {
+            else if (type == 'EMPTY_FIELD_NAME') {
+                resolve({ message: messages.EMPTY_FIELD_NAME });
+            } else if (type == 'EMPTY_FIELD_EMAIL') {
+                resolve({ message: messages.EMPTY_FIELD_EMAIL });
+            } else if (type == 'EMPTY_FIELD_PHONE') {
+                resolve({ message: messages.EMPTY_FIELD_PHONE });
+            } else if (type == 'EMPTY_FIELD_SUBJECT') {
+                resolve({ message: messages.EMPTY_FIELD_SUBJECT });
+            } else if (type == 'EMPTY_FIELD_MESSAGE') {
+                resolve({ message: messages.EMPTY_FIELD_MESSAGE });
+            } else if (type == 'EMPTY_FIELD_WEBSITE_LINK') {
                 resolve({ message: messages.EMPTY_FIELD_WEBSITE_LINK });
             } else if (type == 'EMPTY_FIELD_LOCATION') {
                 resolve({ message: messages.EMPTY_FIELD_LOCATION });
@@ -186,9 +200,11 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_TYPE });
             } else if (type == 'EMPTY_FIELD_STATUS') {
                 resolve({ message: messages.EMPTY_FIELD_STATUS });
+            }else if (type == 'INVALID_SUB_DEAL_ID') {
+                resolve({ message: messages.INVALID_SUB_DEAL_ID });
             }
 
-
+            
 
             else if (type == 'EMPTY_FIELD_BRANCH_NAME_EN') {
                 resolve({ message: messages.EMPTY_FIELD_BRANCH_NAME_EN });

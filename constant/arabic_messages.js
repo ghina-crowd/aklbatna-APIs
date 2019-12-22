@@ -100,6 +100,17 @@ var message = {
     EMPTY_FIELD_BRANCH_LNG: 'invalid gps longitude',
     EMPTY_FIELD_BRANCH_ADDRESS: 'invalid branch address',
     EMPTY_FIELD_BRANCH_ID: 'invalid branch id',
+    ACCOUNT_ALREADY_EXIST: 'same account already exist',
+    INVALID_ACCOUNT_ID: 'invalid account id',
+    EMPTY_FIELD_START_DATE: 'invalid start date',
+    EMPTY_FIELD_END_DATE: 'invalid end date',
+
+    EMPTY_FIELD_SUBJECT: 'invalid subject',
+    EMPTY_FIELD_PHONE: 'invalid phone',
+    EMPTY_FIELD_EMAIL: 'invalid email',
+    EMPTY_FIELD_NAME: 'invalid name',
+    EMPTY_FIELD_MESSAGE: 'invalid message',
+    INVALID_SUB_DEAL_ID: 'sub deal id is missing'
 
 };
 

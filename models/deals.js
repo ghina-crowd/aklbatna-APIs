@@ -64,6 +64,9 @@ module.exports = function (sequelize, DataTypes) {
         final_rate: {
             type: DataTypes.FLOAT,
         },
+        count_bought: {
+            type: DataTypes.INTEGER,
+        },
         main_image: {
             type: DataTypes.STRING,
         },

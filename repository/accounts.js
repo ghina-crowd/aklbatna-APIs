@@ -37,13 +37,11 @@ var AccountRepository = {
                         card_number: newAccountData.card_number,
                         type: newAccountData.type,
                     }).then(account => {
-                        console.log(account['dataValues']);
                         resolve(account);
                     }, error => {
                         reject(error)
                     });
                 } else {
-                    console.log(account['dataValues']);
                     resolve(account['dataValues'])
                 }
             }, error => {
@@ -51,6 +49,22 @@ var AccountRepository = {
             });
         });
     },
+
+
+    checkAccount: function (newAccountData) {
+        return new Promise(function (resolve, reject) {
+            models.Account.findOne({ where: { card_number: newAccountData.card_number } }).then(account => {
+                if (account == null) {
+                    resolve(null);
+                } else {
+                    resolve(account['dataValues'])
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
 
     updateAccount: function (newAccountData) {
         return new Promise(function (resolve, reject) {
@@ -73,9 +87,9 @@ var AccountRepository = {
             });
         });
     },
-    deleteAccount: function (newAccountData) {
+    deleteAccount: function (pk_account_id) {
         return new Promise(function (resolve, reject) {
-            models.Account.destroy({ where: { pk_account_id: newAccountData.pk_account_id } }).then(deleted => {
+            models.Account.destroy({ where: { pk_account_id: pk_account_id } }).then(deleted => {
                 resolve(deleted);
             }, error => {
                 reject(error);

@@ -22,9 +22,18 @@ module.exports = {
             });
         });
     },
-    Delete: function (AccountData) {
+    Check: function (newAccountData) {
         return new Promise(function (resolve, reject) {
-            AccountRepository.deleteAccount(AccountData).then(delete_response => {
+            AccountRepository.checkAccount(newAccountData).then(function (result) {
+                resolve(result);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    Delete: function (pk_account_id) {
+        return new Promise(function (resolve, reject) {
+            AccountRepository.deleteAccount(pk_account_id).then(delete_response => {
                 resolve(delete_response);
             }, error => {
                 reject(error);

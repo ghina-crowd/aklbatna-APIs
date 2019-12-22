@@ -33,7 +33,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -57,6 +57,12 @@ var router = express.Router();
 //categories
 router.get('/home', function (req, res) {
 
+
+    var ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        req.connection.socket.remoteAddress
+    console.log(ip.toString().split(':')[0]);
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -142,7 +148,7 @@ router.get('/sub_categories', function (req, res) {
         })
     }
 });
-router.get('/admin/sub_categories',async function (req, res) {
+router.get('/admin/sub_categories', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -406,7 +412,7 @@ router.post('/admin/update', async function (req, res) {
         })
     }
 });
-router.delete('/admin/delete',async function (req, res) {
+router.delete('/admin/delete', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {

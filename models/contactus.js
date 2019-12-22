@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('advertising', {
-    add_id: {
+  return sequelize.define('contact_us', {
+    contact_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
@@ -10,33 +10,25 @@ module.exports = function (sequelize, DataTypes) {
     },
     user_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
-    deal_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    status: {
+    name: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    type: {
+    email: {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    date: {
-      type: DataTypes.DATE,
+    phone: {
+      type: DataTypes.STRING,
       allowNull: true,
     },
-    start_date: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
-    end_date: {
-      type: DataTypes.DATE,
+    message: {
+      type: DataTypes.TEXT,
       allowNull: true,
     }
   }, {
-    tableName: 'advertising'
+    tableName: 'contact_us'
   });
 };

@@ -37,7 +37,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -92,7 +92,7 @@ router.get('/get', async function (req, res) {
         })
     }
 });
-router.post('/create',async function (req, res) {
+router.post('/create', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -154,36 +154,52 @@ router.post('/create',async function (req, res) {
             } else {
 
                 return new Promise(function (resolve, reject) {
-                    AccountService.Create(credentials).then(account => {
-                        resolve(account);
 
-                        if (account.fk_user_id === credentials.fk_user_id) {
-                            languageService.get_lang(lang, 'SUCCESS').then(msg => {
-                                res.json({
-                                    status: statics.STATUS_FAILURE,
-                                    code: codes.FAILURE,
-                                    message: msg.message,
-                                    data: account
-                                });
-                            });
+                    AccountService.Check(credentials).then(isAccount => {
+
+                        if (!isAccount) {
+                            AccountService.Create(credentials).then(account => {
+                                resolve(account);
+
+                                if (account.fk_user_id === credentials.fk_user_id) {
+                                    languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                                        res.json({
+                                            status: statics.STATUS_SUCCESS,
+                                            code: codes.SUCCESS,
+                                            message: msg.message,
+                                            data: account
+                                        });
+                                    });
+                                } else {
+                                    languageService.get_lang(lang, 'FAILED').then(msg => {
+                                        res.json({
+                                            status: statics.STATUS_FAILURE,
+                                            code: codes.FAILURE,
+                                            message: msg.message,
+                                            data: account
+                                        });
+                                    });
+                                }
+                            }
+                                ,
+                                error => {
+                                    reject(error);
+                                }
+                            );
                         } else {
-                            languageService.get_lang(lang, 'FAILED').then(msg => {
+                            languageService.get_lang(lang, 'ACCOUNT_ALREADY_EXIST').then(msg => {
                                 res.json({
                                     status: statics.STATUS_FAILURE,
                                     code: codes.FAILURE,
                                     message: msg.message,
-                                    data: account
+                                    data: isAccount
                                 });
                             });
                         }
 
-
-                    }
-                        ,
-                        error => {
-                            reject(error);
-                        }
-                    );
+                    }).then(err => {
+                        reject(error);
+                    })
                 });
             }
         })
@@ -273,14 +289,26 @@ router.put('/update', async function (req, res) {
                 return new Promise(function (resolve, reject) {
                     AccountService.Update(credentials).then(account => {
                         resolve(account);
-                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
-                            res.json({
-                                status: statics.STATUS_SUCCESS,
-                                code: codes.SUCCESS,
-                                message: msg.message,
-                                data: account
+                        if (account) {
+                            languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: msg.message,
+                                    data: account
+                                });
                             });
-                        });
+                        } else {
+                            languageService.get_lang(lang, 'INVALID_ACCOUNT_ID').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.FAILURE,
+                                    message: msg.message,
+                                    data: null
+                                });
+                            });
+                        }
+
 
                     }
                         ,
@@ -303,7 +331,7 @@ router.put('/update', async function (req, res) {
     }
 }
 );
-router.delete('/delete', async function (req, res) {
+router.delete('/delete/:pk_account_id', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -315,7 +343,7 @@ router.delete('/delete', async function (req, res) {
             return;
         }
         return new Promise(function (resolve, reject) {
-            if (!credentials.pk_account_id || credentials.pk_account_id == '') {
+            if (!req.params.pk_account_id || req.params.pk_account_id == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_ACCOUNT_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -328,16 +356,29 @@ router.delete('/delete', async function (req, res) {
             } else {
 
                 return new Promise(function (resolve, reject) {
-                    AccountService.Delete(credentials).then(account => {
+                    AccountService.Delete(req.params.pk_account_id).then(account => {
                         resolve(account);
-                        languageService.get_lang(lang, 'SUCCESS').then(msg => {
-                            res.json({
-                                status: statics.STATUS_SUCCESS,
-                                code: codes.SUCCESS,
-                                message: msg.message,
-                                data: account
+
+                        if (account) {
+                            languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: msg.message,
+                                    data: account
+                                });
                             });
-                        });
+                        } else {
+                            languageService.get_lang(lang, 'INVALID_ACCOUNT_ID').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.FAILURE,
+                                    message: msg.message,
+                                    data: null
+                                });
+                            });
+                        }
+
                     }
                         ,
                         error => {

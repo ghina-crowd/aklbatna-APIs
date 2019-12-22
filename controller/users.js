@@ -129,7 +129,7 @@ router.put('/edit_profile', async function (req, res) {
             return;
         }
         if (email) {
-            if (credentials.first_name == '') {
+            if (!credentials.first_name || credentials.first_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -138,7 +138,7 @@ router.put('/edit_profile', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (credentials.last_name == '') {
+            } else if (!credentials.last_name || credentials.last_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
                     res.json({
@@ -148,7 +148,7 @@ router.put('/edit_profile', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (credentials.phone == '') {
+            } else if (!credentials.phone || credentials.phone == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -159,13 +159,22 @@ router.put('/edit_profile', async function (req, res) {
                 });
             } else {
 
+
+                if (credentials.old_password) {
+                    languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                }
+
+
                 return new Promise(function (resolve, reject) {
-
                     UserService.Update(credentials.first_name, credentials.last_name, credentials.phone, credentials.email).then(user => {
-
                         resolve(user);
-
-
                         languageService.get_lang(lang, 'SUCCESS').then(msg => {
                             res.json({
                                 status: statics.STATUS_SUCCESS,

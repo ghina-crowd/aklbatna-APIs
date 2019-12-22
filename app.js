@@ -6,6 +6,7 @@ var MapsRouter = require('./controller/maps');
 var AccountRouter = require('./controller/accounts');
 var UploadRouter = require('./controller/upload');
 var PurchaseRouter = require('./controller/purchase');
+var ContactUsRouter = require('./controller/contactus');
 var CompanyRouter = require('./controller/company');
 var AdvertisingRouter = require('./controller/advertising');
 var authenticationRouter = require('./controller/authentication.js');
@@ -51,6 +52,7 @@ app.get("/", function (req, res) {
 app.use('/user', UserRouter);
 app.use('/account', AccountRouter);
 app.use('/upload', UploadRouter);
+app.use('/contact', ContactUsRouter);
 app.use('/company', CompanyRouter);
 app.use('/purchase', PurchaseRouter);
 app.use('/advertising', AdvertisingRouter);
@@ -61,7 +63,7 @@ app.use('/deals', dealsRouter);
 app.use('/maps', MapsRouter);
 
 //for images only
-app.use("/images", express.static(__dirname + "/images", {fallthrough: false}));
+app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));
 //Register routers
 
 

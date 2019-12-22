@@ -288,7 +288,8 @@ var UserRepository = {
         return new Promise(function (resolve, reject) {
             var otp_val = Math.floor(1000 + Math.random() * 9000);
             models.User.update({ otp: otp_val }, { where: { email: email } }).then(function (result) {
-                models.User.findOne({ attributes: ['email'], where: { email: email } }).then(users => {
+                models.User.findOne({ attributes: ['email', 'otp'], where: { email: email } }).then(users => {
+                    console.log(users);
                     resolve(users);
                 }, error => {
                     reject(error);

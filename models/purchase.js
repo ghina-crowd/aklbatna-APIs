@@ -23,6 +23,10 @@ module.exports = function (sequelize, DataTypes) {
     date: {
       type: DataTypes.STRING(100),
       allowNull: false,
+    },
+    sub_deal_id: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
     }
   }, {
     tableName: 'purchases'

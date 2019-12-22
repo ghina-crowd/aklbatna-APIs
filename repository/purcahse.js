@@ -1,5 +1,6 @@
 var models = require('../models/models.js');
-var modelsdeals = require('../models/deals_model');
+var models_deals = require('../models/deals_model');
+var models_sub_deals = require('../models/sub_deals_model');
 var commonRepository = require('./common.js');
 
 var PurchaseRepository = {
@@ -9,15 +10,15 @@ var PurchaseRepository = {
         if (id) {
             data = { user_id: id };
             return new Promise(function (resolve, reject) {
-                models.Purchase.belongsTo(modelsdeals.Deals, { foreignKey: 'deal_id' })
+                models.Purchase.belongsTo(models_deals.Deals, { foreignKey: 'deal_id' })
                 models.Purchase.findAll({
                     where: data, include: [
-                        { model: modelsdeals.Deals },
+                        { model: models_deals.Deals },
                     ]
-                }).then(purcahses => {
+                }).then(purchases => {
                     var pre_price_total = 0;
                     var new_price_subtotal = 0;
-                    purcahses.forEach(item => {
+                    purchases.forEach(item => {
                         pre_price_total = pre_price_total + item["dataValues"].deal.pre_price;
                         new_price_subtotal = new_price_subtotal + item["dataValues"].deal.new_price;
                     });
@@ -28,7 +29,7 @@ var PurchaseRepository = {
                     response.new_price_subtotal = new_price_subtotal;
                     response.diff = diff;
                     response.percDiff = percDiff;
-                    response.purcahses = purcahses;
+                    response.purchases = purchases;
 
                     resolve(response);
                 }, error => {
@@ -38,8 +39,8 @@ var PurchaseRepository = {
 
         } else {
             return new Promise(function (resolve, reject) {
-                models.Purchase.findAll().then(purcahses => {
-                    resolve(purcahses);
+                models.Purchase.findAll().then(purchases => {
+                    resolve(purchases);
                 }, error => {
                     reject(error);
                 });
@@ -57,8 +58,8 @@ var PurchaseRepository = {
             } else {
                 data = { status: 1 };
             }
-            models.Purchase.findAll({ where: data }).then(purcahses => {
-                resolve(purcahses);
+            models.Purchase.findAll({ where: data }).then(purchases => {
+                resolve(purchases);
             }, error => {
                 reject(error);
             });
@@ -76,8 +77,8 @@ var PurchaseRepository = {
             data = { status: 0 };
         }
         return new Promise(function (resolve, reject) {
-            models.Purchase.findAll({ where: data }).then(purcahses => {
-                resolve(purcahses);
+            models.Purchase.findAll({ where: data }).then(purchases => {
+                resolve(purchases);
             }, error => {
                 reject(error);
             });
@@ -88,11 +89,46 @@ var PurchaseRepository = {
             models.Purchase.create({
                 user_id: newPurchaseData.user_id,
                 deal_id: newPurchaseData.deal_id,
+                sub_deal_id: newPurchaseData.sub_deal_id,
                 status: newPurchaseData.status,
                 date: newPurchaseData.date
             }).then(account => {
-                console.log(account['dataValues']);
                 resolve(account);
+
+                models.Purchase.findAll({
+                    attributes: ['sub_deal_id']
+                    , where: { sub_deal_id: newPurchaseData.sub_deal_id }
+                }).then(purchases => {
+                    if (purchases == null) {
+                        resolve(null);
+                    } else {
+
+                        models_sub_deals.SubDeals.findOne({
+                            attributes: ['count_bought']
+                            , where: { id: newPurchaseData.sub_deal_id }
+                        }).then(count_bought => {
+                            if (count_bought == null) {
+                                resolve(null);
+                            } else {
+                                var count = count_bought.dataValues.count_bought + 1;
+                                models_sub_deals.SubDeals.update(
+                                    { count_bought: count }, { where: { id: newPurchaseData.sub_deal_id } }
+                                ).then(function (result) {
+                                    resolve(result);
+                                }, function (error) {
+                                    reject(error);
+                                });
+
+                            }
+                        }, error => {
+                            reject(error);
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+
+
             }, error => {
                 reject(error)
             });

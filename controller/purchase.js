@@ -38,7 +38,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -56,12 +56,12 @@ async function verifyToken(token, res, lang) {
     });
 }
 
-router.get('/getAll',async function (req, res) {
+router.get('/getAll', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
-     
+
         var token = req.headers.authorization;
         await verifyToken(token, res, lang);
         if (!id) {
@@ -95,12 +95,12 @@ router.get('/getAll',async function (req, res) {
     }
 });
 
-router.get('/getunused',async function (req, res) {
+router.get('/getunused', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
-  
+
         var token = req.headers.authorization;
         await verifyToken(token, res, lang);
         if (!id) {
@@ -133,12 +133,12 @@ router.get('/getunused',async function (req, res) {
     }
 });
 
-router.get('/getused',async function (req, res) {
+router.get('/getused', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
-        
+
         var token = req.headers.authorization;
         await verifyToken(token, res, lang);
         if (!id) {
@@ -171,7 +171,7 @@ router.get('/getused',async function (req, res) {
     }
 });
 
-router.post('/create',async function (req, res) {
+router.post('/create', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -198,6 +198,15 @@ router.post('/create',async function (req, res) {
                     })
                 });
 
+            } else if (!credentials.sub_deal_id || !isNumber(credentials.sub_deal_id)) {
+                languageService.get_lang(lang, 'INVALID_SUB_DEAL_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
             } else if (!credentials.deal_id || !isNumber(credentials.deal_id)) {
                 languageService.get_lang(lang, 'INVALID_DEAL_ID').then(msg => {
                     res.json({
@@ -259,7 +268,7 @@ router.post('/create',async function (req, res) {
     }
 });
 
-router.get('/user/getAll',async function (req, res) {
+router.get('/user/getAll', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -296,7 +305,7 @@ router.get('/user/getAll',async function (req, res) {
     }
 });
 
-router.get('/user/getunused',async function (req, res) {
+router.get('/user/getunused', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -333,7 +342,7 @@ router.get('/user/getunused',async function (req, res) {
     }
 });
 
-router.get('/user/getused',async function (req, res) {
+router.get('/user/getused', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -371,7 +380,7 @@ router.get('/user/getused',async function (req, res) {
 });
 
 
-router.delete('/admin/delete/:purchase_id',async function (req, res) {
+router.delete('/admin/delete/:purchase_id', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {

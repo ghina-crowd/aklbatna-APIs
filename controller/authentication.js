@@ -1,5 +1,5 @@
 var express = require('express');
-const { check, validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator/check');
 var statics = require('../constant/static.js');
 var codes = require('../constant/code.js');
 var authenticationService = require('../service/authentication.js');
@@ -9,7 +9,6 @@ const multer = require('multer');
 const jwt = require('jsonwebtoken');
 var config = require('../constant/config.js');
 var blacklist = require('express-jwt-blacklist');
-// const blacklist = require("express-jwt-blacklist")(jwt);
 const nodemailer = require('nodemailer');
 
 const storage = multer.diskStorage({
@@ -450,7 +449,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                                 utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
 
                             } else if (user.user_type === 'servicePro' && salesRep) {
-                                
+
                                 // creating user as service provider when request is from salesRep
 
                                 creqentials.company['user_id'] = user.user_admin_id;
@@ -586,8 +585,6 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                         }
                     );
                 });
-
-
             }
         })
     } else {
@@ -1021,9 +1018,8 @@ router.put('/resend_code', async function (req, res) {
         return new Promise(function (resolve, reject) {
             if (email) {
                 authenticationService.resend_user(email).then(user => {
-
+                    
                     resolve(user);
-
                     var transporter = nodemailer.createTransport({
                         service: 'gmail',
                         auth: {

@@ -50,7 +50,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -147,7 +147,7 @@ router.get('/admin/get_advertising', async function (req, res) {
         })
     }
 });
-router.post('/admin/create', upload.single('image'), async function (req, res) {
+router.post('/admin/create', async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
@@ -160,22 +160,6 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
             return;
         }
 
-        if (!req.file) {
-            languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-            return;
-        }
-        const relative_ptah = '/images/advertising/';
-        const imagePath = path.join(__dirname, '..' + relative_ptah);
-        const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
-        const filename = await fileUpload.save(req.file.buffer);
-        credentials['img'] = relative_ptah + filename;
 
 
         return new Promise(function (resolve, reject) {
@@ -224,8 +208,25 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
                         data: null
                     });
                 });
+            } else if (!credentials.start_date || credentials.start_date == '' || !new Date(credentials.start_date).getTime()) {
+                languageService.get_lang(lang, 'EMPTY_FIELD_START_DATE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.end_date || credentials.end_date == '' || !new Date(credentials.end_date).getTime()) {
+                languageService.get_lang(lang, 'EMPTY_FIELD_END_DATE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
             } else {
-                console.log(credentials);
                 AdvertisingService.create_advertising(credentials).then(advertise => {
                     resolve(advertise);
                     if (advertise == null) {
@@ -264,7 +265,7 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
     }
 
 });
-router.post('/admin/update', upload.single('image'), async function (req, res) {
+router.post('/admin/update', async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
@@ -276,15 +277,6 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
         await verifyToken(token, res, lang);
         if (!id) {
             return;
-        }
-
-        //check if there is any file update
-        if (req.file) {
-            const relative_ptah = '/images/advertising/';
-            const imagePath = path.join(__dirname, '..' + relative_ptah);
-            const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
-            const filename = await fileUpload.save(req.file.buffer);
-            credentials['img'] = relative_ptah + '/' + filename;
         }
 
         return new Promise(function (resolve, reject) {
@@ -342,8 +334,26 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
                         data: null
                     });
                 });
+            } else if (!credentials.start_date || credentials.start_date == '' || !new Date(credentials.start_date).getTime()) {
+                languageService.get_lang(lang, 'EMPTY_FIELD_START_DATE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.end_date || credentials.end_date == '' || !new Date(credentials.end_date).getTime()) {
+                languageService.get_lang(lang, 'EMPTY_FIELD_END_DATE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
             } else {
-                console.log(credentials);
+
                 AdvertisingService.update_advertising(credentials).then(advertise => {
                     resolve(advertise);
                     if (advertise == null) {
@@ -381,7 +391,7 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
         })
     }
 });
-router.delete('/admin/delete', async function (req, res) {
+router.delete('/admin/delete/:add_id', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -394,7 +404,7 @@ router.delete('/admin/delete', async function (req, res) {
             return;
         }
 
-        if (!credentials.add_id || credentials.add_id == '') {
+        if (!req.params.add_id || req.params.add_id == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_ADVERTISING_ID').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -406,7 +416,7 @@ router.delete('/admin/delete', async function (req, res) {
 
         } else {
             return new Promise(function (resolve, reject) {
-                AdvertisingService.delete_advertising(credentials.add_id).then(response => {
+                AdvertisingService.delete_advertising(req.params.add_id).then(response => {
                     resolve(response);
                     if (response == 0) {
                         languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
