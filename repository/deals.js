@@ -3,6 +3,7 @@ var model_rate = require('../models/rating_model.js');
 var model_images = require('../models/image_model.js');
 var sub_deals = require('../models/sub_deals_model.js');
 var info_deals = require('../models/sub_deals_info');
+var condition_deals = require('../models/sub_deals_conditions');
 var model_company = require('../models/company_model.js');
 var model_user = require('../models/models.js');
 var category_model = require('../models/categories_model.js');
@@ -11,7 +12,7 @@ var lang = require('../app');
 var company_model = require('../models/company_model');
 const sequelize = require('sequelize');
 const Op = sequelize.Op;
-var deal_attributes, company_attributes, sub_deals_attributes, info_deals_attributes, cat_attributes;
+var deal_attributes, company_attributes, sub_deals_attributes, info_deals_attributes, conditions_deals_attributes, cat_attributes;
 
 var dealsRepository = {
     get_deals_by_categoryID: function (id, page) {
@@ -45,21 +46,23 @@ var dealsRepository = {
             company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link'];
             sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
             info_deals_attributes = ['info_id', 'deal_id', ['details_en', 'details']];
+            conditions_deals_attributes = ['condition_id', 'deal_id', ['details_en', 'details']];
             cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
         } else {
             deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
             company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link'];
             sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
             info_deals_attributes = ['info_id', 'deal_id', ['details_ar', 'details']];
+            conditions_deals_attributes = ['condition_id', 'deal_id', ['details_ar', 'details']];
             cat_attributes = ['shop_category_id', ['name_ar', 'name'], 'icon'];
         }
-
 
 
         return new Promise(function (resolve, reject) {
             models.Deals.belongsTo(model_company.Company, { foreignKey: 'company_id', targetKey: 'company_id' });
             models.Deals.belongsTo(model_company.Company_Branches, { foreignKey: 'branch_id', targetKey: 'branch_id' });
             models.Deals.hasMany(info_deals.InfoDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+            models.Deals.hasMany(condition_deals.ConditionsDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
             models.Deals.belongsTo(category_model.Categories, { foreignKey: 'shop_category_id', targetKey: 'shop_category_id' });
             models.Deals.findOne({
                 attributes: deal_attributes,
@@ -73,8 +76,140 @@ var dealsRepository = {
                     model: info_deals.InfoDeals,
                     attributes: info_deals_attributes
                 }, {
+                    model: condition_deals.ConditionsDeals,
+                    attributes: conditions_deals_attributes
+                }, {
                     model: category_model.Categories,
                     attributes: cat_attributes
+                }],
+
+            }).then(deals => {
+                if (deals == null) {
+                    resolve(null);
+                } else {
+                    model_rate.Rating.belongsTo(model_user.User, { foreignKey: 'user_id', targetKey: 'user_admin_id' });
+                    model_rate.Rating.findAll({
+                        limit: 4, order: [['date', 'DESC']],
+                        where: { deal_id: id },
+                        include: [{
+                            model: model_user.User,
+                            attributes: ['user_admin_id', 'first_name', 'last_name']
+                        }],
+
+                    }).then(rating => {
+                        if (deals == null) {
+                            resolve(null);
+                        } else {
+                            model_rate.Rating.findAll({
+                                attributes: [[sequelize.fn('COUNT', sequelize.col('rating_id')), 'reviews_count']],
+                                where: { deal_id: id },
+                            }).then(reviews_count => {
+                                if (deals == null) {
+                                    resolve(null);
+                                } else {
+                                    deals.dataValues['reviews_count'] = reviews_count[0].dataValues['reviews_count'];
+                                }
+                            });
+
+                            var all_rate = [];
+                            rating.forEach(item => {
+                                all_rate.push(item.dataValues);
+
+                            });
+                            deals.dataValues['reviews'] = all_rate;
+                            model_images.Images.findAll({ where: { deal_id: id } }).then(images => {
+                                if (images == null) {
+                                    resolve(null);
+                                } else {
+                                    var all_images = [];
+                                    images.forEach(item => {
+                                        all_images.push(item.dataValues);
+                                    });
+                                    deals.dataValues['images'] = all_images;
+                                    sub_deals.SubDeals.findAll({
+                                        where: { deal_id: id },
+                                        attributes: sub_deals_attributes
+                                    }).then(sub_deal => {
+                                        if (sub_deal == null) {
+                                            resolve(null);
+                                        } else {
+                                            sub_deals.SubDeals.findAll({
+                                                attributes: [[sequelize.fn('COUNT', sequelize.col('id')), 'sub_deals_count']],
+                                                where: { deal_id: id },
+                                            }).then(sub_deals_count => {
+                                                if (sub_deals_count == null) {
+                                                    resolve(null);
+                                                } else {
+                                                    deals.dataValues['sub_deals_count'] = sub_deals_count[0].dataValues['sub_deals_count'];
+                                                    var all_sub_deals = [];
+
+                                                    var pre_price_total = 0;
+                                                    var new_price_subtotal = 0;
+
+                                                    sub_deal.forEach(item => {
+                                                        pre_price_total = pre_price_total + item.dataValues.pre_price;
+                                                        new_price_subtotal = new_price_subtotal + item.dataValues.new_price;
+                                                        var percDiff = 100 * Math.abs((item.dataValues.new_price - item.dataValues.pre_price) / ((item.dataValues.pre_price + item.dataValues.new_price) / 2));
+                                                        item.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";;
+                                                        all_sub_deals.push(item.dataValues);
+                                                    });
+
+                                                    var diff = pre_price_total - new_price_subtotal;
+                                                    var percDiff = 100 * Math.abs((new_price_subtotal - pre_price_total) / ((pre_price_total + new_price_subtotal) / 2));
+                                                    deals.dataValues['pre_price_total'] = pre_price_total;
+                                                    deals.dataValues['new_price_subtotal'] = new_price_subtotal;
+                                                    deals.dataValues['diff'] = diff;
+                                                    deals.dataValues['percDiff'] = percDiff.toString().split('.')[0] + "%";;
+
+                                                    deals.dataValues['sub_deals'] = all_sub_deals;
+                                                    resolve(deals);
+
+                                                }
+                                            });
+
+                                        }
+                                    }, error => {
+                                        reject(error);
+                                    });
+                                }
+                            }, error => {
+                                reject(error);
+                            });
+
+                        }
+                    }
+                        ,
+                        error => {
+                            reject(error);
+                        }
+                    );
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    get_deal_by_id_admin: function (id) {
+
+        return new Promise(function (resolve, reject) {
+            models.Deals.belongsTo(model_company.Company, { foreignKey: 'company_id', targetKey: 'company_id' });
+            models.Deals.belongsTo(model_company.Company_Branches, { foreignKey: 'branch_id', targetKey: 'branch_id' });
+            models.Deals.hasMany(info_deals.InfoDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+            models.Deals.hasMany(condition_deals.ConditionsDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+            models.Deals.belongsTo(category_model.Categories, { foreignKey: 'shop_category_id', targetKey: 'shop_category_id' });
+            models.Deals.findOne({
+                where: { active: 1, deal_id: id },
+                include: [{
+                    model: model_company.Company,
+                }, {
+                    model: model_company.Company_Branches,
+                }, {
+                    model: info_deals.InfoDeals
+                }, {
+                    model: condition_deals.ConditionsDeals
+                }, {
+                    model: category_model.Categories
                 }],
 
             }).then(deals => {
@@ -446,7 +581,7 @@ var dealsRepository = {
             }
             models.Deals.hasMany(model_images.Images, { foreignKey: 'deal_id' })
             models.Deals.findAll({
-                limit: pageSize, offset: offset, attributes: deal_attributes,
+                limit: pageSize, offset: offset,
                 include: [{
                     model: model_images.Images
                 }]
@@ -628,9 +763,33 @@ var dealsRepository = {
                         dealsRepository.create_deal_info(newDealData.info[k]).then(result => {
                             length--;
                             if (!length) {
-                                dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
-                                    resolve(deal);
-                                });
+
+
+
+                                //create conditions of deals if there is any 
+                                if (newDealData.conditions) {
+                                    var length = newDealData.conditions.length;
+                                    for (let k in newDealData.conditions) {
+                                        newDealData.conditions[k]['deal_id'] = deal.deal_id;
+                                        dealsRepository.create_deal_condition(newDealData.conditions[k]).then(result => {
+                                            length--;
+                                            if (!length) {
+                                                dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
+                                                    resolve(deal);
+                                                });
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
+                                        resolve(deal);
+                                    });
+                                }
+
+
+
+
+
                             }
                         });
                     }
@@ -675,6 +834,20 @@ var dealsRepository = {
             });
         });
     },
+    create_deal_condition: function (newDealConditionData) {
+        return new Promise(function (resolve, reject) {
+            condition_deals.ConditionsDeals.create({
+                deal_id: newDealConditionData.deal_id,
+                details_en: newDealConditionData.details_en,
+                details_ar: newDealConditionData.details_ar
+            }).then(dealCondition => {
+                resolve(dealCondition);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+
     update_deal: function (newDealData) {
         console.log(newDealData.active);
         return new Promise(function (resolve, reject) {
@@ -785,14 +958,21 @@ var dealsRepository = {
     },
 
 
-    get_servicePro_deals: function (user_id) {
+    get_servicePro_deals: function (user_id, page) {
+
+        var pageSize = 12; // page start from 0
+        const offset = page * pageSize;
 
         return new Promise(function (resolve, reject) {
+
             if (lang.acceptedLanguage == 'en') {
                 deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
-
+                sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
+                info_deals_attributes = ['info_id', 'deal_id', ['details_en', 'details']];
             } else {
                 deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
+                info_deals_attributes = ['info_id', 'deal_id', ['details_ar', 'details']];
             }
 
             model_company.Company.findOne({
@@ -804,19 +984,33 @@ var dealsRepository = {
                 if (company == null || !company['dataValues'].company_id) {
                     resolve([]);
                 } else {
+                    models.Deals.hasMany(condition_deals.ConditionsDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+                    models.Deals.hasMany(info_deals.InfoDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+                    models.Deals.hasMany(sub_deals.SubDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
                     models.Deals.hasMany(model_images.Images, { foreignKey: 'deal_id' })
-                    models.Deals.findAll({
+                    models.Deals.findAndCountAll({
+                        limit: pageSize, offset: offset,
+                        distinct: true,
                         where: {
                             company_id: company['dataValues'].company_id
                         },
-                        attributes: deal_attributes,
                         include: [{
                             model: model_images.Images
+                        }, {
+                            model: info_deals.InfoDeals
+                        }, {
+                            model: condition_deals.ConditionsDeals
+                        }, {
+                            model: sub_deals.SubDeals
                         }]
                     }).then(deals => {
                         if (deals == null) {
                             resolve([]);
                         } else {
+                            var dealsTemp = deals.rows;
+                            deals.deals = dealsTemp;
+                            delete deals.rows;
+                            console.log(dealsTemp);
                             resolve(deals);
                         }
                     }, error => {
@@ -829,23 +1023,39 @@ var dealsRepository = {
         }
         );
     },
-    get_salesRep_deals: function (user_id) {
+    get_salesRep_deals: function (user_id, page) {
+        var pageSize = 12; // page start from 0
+        const offset = page * pageSize;
 
         return new Promise(function (resolve, reject) {
-            if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
-            } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
-            }
 
+            // if (lang.acceptedLanguage == 'en') {
+            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            //     sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
+            //     info_deals_attributes = ['info_id', 'deal_id', ['details_en', 'details']];
+            // } else {
+            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            //     sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
+            //     info_deals_attributes = ['info_id', 'deal_id', ['details_ar', 'details']];
+            // }
+
+            models.Deals.hasMany(info_deals.InfoDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+            models.Deals.hasMany(condition_deals.ConditionsDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
+            models.Deals.hasMany(sub_deals.SubDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
             models.Deals.hasMany(model_images.Images, { foreignKey: 'deal_id' })
             models.Deals.findAll({
+                limit: pageSize, offset: offset,
                 where: {
                     user_id: user_id
                 },
-                attributes: deal_attributes,
                 include: [{
                     model: model_images.Images
+                }, {
+                    model: condition_deals.ConditionsDeals
+                }, {
+                    model: info_deals.InfoDeals
+                }, {
+                    model: sub_deals.SubDeals
                 }]
             }).then(deals => {
                 if (deals == null) {

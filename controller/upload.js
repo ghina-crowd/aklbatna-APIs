@@ -13,25 +13,41 @@ var fs = require('fs');
 
 
 var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './files/companies/');
-    },
-    filename: (req, file, cb) => {
-        console.log(file);
-        var filetype = '';
+    destination: async (req, file, cb) => {
+
         if (file.mimetype === 'image/gif') {
-            filetype = 'gif';
+            cb(null, './images/companies/');
         }
         if (file.mimetype === 'image/png') {
-            filetype = 'png';
+            cb(null, './images/companies/');
         }
         if (file.mimetype === 'image/jpeg') {
-            filetype = 'jpg';
+            cb(null, './images/companies/');
         }
         if (file.mimetype === 'application/pdf') {
-            filetype = 'pdf';
+            cb(null, './files/companies/');
         }
-        cb(null, Date.now() + '.' + filetype);
+
+    },
+    filename: async (req, file, cb) => {
+        console.log(file);
+        var filename = new Date().getTime().toString();
+        if (file.mimetype === 'image/gif') {
+            filename = filename + '.gif'
+        }
+        if (file.mimetype === 'image/png') {
+            // const imagePath = path.join(__dirname, '..' + '/images/companies/');
+            // const fileUpload = new Resize(imagePath, filename + '.' + 'png');
+            // filename = await fileUpload.save(req.file.buffer);
+            filename = filename + '.png'
+        }
+        if (file.mimetype === 'image/jpeg') {
+            filename = filename + '.jpg'
+        }
+        if (file.mimetype === 'application/pdf') {
+            filename = filename + '.pdf'
+        }
+        cb(null, filename);
     }
 });
 var upload_file = multer({ storage: storage });
@@ -71,7 +87,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -258,7 +274,7 @@ router.post('/company/images', upload.array('images'), async function (req, res)
 
 
 
-        
+
 
         //uploading images and save into array
         var temp_images = [];
@@ -266,21 +282,22 @@ router.post('/company/images', upload.array('images'), async function (req, res)
             for (let k in req.files) {
 
 
-
+                const relative_ptah = '/images/companies/';
 
                 var filetype = '';
-                if (req.files[k].mimetype === 'image/png') {
+                if (req.files[k].mimetype === 'image/png' || req.files[k].mimetype === 'image/jpeg') {
                     filetype = 'png';
-                }
-                if (req.files[k].mimetype === 'image/jpeg') {
-                    filetype = 'jpg';
+                    const imagePath = path.join(__dirname, '..' + relative_ptah);
+                    const fileUpload = new Resize(imagePath, new Date().getTime() + '.' + filetype);
+                    const filename = await fileUpload.save(req.files[k].buffer);
+                    temp_images.push(relative_ptah + filename);
+                } else {
+                    filetype = 'pdf';
+                    relative_ptah = '/files/companies/';
                 }
 
-                const relative_ptah = '/images/companies/';
-                const imagePath = path.join(__dirname, '..' + relative_ptah);
-                const fileUpload = new Resize(imagePath, new Date().getTime() + '.' + filetype);
-                const filename = await fileUpload.save(req.files[k].buffer);
-                temp_images.push(relative_ptah + filename);
+
+
             }
         }
         languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
@@ -305,7 +322,7 @@ router.post('/company/images', upload.array('images'), async function (req, res)
     }
 
 });
-router.post('/company/file', upload_file.single('file'), async function (req, res) {
+router.post('/company/file', upload_file.array('file'), async function (req, res) {
 
 
     var lang = req.headers.language;
@@ -319,7 +336,7 @@ router.post('/company/file', upload_file.single('file'), async function (req, re
             return;
         }
 
-        if (!req.file) {
+        if (!req.files) {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -331,14 +348,27 @@ router.post('/company/file', upload_file.single('file'), async function (req, re
             return;
         }
 
-        var file = {};
-        file['url'] = '/files/companies/' + req.file.filename;
+
+        var temp_images = [];
+        if (req.files.length > 0) {
+            for (let k in req.files) {
+                var relative_ptah = '/images/companies/';
+                if (req.files[k].mimetype === 'image/png' || req.files[k].mimetype === 'image/jpeg' || req.files[k].mimetype === 'image/gif') {
+                    relative_ptah = '/images/companies/';
+                    temp_images.push(relative_ptah + req.files[0].filename);
+                } else {
+                    relative_ptah = '/files/companies/';
+                    temp_images.push(relative_ptah + req.files[0].filename);
+                }
+            }
+        }
+
         languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
             res.json({
                 status: statics.STATUS_SUCCESS,
                 code: codes.SUCCESS,
                 message: msg.message,
-                data: file,
+                data: temp_images,
             });
         })
 

@@ -6,7 +6,7 @@ const sequelize = require('sequelize');
 
 
 const Op = sequelize.Op;
-var deal_attributes, company_attributes
+var deal_attributes, company_attributes, company_branches_attributes
 var CompanyRepository = {
     filter_companies: function (latitude, longitude, location_name, page) {
         var pageSize = 12; // page start from 0
@@ -15,9 +15,11 @@ var CompanyRepository = {
             if (lang.acceptedLanguage == 'en') {
                 deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
             } else {
                 deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link', 'icon'];
+                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
             }
 
             var data = {};
@@ -66,8 +68,10 @@ var CompanyRepository = {
 
             if (lang.acceptedLanguage == 'en') {
                 company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
             } else {
-                company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+                company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
             }
             var data = {}
             if (keyword) {
@@ -81,9 +85,46 @@ var CompanyRepository = {
                     }
                 }
             }
-
+            company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
             company_model.Company.findAll({
-                limit: pageSize, offset: offset, attributes: company_attributes
+                limit: pageSize, offset: offset, attributes: company_attributes,
+                include: [{
+                    model: company_model.Company_Branches,
+                    attributes: company_branches_attributes
+                }]
+            }).then(companies => {
+                if (companies == null) {
+                    resolve([]);
+                } else {
+                    resolve(companies);
+                }
+            }, error => {
+                reject(error);
+            });
+        }
+        );
+    },
+    get_company: function (id) {
+        return new Promise(function (resolve, reject) {
+
+            if (lang.acceptedLanguage == 'en') {
+                company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
+            } else {
+                company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
+            }
+
+            company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
+            company_model.Company.findAll({
+                where: {
+                    company_id: id
+                },
+                attributes: company_attributes,
+                include: [{
+                    model: company_model.Company_Branches,
+                    attributes: company_branches_attributes
+                }]
             }).then(companies => {
                 if (companies == null) {
                     resolve([]);
@@ -134,6 +175,7 @@ var CompanyRepository = {
         });
     },
     create_company: function (newCompanyData) {
+
         return new Promise(function (resolve, reject) {
             company_model.Company.create({
                 user_id: newCompanyData.user_id,
@@ -166,6 +208,8 @@ var CompanyRepository = {
                 company_role: newCompanyData.company_role,
             }).then(company => {
 
+                // console.log(company);
+
                 var branch = {};
                 branch['address'] = newCompanyData.address;
                 branch['latitude'] = newCompanyData.latitude;
@@ -181,6 +225,9 @@ var CompanyRepository = {
                 })
 
             }, error => {
+                console.log('error');
+                console.log(error);
+
                 reject(error)
             });
         });
@@ -349,6 +396,7 @@ var CompanyRepository = {
             }, { where: { company_id: newCompanyData.company_id } }).then(function (result) {
                 company_model.Company.findOne({ where: { company_id: newCompanyData.company_id } }).then(company => {
 
+                    console.log('branch');
 
                     var branch = {};
                     branch['address'] = newCompanyData.address;
@@ -362,11 +410,10 @@ var CompanyRepository = {
                         resolve(company);
 
                     }).catch(error => {
-                        reject(error)
+                        // reject(error)
                     })
-                    // resolve(company);
                 }, error => {
-                    reject(error);
+                    // reject(error);
                 });
             }, function (error) {
                 reject(error);

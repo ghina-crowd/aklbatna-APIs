@@ -204,6 +204,50 @@ router.get('/deal/:id', function (req, res) {
 
     }
 });
+router.get('/admin/deal/:id', function (req, res) {
+
+    var lang = req.headers.language;
+    var id = req.params.id;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        return new Promise(function (resolve, reject) {
+            dealServices.get_deal_by_id_admin(id).then(deals => {
+                resolve(deals);
+                if (deals == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: [],
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: deals,
+                        });
+                    });
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+
+    }
+});
 
 router.post('/filter', function (req, res) {
     var errors = validationResult(req);
@@ -477,13 +521,20 @@ router.get('/sub_deals/:id', function (req, res) {
 
 
 //Deal by user id but i have no idea lol why salesRep we can use this for every user .
-router.get('/salesRep/get_deals/:id', function (req, res) {
+router.get('/salesRep/get_deals/:page', async function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
-        var user_id = req.params.id;
+
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        var page = req.params.page;
+
         return new Promise(function (resolve, reject) {
-            dealServices.get_salesRep_deals(user_id).then(deals => {
+            dealServices.get_salesRep_deals(id, page).then(deals => {
                 resolve(deals);
                 if (deals == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -519,13 +570,21 @@ router.get('/salesRep/get_deals/:id', function (req, res) {
         })
     }
 });
-router.get('/ServiceRep/get_deals/:id', function (req, res) {
+router.get('/ServicePro/get_deals/:page', async function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
-        var user_id = req.params.id;
+
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
+        var page = req.params.page;
+
         return new Promise(function (resolve, reject) {
-            dealServices.get_servicePro_deals(user_id).then(deals => {
+            dealServices.get_servicePro_deals(id, page).then(deals => {
                 resolve(deals);
                 if (deals == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {

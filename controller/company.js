@@ -191,6 +191,56 @@ router.get('/admin/get_companies', async function (req, res) {
         })
     }
 });
+//get companies by admin
+router.get('/get/:company_id', async function (req, res) {
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            companyService.get_company(req.params.company_id).then(companies => {
+                resolve(companies);
+                if (companies == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: [],
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: companies,
+                        });
+                    });
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.post('/admin/create', upload.single('icon'), async function (req, res) {
 
 
@@ -361,7 +411,7 @@ router.post('/admin/create', upload.single('icon'), async function (req, res) {
     }
 
 });
-router.post('/admin/update', upload.single('icon'), async function (req, res) {
+router.put('/admin/update', async function (req, res) {
 
 
     var lang = req.headers.language;
@@ -373,15 +423,6 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
         await verifyToken(token, res, lang);
         if (!id) {
             return;
-        }
-
-        //check if there is any file update
-        if (req.file) {
-            const relative_ptah = '/images/companies/';
-            const imagePath = path.join(__dirname, '..' + relative_ptah);
-            const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
-            const filename = await fileUpload.save(req.file.buffer);
-            credentials['icon'] = relative_ptah + filename;
         }
 
 
@@ -398,15 +439,6 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
                 });
             } else if (!credentials.company_id || credentials.company_id == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY_ID').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.user_id || credentials.user_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_USER_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -482,18 +514,7 @@ router.post('/admin/update', upload.single('icon'), async function (req, res) {
                     });
                 });
 
-            } else if (!credentials.website_link || credentials.website_link == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_WEBSITE_LINK').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
             } else {
-
                 console.log(JSON.stringify(credentials));
                 companyService.update_company(credentials).then(company => {
                     resolve(company);
@@ -689,7 +710,7 @@ router.post('/branch/create', async function (req, res) {
                 });
 
             } else {
-                
+
                 companyService.create_company_branch(credentials).then(company_branch => {
                     resolve(company_branch);
                     if (company_branch == null) {
@@ -728,7 +749,7 @@ router.post('/branch/create', async function (req, res) {
     }
 
 });
-router.post('/branch/update', async function (req, res) {
+router.put('/branch/update', async function (req, res) {
 
 
     var lang = req.headers.language;

@@ -200,11 +200,13 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_TYPE });
             } else if (type == 'EMPTY_FIELD_STATUS') {
                 resolve({ message: messages.EMPTY_FIELD_STATUS });
-            }else if (type == 'INVALID_SUB_DEAL_ID') {
+            } else if (type == 'INVALID_SUB_DEAL_ID') {
                 resolve({ message: messages.INVALID_SUB_DEAL_ID });
+            } else if (type == 'INVALID_PASSWORD') {
+                resolve({ message: messages.INVALID_PASSWORD });
             }
 
-            
+
 
             else if (type == 'EMPTY_FIELD_BRANCH_NAME_EN') {
                 resolve({ message: messages.EMPTY_FIELD_BRANCH_NAME_EN });

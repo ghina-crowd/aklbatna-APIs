@@ -28,6 +28,14 @@ var service = {
                 reject(error);
             });
         });
+    }, get_deal_by_id_admin: function (id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.get_deal_by_id_admin(id).then(deals => {
+                resolve(deals);
+            }, error => {
+                reject(error);
+            });
+        });
     },
 
     get_related_deals: function (category_id, deal_id) {
@@ -175,18 +183,18 @@ var service = {
         });
     },
 
-    get_servicePro_deals: function (user_id) {
+    get_servicePro_deals: function (user_id, page) {
         return new Promise(function (resolve, reject) {
-            dealRepository.get_servicePro_deals(user_id).then(deals => {
+            dealRepository.get_servicePro_deals(user_id, page).then(deals => {
                 resolve(deals);
             }, error => {
                 reject(error);
             });
         });
     },
-    get_salesRep_deals: function (user_id) {
+    get_salesRep_deals: function (user_id, page) {
         return new Promise(function (resolve, reject) {
-            dealRepository.get_salesRep_deals(user_id).then(deals => {
+            dealRepository.get_salesRep_deals(user_id, page).then(deals => {
                 resolve(deals);
             }, error => {
                 reject(error);

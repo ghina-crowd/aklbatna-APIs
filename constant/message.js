@@ -111,7 +111,8 @@ var message = {
     EMPTY_FIELD_EMAIL: 'invalid email',
     EMPTY_FIELD_NAME: 'invalid name',
     EMPTY_FIELD_MESSAGE: 'invalid message',
-    INVALID_SUB_DEAL_ID: 'sub deal id is missing'
+    INVALID_SUB_DEAL_ID: 'sub deal id is missing',
+    INVALID_PASSWORD: 'invalid password',
 
 
 };

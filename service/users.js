@@ -63,9 +63,9 @@ module.exports = {
             });
         });
     },
-    Update: function (first_name, last_name, phone, email) {
+    Update: function (first_name, last_name, phone, email, subscribe, new_password, old_password) {
         return new Promise(function (resolve, reject) {
-            UserRepository.update_profile(first_name, last_name, phone, email).then(user => {
+            UserRepository.update_profile(first_name, last_name, phone, email, subscribe, new_password, old_password).then(user => {
                 resolve(user);
             }, function (error) {
                 reject(error);
@@ -105,6 +105,15 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             UserRepository.getUserActivities(id).then(user => {
                 resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getBestSeller: function () {
+        return new Promise(function (resolve, reject) {
+            UserRepository.getBestSeller().then(users => {
+                resolve(users);
             }, error => {
                 reject(error);
             });

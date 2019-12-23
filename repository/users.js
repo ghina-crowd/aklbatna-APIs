@@ -1,7 +1,11 @@
 var models = require('../models/models.js');
 var model_deal = require('../models/deals_model');
+var model_company = require('../models/company_model');
+var model_sub_deal = require('../models/sub_deals_model');
 var commonRepository = require('./common.js');
 var bcrypt = require('bcryptjs');
+const sequelize = require('sequelize');
+const Op = sequelize.Op;
 
 var UserRepository = {
     GetAll: function () {
@@ -49,22 +53,33 @@ var UserRepository = {
 
             models.User.hasMany(models.Account, { foreignKey: 'fk_user_id' });
             models.User.hasMany(model_deal.Deals, { foreignKey: 'user_id' });
+            model_deal.Deals.hasMany(model_sub_deal.SubDeals, { foreignKey: 'deal_id' });
             models.User.hasMany(models.Purchase, { foreignKey: 'user_id' });
             models.User.hasMany(models.Advertising, { foreignKey: 'user_id' });
             models.User.hasMany(models.Activities, { foreignKey: 'user_id' });
+            models.User.hasOne(model_company.Company, { foreignKey: 'user_id' });
+            model_company.Company.hasMany(model_company.Company_Branches, { foreignKey: 'company_id' });
 
             models.User.findOne({
                 where: { user_admin_id: id },
                 include: [{
                     model: models.Account
                 }, {
-                    model: model_deal.Deals
+                    model: model_deal.Deals,
+                    include: [{
+                        model: model_sub_deal.SubDeals
+                    }]
                 }, {
                     model: models.Purchase
                 }, {
                     model: models.Advertising
                 }, {
                     model: models.Activities
+                }, {
+                    model: model_company.Company,
+                    include: [{
+                        model: model_company.Company_Branches
+                    }]
                 }]
             }).then(user => {
                 if (!user) {
@@ -80,9 +95,17 @@ var UserRepository = {
     },
     Login: function (email, password) {
         return new Promise(function (resolve, reject) {
+            models.User.hasOne(model_company.Company, { foreignKey: 'user_id' });
+            model_company.Company.hasMany(model_company.Company_Branches, { foreignKey: 'company_id' });
             models.User.findOne({
                 attributes: ['user_admin_id', 'password', 'email', 'phone', 'first_name', 'last_name', 'active', 'user_type'],
-                where: { email: email }
+                where: { email: email },
+                include: [{
+                    model: model_company.Company,
+                    include: [{
+                        model: model_company.Company_Branches
+                    }]
+                }]
             }).then(users => {
                 console.log(users);
                 if (users) {
@@ -299,25 +322,60 @@ var UserRepository = {
             });
         });
     },
-    update_profile: function (first_name, last_name, phone, email) {
-        return new Promise(function (resolve, reject) {
-            models.User.update({
-                first_name: first_name,
-                last_name: last_name,
-                phone: phone,
+    update_profile: function (first_name, last_name, phone, email, subscribe, old_password, new_password) {
 
-            }, { where: { email: email } }).then(function (result) {
-                models.User.findOne({ where: { email: email }, attributes: ['email', 'first_name', 'last_name', 'phone'] }).then(users => {
-                    resolve(users);
+
+        return new Promise(function (resolve, reject) {
+            if (new_password && old_password) {
+                var hashPassword = bcrypt.hashSync(new_password, 8);
+                models.User.findOne({ where: { email: email }, attributes: ['password'] }).then(users => {
+                    var passwordIsValid = bcrypt.compareSync(old_password, users.password);
+                    if (!passwordIsValid) {
+                        resolve('0')
+                    } else {
+                        if (!subscribe) {
+                            subscribe = 0;
+                        }
+                        models.User.update({
+                            first_name: first_name,
+                            last_name: last_name,
+                            phone: phone,
+                            subscribe: subscribe,
+                            password: hashPassword
+                        }, { where: { email: email } }).then(function (result) {
+                            models.User.findOne({ where: { email: email }, attributes: ['email', 'first_name', 'last_name', 'phone', 'subscribe'] }).then(users => {
+                                resolve(users);
+                            }, error => {
+                                reject(error);
+                            });
+                        }, function (error) {
+                            reject(error);
+                        });
+                    }
+
                 }, error => {
                     reject(error);
                 });
+            } else {
+                if (!subscribe) {
+                    subscribe = 0;
+                }
+                models.User.update({
+                    first_name: first_name,
+                    last_name: last_name,
+                    phone: phone,
+                    subscribe: subscribe,
 
-
-            }, function (error) {
-            }, function (error) {
-                reject(error);
-            });
+                }, { where: { email: email } }).then(function (result) {
+                    models.User.findOne({ where: { email: email }, attributes: ['email', 'first_name', 'last_name', 'phone', 'subscribe'] }).then(users => {
+                        resolve(users);
+                    }, error => {
+                        reject(error);
+                    });
+                }, function (error) {
+                    reject(error);
+                });
+            }
         });
     },
     update_user_type: function (body) {
@@ -382,6 +440,57 @@ var UserRepository = {
             }, error => {
                 reject(error);
             });
+        });
+
+        // 
+        // , where: { deal_id: deal_id }
+    }, getBestSeller: function () {
+        return new Promise(function (resolve, reject) {
+            models.User.hasMany(model_deal.Deals, { foreignKey: 'user_id' });
+            model_deal.Deals.hasMany(model_sub_deal.SubDeals, { foreignKey: 'deal_id' });
+            models.User.findAll({
+                attributes: ['first_name', 'last_name', 'phone', 'email', 'photo'],
+                where: {
+                    user_type: {
+                        [Op.or]: ["servicePro", "salesRep"]
+                    }
+                }, include: [{
+                    attributes: ['count_bought', 'final_rate'],
+                    model: model_deal.Deals,
+                    include: [{
+                        attributes: ['id', 'count_bought'],
+                        model: model_sub_deal.SubDeals
+                    }]
+                }]
+            }).then(users => {
+                if (users == null) {
+                    resolve(null);
+                } else {
+
+                    users.forEach(users => {
+                        users['dataValues'].all_deal_count_bought = 0;
+                        users['dataValues'].deals.forEach(deals => {
+                            console.log(deals['dataValues']);
+                            deals['dataValues'].sub_deals.forEach(item => {
+                                console.log(item['dataValues']);
+                                deals['dataValues'].count_bought = deals['dataValues'].count_bought + item['dataValues'].count_bought;
+                            });
+                            users['dataValues'].all_deal_count_bought = users['dataValues'].all_deal_count_bought + deals['dataValues'].count_bought;
+                        });
+                        delete users['dataValues'].deals;
+                    });
+
+                    users.sort((a, b) => parseFloat(a["dataValues"].all_deal_count_bought) + parseFloat(b["dataValues"].all_deal_count_bought));
+                    resolve(users);
+
+
+                }
+            }, error => {
+                reject(error);
+            });
+
+
+
         });
     },
 };

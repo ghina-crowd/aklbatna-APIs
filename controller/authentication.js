@@ -82,9 +82,9 @@ router.post('/login', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var creqentials = req.body;
+        var credentials = req.body;
 
-        if (creqentials.email == '') {
+        if (credentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -93,7 +93,7 @@ router.post('/login', function (req, res) {
                     data: null
                 });
             });
-        } else if (creqentials.password == '') {
+        } else if (credentials.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -104,7 +104,7 @@ router.post('/login', function (req, res) {
             });
         } else {
             return new Promise(function (resolve, reject) {
-                authenticationService.login(creqentials.email, creqentials.password).then(user => {
+                authenticationService.login(credentials.email, credentials.password).then(user => {
                     resolve(user);
                     if (user == null) {
                         languageService.get_lang(lang, 'INCORRECT_PASSWORD_USER').then(msg => {
@@ -200,11 +200,11 @@ router.post('/social', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var creqentials = req.body;
+        var credentials = req.body;
         var lang = req.headers.language;
 
         return new Promise(function (resolve, reject) {
-            if (creqentials.email == '') {
+            if (credentials.email == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -214,7 +214,7 @@ router.post('/social', function (req, res) {
                     })
                 });
 
-            } else if (creqentials.firstName == '') {
+            } else if (credentials.firstName == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -223,7 +223,7 @@ router.post('/social', function (req, res) {
                         data: null
                     });
                 });
-            } else if (creqentials.lastName == '') {
+            } else if (credentials.lastName == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
                     res.json({
@@ -237,7 +237,7 @@ router.post('/social', function (req, res) {
 
                 return new Promise(function (resolve, reject) {
 
-                    authenticationService.check_user_social(creqentials.email, '123456789', creqentials.firstName, creqentials.lastName).then(user => {
+                    authenticationService.check_user_social(credentials.email, '123456789', credentials.firstName, credentials.lastName).then(user => {
 
                         resolve(user);
 
@@ -313,10 +313,10 @@ router.post('/register', upload.single('photo'), async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var creqentials = req.body;
+        var credentials = req.body;
         var lang = req.headers.language;
 
-        if (creqentials.user_type == 'servicePro' && creqentials.salesRep_id) {
+        if (credentials.user_type == 'servicePro' && credentials.salesRep_id) {
             var token = req.headers.authorization;
             await verifyToken(token, res, lang);
             if (!id) {
@@ -324,7 +324,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
             }
         }
         return new Promise(function (resolve, reject) {
-            if (creqentials.user_type == 'servicePro' && !creqentials.company) {
+            if (credentials.user_type == 'servicePro' && !credentials.company) {
                 languageService.get_lang(lang, 'COMPANY_DETAILS_IS_MISSING').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -334,7 +334,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                     })
                 });
             }
-            else if (!creqentials.user_type && creqentials.user_type == '') {
+            else if (!credentials.user_type && credentials.user_type == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_USER_TYPE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -344,7 +344,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                     })
                 });
             }
-            else if (!creqentials.email || creqentials.email == '') {
+            else if (!credentials.email || credentials.email == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -354,7 +354,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                     })
                 });
 
-            } else if (!creqentials.password || creqentials.password == '') {
+            } else if (!credentials.password || credentials.password == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -363,7 +363,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!creqentials.first_name || creqentials.first_name == '') {
+            } else if (!credentials.first_name || credentials.first_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -372,7 +372,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!creqentials.last_name || creqentials.last_name == '') {
+            } else if (!credentials.last_name || credentials.last_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
                     res.json({
@@ -382,7 +382,7 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!creqentials.phone || creqentials.phone == '') {
+            } else if (!credentials.phone || credentials.phone == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -395,14 +395,14 @@ router.post('/register', upload.single('photo'), async function (req, res) {
                 return new Promise(function (resolve, reject) {
                     // checking if user has no password means this request is from Sales Representative for service provider account.
                     var temp_password = ""
-                    if (!creqentials.password) {
+                    if (!credentials.password) {
                         temp_password = Math.floor(1000 + Math.random() * 9000) + '';
-                        creqentials.password = temp_password;
+                        credentials.password = temp_password;
                     } else {
-                        temp_password = creqentials.password;
+                        temp_password = credentials.password;
                     }
 
-                    authenticationService.check_user(creqentials.email, creqentials.password, creqentials.first_name, creqentials.last_name, creqentials.phone, creqentials.user_type, creqentials.salesRep_id).then(user => {
+                    authenticationService.check_user(credentials.email, credentials.password, credentials.first_name, credentials.last_name, credentials.phone, credentials.user_type, credentials.salesRep_id).then(user => {
                         resolve(user);
                         if (user == null) {
                             languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
@@ -452,9 +452,9 @@ router.post('/register', upload.single('photo'), async function (req, res) {
 
                                 // creating user as service provider when request is from salesRep
 
-                                creqentials.company['user_id'] = user.user_admin_id;
-                                console.log(creqentials.company);
-                                companyService.create_company(creqentials.company).then(company => {
+                                credentials.company['user_id'] = user.user_admin_id;
+                                console.log(credentials.company);
+                                companyService.create_company(credentials.company).then(company => {
 
                                     languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
@@ -500,9 +500,9 @@ router.post('/register', upload.single('photo'), async function (req, res) {
 
                             } else if (user.user_type === 'servicePro' && !salesRep) {
                                 // creating user as service provider when request is from service provider.
-                                creqentials.company['user_id'] = user.user_admin_id;
-                                console.log(creqentials.company);
-                                companyService.create_company(creqentials.company).then(company => {
+                                credentials.company['user_id'] = user.user_admin_id;
+                                console.log(credentials.company);
+                                companyService.create_company(credentials.company).then(company => {
 
                                     languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
@@ -857,151 +857,150 @@ router.get('/profile', function (req, res) {
     }
 });
 
-// update profile
-router.put('/update_profile', upload.single('picture'), function (req, res) {
+// // update profile
+// router.put('/update_profile', upload.single('picture'), function (req, res) {
 
-    var path = req.file.path;
-    console.log(path);
+//     var path = req.file.path;
+//     console.log(path);
 
-    var lang = req.headers.language;
+//     var lang = req.headers.language;
 
+//     var errors = validationResult(req);
+//     if (errors.array().length == 0) {
+//         var header_data = req.headers;
+//         var data = req.body;
 
-    var errors = validationResult(req);
-    if (errors.array().length == 0) {
-        var header_data = req.headers;
-        var data = req.body;
+//         if (data.first_name == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
 
-        if (data.first_name == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else if (data.last_name == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (data.last_name == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else if (data.address == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_ADDRESS').then(msg => {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (data.address == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_ADDRESS').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else if (data.phone == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (data.phone == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else if (data.lattitude == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_LAT').then(msg => {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (data.lattitude == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_LAT').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else if (data.longitude == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_LONG').then(msg => {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (data.longitude == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_LONG').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else if (data.company_name == '') {
+//             languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY').then(msg => {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (data.company_name == '') {
-            languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY').then(msg => {
+//                 res.json({
+//                     status: statics.STATUS_FAILURE,
+//                     code: codes.FAILURE,
+//                     message: msg.message,
+//                     data: null
+//                 });
+//             });
+//         } else {
 
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else {
+//             return new Promise(function (resolve, reject) {
 
-            return new Promise(function (resolve, reject) {
-
-                authenticationService.check_token(header_data.authorization).then(user => {
-
-
-                    resolve(user);
-                    if (user == null) {
-                        languageService.get_lang(lang, 'INVALID_TOKEN').then(msg => {
-
-                            res.json({
-                                status: statics.STATUS_FAILURE,
-                                code: codes.FAILURE,
-                                message: msg.message,
-                                data: null
-                            });
-                        });
-
-                    } else {
-                        authenticationService.update_profile(header_data.token, data.first_name, data.last_name, data.address, data.phone, path, data.lattitude, data.longitude, data.company_name).then(user => {
-
-                            resolve(user);
-                            languageService.get_lang(lang, 'PROFILE_UPDATE').then(msg => {
-
-                                res.json({
-                                    status: statics.STATUS_SUCCESS,
-                                    code: codes.SUCCESS,
-                                    message: msg.message,
-                                    data: user,
-                                });
-                            });
-
-                        }, error => {
-                            reject(error);
-                        });
-                    }
+//                 authenticationService.check_token(header_data.authorization).then(user => {
 
 
-                }, error => {
-                    reject(error);
-                });
+//                     resolve(user);
+//                     if (user == null) {
+//                         languageService.get_lang(lang, 'INVALID_TOKEN').then(msg => {
+
+//                             res.json({
+//                                 status: statics.STATUS_FAILURE,
+//                                 code: codes.FAILURE,
+//                                 message: msg.message,
+//                                 data: null
+//                             });
+//                         });
+
+//                     } else {
+//                         authenticationService.update_profile(header_data.token, data.first_name, data.last_name, data.address, data.phone, path, data.lattitude, data.longitude, data.company_name).then(user => {
+
+//                             resolve(user);
+//                             languageService.get_lang(lang, 'PROFILE_UPDATE').then(msg => {
+
+//                                 res.json({
+//                                     status: statics.STATUS_SUCCESS,
+//                                     code: codes.SUCCESS,
+//                                     message: msg.message,
+//                                     data: user,
+//                                 });
+//                             });
+
+//                         }, error => {
+//                             reject(error);
+//                         });
+//                     }
 
 
-            }, error => {
-                reject(error);
-            });
+//                 }, error => {
+//                     reject(error);
+//                 });
 
 
-        }
-    } else {
-        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.INVALID_DATA,
-                message: msg.message,
-                data: errors.array()
-            });
-        });
-    }
-});
+//             }, error => {
+//                 reject(error);
+//             });
+
+
+//         }
+//     } else {
+//         languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+//             res.json({
+//                 status: statics.STATUS_FAILURE,
+//                 code: codes.INVALID_DATA,
+//                 message: msg.message,
+//                 data: errors.array()
+//             });
+//         });
+//     }
+// });
 
 //resend code
 router.put('/resend_code', async function (req, res) {
@@ -1018,7 +1017,7 @@ router.put('/resend_code', async function (req, res) {
         return new Promise(function (resolve, reject) {
             if (email) {
                 authenticationService.resend_user(email).then(user => {
-                    
+
                     resolve(user);
                     var transporter = nodemailer.createTransport({
                         service: 'gmail',
@@ -1080,9 +1079,9 @@ router.post('/sent_otp_by_email', function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var creqentials = req.body;
+        var credentials = req.body;
 
-        if (creqentials.email == '') {
+        if (credentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
 
                 res.json({
@@ -1095,7 +1094,7 @@ router.post('/sent_otp_by_email', function (req, res) {
         } else {
 
             return new Promise(function (resolve, reject) {
-                authenticationService.check_email(creqentials.email).then(user => {
+                authenticationService.check_email(credentials.email).then(user => {
                     resolve(user);
                     if (!user) {
                         languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {

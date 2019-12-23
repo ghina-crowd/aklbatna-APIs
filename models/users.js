@@ -41,6 +41,9 @@ module.exports = function (sequelize, DataTypes) {
     active: {
       type: DataTypes.STRING(45),
     },
+    subscribe: {
+      type: DataTypes.STRING(45),
+    },
     latitude: {
       type: DataTypes.STRING(45),
     },
