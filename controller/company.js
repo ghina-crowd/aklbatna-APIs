@@ -699,7 +699,7 @@ router.post('/branch/create', async function (req, res) {
                     });
                 });
 
-            } else if (!credentials.address || credentials.address == '') {
+            } else if (!credentials.location_name || credentials.location_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ADDRESS').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -710,7 +710,6 @@ router.post('/branch/create', async function (req, res) {
                 });
 
             } else {
-
                 companyService.create_company_branch(credentials).then(company_branch => {
                     resolve(company_branch);
                     if (company_branch == null) {

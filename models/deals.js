@@ -27,12 +27,30 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(225),
             foreignKey: true,
         },
+
+        attache_link: {
+            type: DataTypes.STRING(225),
+        },
+        attache: {
+            type: DataTypes.STRING(225)
+        },
+        deal_Inclusions: {
+            type: DataTypes.TEXT,
+        },
+        deal_Inclusions_link: {
+            type: DataTypes.STRING(225)
+        },
+        deal_exclusions: {
+            type: DataTypes.TEXT,
+        },
+        deal_exclusions_link: {
+            type: DataTypes.STRING(225)
+        },
+
+
         branch_id: {
             type: DataTypes.STRING(225),
             foreignKey: true,
-        },
-        short_detail: {
-            type: DataTypes.STRING(225),
         },
         details_en: {
             type: DataTypes.STRING(225),
@@ -55,11 +73,20 @@ module.exports = function (sequelize, DataTypes) {
         active: {
             type: DataTypes.STRING(225),
         },
-        premium: {
+        terms_and_conditions: {
+            type: DataTypes.TEXT,
+        },
+        purchased_voucher: {
             type: DataTypes.STRING(225),
         },
-        location_address: {
+        link_for_booking: {
             type: DataTypes.STRING(225),
+        },
+        is_prior_booking: {
+            type: DataTypes.INTEGER,
+        },
+        prior_booking_message: {
+            type: DataTypes.TEXT,
         },
         final_rate: {
             type: DataTypes.FLOAT,

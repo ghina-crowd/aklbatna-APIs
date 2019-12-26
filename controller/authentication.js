@@ -84,7 +84,7 @@ router.post('/login', function (req, res) {
     if (errors.array().length == 0) {
         var credentials = req.body;
 
-        if (credentials.email == '') {
+        if (!credentials.email || credentials.email == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -93,7 +93,7 @@ router.post('/login', function (req, res) {
                     data: null
                 });
             });
-        } else if (credentials.password == '') {
+        } else if (!credentials.password || credentials.password == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_PASS').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -153,19 +153,20 @@ router.post('/login', function (req, res) {
                         var token = jwt.sign(userData, config.secret, {});
 
                         if (user.active == 0) {
+                            var userTemp = { token: token };
+
                             languageService.get_lang(lang, 'ACTIVATION').then(msg => {
                                 res.json({
                                     status: statics.STATUS_FAILURE,
                                     code: codes.ACCOUNT_NOT_FOUND,
                                     message: msg.message,
-                                    data: null,
+                                    data: userTemp,
                                     token: token
                                 });
                             });
                         } else {
                             user['token'] = token,
                                 languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-
                                     res.json({
                                         status: statics.STATUS_SUCCESS,
                                         code: codes.SUCCESS,

@@ -60,12 +60,6 @@ module.exports = function (sequelize, DataTypes) {
         instagram_page: {
             type: DataTypes.STRING(225),
         },
-        city_location: {
-            type: DataTypes.STRING(225),
-        },
-        address: {
-            type: DataTypes.STRING(225),
-        },
         number_of_locations: {
             type: DataTypes.INTEGER,
         },

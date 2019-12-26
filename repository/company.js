@@ -13,13 +13,13 @@ var CompanyRepository = {
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_location_name', 'is_monthly', , ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
+                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
             } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_location_name', 'is_monthly', , ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
                 company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
+                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
             }
 
             var data = {};
@@ -68,10 +68,10 @@ var CompanyRepository = {
 
             if (lang.acceptedLanguage == 'en') {
                 company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
+                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
             } else {
                 company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
+                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
             }
             var data = {}
             if (keyword) {
@@ -107,13 +107,13 @@ var CompanyRepository = {
     get_company: function (id) {
         return new Promise(function (resolve, reject) {
 
-            if (lang.acceptedLanguage == 'en') {
-                company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
-            } else {
-                company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'address', 'latitude', 'longitude'];
-            }
+            // if (lang.acceptedLanguage == 'en') {
+            //     company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+            //     company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
+            // } else {
+            //     company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+            //     company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
+            // }
 
             company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
             company_model.Company.findAll({
@@ -144,7 +144,7 @@ var CompanyRepository = {
                     company_model.Company_Branches.create({
                         company_id: company_id,
                         status: 1,
-                        address: CompanyBranchData.address,
+                        location_name: CompanyBranchData.location_name,
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
@@ -158,7 +158,7 @@ var CompanyRepository = {
                     company_model.Company_Branches.create({
                         company_id: company_id,
                         status: 0,
-                        address: CompanyBranchData.address,
+                        location_name: CompanyBranchData.location_name,
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
@@ -186,7 +186,6 @@ var CompanyRepository = {
                 latitude: newCompanyData.latitude,
                 longitude: newCompanyData.longitude,
                 location_name: newCompanyData.location_name,
-                address: newCompanyData.address,
                 website_link: newCompanyData.website_link,
                 icon: newCompanyData.icon,
 
@@ -194,7 +193,6 @@ var CompanyRepository = {
                 licence_number: newCompanyData.licence_number,
                 expiry_date: newCompanyData.expiry_date,
                 tax_number: newCompanyData.tax_number,
-                city_location: newCompanyData.city_location,
                 facebook_page: newCompanyData.facebook_page,
                 instagram_page: newCompanyData.instagram_page,
                 number_of_locations: newCompanyData.number_of_locations,
@@ -211,7 +209,7 @@ var CompanyRepository = {
                 // console.log(company);
 
                 var branch = {};
-                branch['address'] = newCompanyData.address;
+                branch['location_name'] = newCompanyData.location_name;
                 branch['latitude'] = newCompanyData.latitude;
                 branch['longitude'] = newCompanyData.longitude;
                 branch['name_ar'] = newCompanyData.company_name_ar;
@@ -238,10 +236,9 @@ var CompanyRepository = {
                 console.log(branch_id);
                 if (branch_id) {
                     company_model.Company_Branches.update({
-
                         company_id: company_id,
                         status: 1,
-                        address: CompanyBranchData.address,
+                        location_name: CompanyBranchData.location_name,
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
@@ -279,7 +276,7 @@ var CompanyRepository = {
                     company_model.Company_Branches.create({
                         company_id: company_id,
                         status: 1,
-                        address: CompanyBranchData.address,
+                        location_name: CompanyBranchData.location_name,
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
@@ -314,7 +311,7 @@ var CompanyRepository = {
             company_model.Company_Branches.create({
                 company_id: CompanyBranchData.company_id,
                 status: 0,
-                address: CompanyBranchData.address,
+                location_name: CompanyBranchData.location_name,
                 latitude: CompanyBranchData.latitude,
                 longitude: CompanyBranchData.longitude,
                 name_ar: CompanyBranchData.name_ar,
@@ -345,7 +342,7 @@ var CompanyRepository = {
         return new Promise(function (resolve, reject) {
             company_model.Company_Branches.update({
                 company_id: CompanyBranchData.company_id,
-                address: CompanyBranchData.address,
+                location_name: CompanyBranchData.location_name,
                 latitude: CompanyBranchData.latitude,
                 longitude: CompanyBranchData.longitude,
                 name_ar: CompanyBranchData.name_ar,
@@ -374,14 +371,13 @@ var CompanyRepository = {
                 latitude: newCompanyData.latitude,
                 longitude: newCompanyData.longitude,
                 location_name: newCompanyData.location_name,
-                address: newCompanyData.address,
+                location_name: newCompanyData.location_name,
                 website_link: newCompanyData.website_link,
                 icon: newCompanyData.icon,
                 trade_name: newCompanyData.trade_name,
                 licence_number: newCompanyData.licence_number,
                 expiry_date: newCompanyData.expiry_date,
                 tax_number: newCompanyData.tax_number,
-                city_location: newCompanyData.city_location,
                 facebook_page: newCompanyData.facebook_page,
                 instagram_page: newCompanyData.instagram_page,
                 number_of_locations: newCompanyData.number_of_locations,
@@ -399,7 +395,7 @@ var CompanyRepository = {
                     console.log('branch');
 
                     var branch = {};
-                    branch['address'] = newCompanyData.address;
+                    branch['location_name'] = newCompanyData.location_name;
                     branch['latitude'] = newCompanyData.latitude;
                     branch['longitude'] = newCompanyData.longitude;
                     branch['name_ar'] = newCompanyData.company_name_ar;

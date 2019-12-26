@@ -107,7 +107,6 @@ var UserRepository = {
                     }]
                 }]
             }).then(users => {
-                console.log(users);
                 if (users) {
                     var passwordIsValid = bcrypt.compareSync(password, users.password);
                     console.log(passwordIsValid);

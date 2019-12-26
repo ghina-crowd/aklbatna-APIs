@@ -30,7 +30,7 @@ var storage = multer.diskStorage({
 
     },
     filename: async (req, file, cb) => {
-        console.log(file);
+        // console.log(file);
         var filename = new Date().getTime().toString();
         if (file.mimetype === 'image/gif') {
             filename = filename + '.gif'
@@ -327,6 +327,7 @@ router.post('/company/file', upload_file.array('file'), async function (req, res
 
     var lang = req.headers.language;
     var token = req.headers.authorization;
+    console.log(req.files)
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {

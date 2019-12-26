@@ -113,6 +113,23 @@ var message = {
     INVALID_SUB_DEAL_ID: 'sub deal id is missing',
     INVALID_PASSWORD: 'invalid password',
 
+
+
+
+
+    EMPTY_FIELDS_DETAILS_AR: 'invalid details ar',
+    EMPTY_FIELDS_DETAILS_EN: 'invalid details en',
+    EMPTY_FIELDS_NEW_PRICE: 'invalid new price',
+    EMPTY_FIELDS_START_DATE: 'invalid start date',
+    EMPTY_FIELDS_ACTIVE: 'invalid active status',
+
+    EMPTY_FIELDS_IS_MONTHLY: 'invalid month check',
+    EMPTY_FIELDS_DEAL_TITLE_AR: 'invalid title ar',
+    EMPTY_FIELDS_BRANCH_ID: 'invalid branch',
+    EMPTY_FIELDS_COMPANY_ID: 'invalid company id',
+    EMPTY_FIELDS_CATEGORY_ID: 'invalid category id',
+    EMPTY_FIELDS_SUB_CATEGORY_ID: 'invalid sub category id',
+
 };
 
 module.exports = message;

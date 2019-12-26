@@ -674,7 +674,7 @@ router.get('/admin/get_deals', function (req, res) {
         })
     }
 });
-router.post('/admin/create', upload.array('main_image'), async function (req, res) {
+router.post('/admin/create', upload.single('icon'), async function (req, res) {
 
 
     var lang = req.headers.language;
@@ -689,7 +689,6 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
             return;
         }
 
-
         return new Promise(function (resolve, reject) {
 
             if (!credentials) {
@@ -702,7 +701,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                     });
                 });
             } else if (!credentials.sub_category_id || credentials.sub_category_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_NAME_AR').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_SUB_CATEGORY_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -711,7 +710,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                     });
                 });
             } else if (!credentials.shop_category_id || credentials.shop_category_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_KEYWORD').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_CATEGORY_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -720,7 +719,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                     });
                 });
             } else if (!credentials.company_id || credentials.company_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_COMPANY_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -730,7 +729,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.branch_id || credentials.branch_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ID').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_BRANCH_ID').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -740,7 +739,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.deal_title_en || credentials.deal_title_en == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_DEAL_TITLE_EN').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -750,17 +749,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.deal_title_ar || credentials.deal_title_ar == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
-            } else if (!credentials.short_detail || credentials.short_detail == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_DEAL_TITLE_AR').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -770,7 +759,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.details_en || credentials.details_en == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_DETAILS_EN').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -780,7 +769,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.details_ar || credentials.details_ar == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_DETAILS_AR').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -790,7 +779,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.pre_price || credentials.pre_price == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC_PRE_PRICE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -800,7 +789,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.new_price || credentials.new_price == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_NEW_PRICE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -810,7 +799,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.start_time || credentials.start_time == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_START_DATE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -820,27 +809,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.active || credentials.active == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
-            } else if (!credentials.premium || credentials.premium == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
-            } else if (!credentials.location_address || credentials.location_address == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_ACTIVE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -850,17 +819,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else if (!credentials.is_monthly || credentials.is_monthly == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
-            } else if (!credentials.final_rate || credentials.final_rate == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
+                languageService.get_lang(lang, 'EMPTY_FIELDS_IS_MONTHLY').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -880,7 +839,6 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
                 });
 
             } else {
-
                 //checking who is creating this deal.
                 credentials['user_id'] = id;
                 dealServices.create_deal(credentials).then(deal => {
@@ -922,7 +880,7 @@ router.post('/admin/create', upload.array('main_image'), async function (req, re
     }
 
 });
-router.post('/admin/update', upload.single('main_image'), async function (req, res) {
+router.post('/admin/update', async function (req, res) {
 
 
     var lang = req.headers.language;
@@ -937,16 +895,6 @@ router.post('/admin/update', upload.single('main_image'), async function (req, r
         if (!id) {
             return;
         }
-
-        //check if there is any file update
-        if (req.file) {
-            const relative_ptah = '/images/deals/';
-            const imagePath = path.join(__dirname, '..' + relative_ptah);
-            const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
-            const filename = await fileUpload.save(req.file.buffer);
-            credentials['main_image'] = relative_ptah + filename;
-        }
-
 
         return new Promise(function (resolve, reject) {
 
@@ -1034,16 +982,6 @@ router.post('/admin/update', upload.single('main_image'), async function (req, r
                     });
                 });
 
-            } else if (!credentials.short_detail || credentials.short_detail == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
             } else if (!credentials.details_en || credentials.details_en == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
                     res.json({
@@ -1104,37 +1042,7 @@ router.post('/admin/update', upload.single('main_image'), async function (req, r
                     });
                 });
 
-            } else if (!credentials.premium || credentials.premium == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
-            } else if (!credentials.location_address || credentials.location_address == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
             } else if (!credentials.is_monthly || credentials.is_monthly == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-
-            } else if (!credentials.final_rate || credentials.final_rate == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,

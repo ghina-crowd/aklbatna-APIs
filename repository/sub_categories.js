@@ -1,5 +1,6 @@
 var models = require('../models/sub_categories_model.js');
 var deals_model = require('../models/deals_model.js');
+var company_model = require('../models/company_model');
 var category_model = require('../models/categories_model.js');
 var fields = require('../constant/field.js');
 var commonRepository = require('./common.js');
@@ -27,24 +28,32 @@ var SubCategoryRepository = {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
-                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'premium', 'location_address', 'final_rate'];
+                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', 'company_id', 'branch_id', ['deal_title_en', 'deal_title'], ['details_en', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'final_rate'];
             } else {
                 cat_attributes = ['shop_category_id', ['name_ar', 'name'], 'icon'];
-                sub_cat_attributes = ['deal_id', 'sub_category_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'premium', 'location_address', 'final_rate'];
+                sub_cat_attributes = ['deal_id', 'sub_category_id', 'company_id', 'branch_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], ['details_ar', 'details'], 'pre_price', 'new_price', 'main_image', 'start_time', 'end_time', 'active', 'final_rate'];
             }
 
             category_model.Categories.hasMany(deals_model.Deals, { foreignKey: 'shop_category_id' })
+            deals_model.Deals.belongsTo(company_model.Company, { foreignKey: 'company_id' })
+            deals_model.Deals.belongsTo(company_model.Company_Branches, { foreignKey: 'branch_id' })
             category_model.Categories.findAll({
                 attributes: cat_attributes,
                 include: [{
-                    model: deals_model.Deals,
                     order: [['start_time', 'DESC']],
                     attributes: sub_cat_attributes,
                     limit: 6,
-                    where: { active: 1 }
+                    where: { active: 1 },
+                    model: deals_model.Deals,
+                    include: [{
+                        model: company_model.Company,
+                    },
+                    {
+                        model: company_model.Company_Branches,
+                        where: { status: 1 },
+                    }]
                 }]
             }).then(deals => {
-
 
                 if (deals != null) {
                     deals.forEach(deals => {

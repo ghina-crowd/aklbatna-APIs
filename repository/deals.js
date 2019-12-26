@@ -20,9 +20,9 @@ var dealsRepository = {
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
             } else {
-                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
             }
             models.Deals.findAll({
                 limit: pageSize,
@@ -42,14 +42,14 @@ var dealsRepository = {
     },
     get_deal_by_id: function (id) {
         if (lang.acceptedLanguage == 'en') {
-            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
             company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link'];
             sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
             info_deals_attributes = ['info_id', 'deal_id', ['details_en', 'details']];
             conditions_deals_attributes = ['condition_id', 'deal_id', ['details_en', 'details']];
             cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
         } else {
-            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
             company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link'];
             sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
             info_deals_attributes = ['info_id', 'deal_id', ['details_ar', 'details']];
@@ -322,9 +322,9 @@ var dealsRepository = {
     get_deals_by_sub_category: function (id) {
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
             } else {
-                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
             }
             models.Deals.findAll({
                 attributes: deal_attributes,
@@ -345,11 +345,11 @@ var dealsRepository = {
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
             } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
             }
@@ -559,11 +559,11 @@ var dealsRepository = {
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
             } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
                 cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
 
             }
@@ -599,9 +599,9 @@ var dealsRepository = {
     },
     get_related_deals: function (category_id, deal_id) {
         if (lang.acceptedLanguage == 'en') {
-            deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            deal_attributes = ['deal_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
         } else {
-            deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            deal_attributes = ['deal_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
         }
         return new Promise(function (resolve, reject) {
             models.Deals.findAll({
@@ -713,6 +713,25 @@ var dealsRepository = {
         });
     },
     create_deal: async function (newDealData) {
+
+
+        if (newDealData.attache) {
+            newDealData.attache_link = '';
+        }
+        if (newDealData.attache_link) {
+            newDealData.attache_link = '';
+        }
+        if (newDealData.attache_link) {
+            newDealData.attache_link = '';
+        }
+        if (newDealData.attache_link) {
+            newDealData.attache_link = '';
+        }
+        if (newDealData.attache_link) {
+            newDealData.attache_link = '';
+        }
+
+        console.log(newDealData)
         return new Promise(function (resolve, reject) {
             models.Deals.create({
                 user_id: newDealData.user_id,
@@ -722,7 +741,6 @@ var dealsRepository = {
                 branch_id: newDealData.branch_id,
                 deal_title_en: newDealData.deal_title_en,
                 deal_title_ar: newDealData.deal_title_ar,
-                short_detail: newDealData.short_detail,
                 details_en: newDealData.details_en,
                 details_ar: newDealData.details_ar,
                 pre_price: newDealData.pre_price,
@@ -731,11 +749,25 @@ var dealsRepository = {
                 end_time: newDealData.end_time,
                 active: newDealData.active,
                 main_image: newDealData.main_image,
-                premium: newDealData.premium,
-                location_address: newDealData.location_address,
                 is_monthly: newDealData.is_monthly,
                 final_rate: newDealData.final_rate,
+
+                terms_and_conditions: newDealData.terms_and_conditions,
+                purchased_voucher: newDealData.purchased_voucher,
+                link_for_booking: newDealData.link_for_booking,
+                is_prior_booking: newDealData.is_prior_booking,
+                prior_booking_message: newDealData.prior_booking_message,
+                attache: newDealData.attache,
+                attache_link: newDealData.attache_link,
+                deal_Inclusions: newDealData.deal_Inclusions,
+                deal_Inclusions_link: newDealData.deal_Inclusions_link,
+                deal_exclusions: newDealData.deal_exclusions,
+                deal_exclusions_link: newDealData.deal_exclusions_link
             }).then(deal => {
+
+                console.log("deal");
+                console.log(newDealData.info);
+                console.log(newDealData.conditions);
 
                 // creating images deal if has
                 for (let k in newDealData.images) {
@@ -754,10 +786,10 @@ var dealsRepository = {
                     }
                 }
 
-
                 // creating info deal if has
                 if (newDealData.info) {
                     var length = newDealData.info.length;
+
                     for (let k in newDealData.info) {
                         newDealData.info[k]['deal_id'] = deal.deal_id;
                         dealsRepository.create_deal_info(newDealData.info[k]).then(result => {
@@ -774,14 +806,18 @@ var dealsRepository = {
                                         dealsRepository.create_deal_condition(newDealData.conditions[k]).then(result => {
                                             length--;
                                             if (!length) {
-                                                dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
+                                                dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
+                                                    console.log("back1");
+                                                    console.log(deal);
                                                     resolve(deal);
                                                 });
                                             }
                                         });
                                     }
                                 } else {
-                                    dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
+                                    dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
+                                        console.log("back2");
+                                        console.log(deal);
                                         resolve(deal);
                                     });
                                 }
@@ -793,8 +829,35 @@ var dealsRepository = {
                             }
                         });
                     }
+                } else if (newDealData.conditions) {
+                    //create conditions of deals if there is any 
+                    if (newDealData.conditions) {
+                        var length = newDealData.conditions.length;
+                        for (let k in newDealData.conditions) {
+                            newDealData.conditions[k]['deal_id'] = deal.deal_id;
+                            dealsRepository.create_deal_condition(newDealData.conditions[k]).then(result => {
+                                length--;
+                                if (!length) {
+                                    dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
+                                        console.log("back1");
+                                        console.log(deal);
+                                        resolve(deal);
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+                        dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
+                            console.log("back2");
+                            console.log(deal);
+                            resolve(deal);
+                        });
+                    }
                 } else {
-                    dealsRepository.get_deal_by_id(deal.deal_id).then(deal => {
+                    console.log(deal.deal_id);
+                    dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
+                        console.log("back3");
+                        console.log(deal);
                         resolve(deal);
                     });
                 }
@@ -849,16 +912,15 @@ var dealsRepository = {
     },
 
     update_deal: function (newDealData) {
-        console.log(newDealData.active);
         return new Promise(function (resolve, reject) {
             models.Deals.update({
+
                 user_id: newDealData.user_id,
                 sub_category_id: newDealData.sub_category_id,
                 shop_category_id: newDealData.shop_category_id,
                 company_id: newDealData.company_id,
                 deal_title_en: newDealData.deal_title_en,
                 deal_title_ar: newDealData.deal_title_ar,
-                short_detail: newDealData.short_detail,
                 details_en: newDealData.details_en,
                 details_ar: newDealData.details_ar,
                 pre_price: newDealData.pre_price,
@@ -867,10 +929,21 @@ var dealsRepository = {
                 end_time: newDealData.end_time,
                 active: newDealData.active,
                 main_image: newDealData.main_image,
-                premium: newDealData.premium,
-                location_address: newDealData.location_address,
                 is_monthly: newDealData.is_monthly,
                 final_rate: newDealData.final_rate,
+
+                terms_and_conditions: newDealData.terms_and_conditions,
+                purchased_voucher: newDealData.purchased_voucher,
+                link_for_booking: newDealData.link_for_booking,
+                is_prior_booking: newDealData.is_prior_booking,
+                prior_booking_message: newDealData.prior_booking_message,
+                attache: newDealData.attache,
+                attache_link: newDealData.attache_link,
+                deal_Inclusions: newDealData.deal_Inclusions,
+                deal_Inclusions_link: newDealData.deal_Inclusions_link,
+                deal_exclusions: newDealData.deal_exclusions,
+                deal_exclusions_link: newDealData.deal_exclusions_link
+
             }, { where: { deal_id: newDealData.deal_id } }).then(function (result) {
                 models.Deals.findOne({ where: { deal_id: newDealData.deal_id } }).then(deal => {
                     resolve(deal);
@@ -966,11 +1039,11 @@ var dealsRepository = {
         return new Promise(function (resolve, reject) {
 
             if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
                 sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
                 info_deals_attributes = ['info_id', 'deal_id', ['details_en', 'details']];
             } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought', 'terms_and_conditions', 'purchased_voucher', 'link_for_booking', 'is_prior_booking', 'prior_booking_message'];
                 sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
                 info_deals_attributes = ['info_id', 'deal_id', ['details_ar', 'details']];
             }
@@ -1030,11 +1103,11 @@ var dealsRepository = {
         return new Promise(function (resolve, reject) {
 
             // if (lang.acceptedLanguage == 'en') {
-            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'],  'is_monthly', ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
             //     sub_deals_attributes = ['id', 'deal_id', ['title_en', 'title'], 'pre_price', 'new_price', 'count_bought'];
             //     info_deals_attributes = ['info_id', 'deal_id', ['details_en', 'details']];
             // } else {
-            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_address', 'is_monthly', 'short_detail', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
+            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'],  'is_monthly', ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active', 'count_bought'];
             //     sub_deals_attributes = ['id', 'deal_id', ['title_ar', 'title'], 'pre_price', 'new_price', 'count_bought'];
             //     info_deals_attributes = ['info_id', 'deal_id', ['details_ar', 'details']];
             // }

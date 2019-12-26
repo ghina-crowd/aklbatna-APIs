@@ -19,7 +19,7 @@ module.exports = function (sequelize, DataTypes) {
         name_en: {
             type: DataTypes.STRING(225),
         },
-        address: {
+        location_name: {
             type: DataTypes.STRING(1000),
         },
         latitude: {

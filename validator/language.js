@@ -208,6 +208,36 @@ var language = {
 
 
 
+
+
+
+            else if (type == 'EMPTY_FIELDS_DETAILS_EN') {
+                resolve({ message: messages.EMPTY_FIELDS_DETAILS_EN });
+            } else if (type == 'EMPTY_FIELDS_DETAILS_AR') {
+                resolve({ message: messages.EMPTY_FIELDS_DETAILS_AR });
+            } else if (type == 'EMPTY_FIELD_SHORT_DEC_PRE_PRICE') {
+                resolve({ message: messages.EMPTY_FIELD_SHORT_DEC_PRE_PRICE });
+            } else if (type == 'EMPTY_FIELDS_NEW_PRICE') {
+                resolve({ message: messages.EMPTY_FIELDS_NEW_PRICE });
+            } else if (type == 'EMPTY_FIELDS_START_DATE') {
+                resolve({ message: messages.EMPTY_FIELDS_START_DATE });
+            } else if (type == 'EMPTY_FIELDS_ACTIVE') {
+                resolve({ message: messages.EMPTY_FIELDS_ACTIVE });
+            } else if (type == 'EMPTY_FIELDS_IS_MONTHLY') {
+                resolve({ message: messages.EMPTY_FIELDS_IS_MONTHLY });
+            } else if (type == 'EMPTY_FIELDS_DEAL_TITLE_AR') {
+                resolve({ message: messages.EMPTY_FIELDS_DEAL_TITLE_AR });
+            } else if (type == 'EMPTY_FIELDS_BRANCH_ID') {
+                resolve({ message: messages.EMPTY_FIELDS_BRANCH_ID });
+            } else if (type == 'EMPTY_FIELDS_COMPANY_ID') {
+                resolve({ message: messages.EMPTY_FIELDS_COMPANY_ID });
+            } else if (type == 'EMPTY_FIELDS_CATEGORY_ID') {
+                resolve({ message: messages.EMPTY_FIELDS_CATEGORY_ID });
+            } else if (type == 'EMPTY_FIELDS_SUB_CATEGORY_ID') {
+                resolve({ message: messages.EMPTY_FIELDS_SUB_CATEGORY_ID });
+            }
+
+
             else if (type == 'EMPTY_FIELD_BRANCH_NAME_EN') {
                 resolve({ message: messages.EMPTY_FIELD_BRANCH_NAME_EN });
             } else if (type == 'EMPTY_FIELD_BRANCH_NAME_AR') {

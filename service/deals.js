@@ -92,6 +92,9 @@ var service = {
     create_deal: function (credentials) {
         return new Promise(function (resolve, reject) {
             dealRepository.create_deal(credentials).then(deal => {
+                console.log("deal");
+                console.log(deal);
+
                 userRepository.CreateActivity(credentials.user_id, '1', 'pending', deal.deal_id, null).then(activity => {
                     resolve(deal);
                 })
@@ -111,7 +114,7 @@ var service = {
     },
     update_deal: function (credentials) {
         return new Promise(function (resolve, reject) {
-            dealRepository.update_sub_deal(credentials).then(deal => {
+            dealRepository.update_deal(credentials).then(deal => {
                 resolve(deal);
             }, error => {
                 reject(error);
