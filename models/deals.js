@@ -71,7 +71,10 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(225),
         },
         active: {
-            type: DataTypes.STRING(225),
+            type: DataTypes.INTEGER,
+        },
+        is_monthly: {
+            type: DataTypes.INTEGER,
         },
         terms_and_conditions: {
             type: DataTypes.TEXT,
@@ -82,6 +85,7 @@ module.exports = function (sequelize, DataTypes) {
         link_for_booking: {
             type: DataTypes.STRING(225),
         },
+
         is_prior_booking: {
             type: DataTypes.INTEGER,
         },

@@ -199,7 +199,7 @@ var dealsRepository = {
             models.Deals.hasMany(condition_deals.ConditionsDeals, { foreignKey: 'deal_id', targetKey: 'deal_id' });
             models.Deals.belongsTo(category_model.Categories, { foreignKey: 'shop_category_id', targetKey: 'shop_category_id' });
             models.Deals.findOne({
-                where: { active: 1, deal_id: id },
+                where: { deal_id: id },
                 include: [{
                     model: model_company.Company,
                 }, {
@@ -257,7 +257,6 @@ var dealsRepository = {
                                     deals.dataValues['images'] = all_images;
                                     sub_deals.SubDeals.findAll({
                                         where: { deal_id: id },
-                                        attributes: sub_deals_attributes
                                     }).then(sub_deal => {
                                         if (sub_deal == null) {
                                             resolve(null);
@@ -714,25 +713,8 @@ var dealsRepository = {
     },
     create_deal: async function (newDealData) {
 
-
-        if (newDealData.attache) {
-            newDealData.attache_link = '';
-        }
-        if (newDealData.attache_link) {
-            newDealData.attache_link = '';
-        }
-        if (newDealData.attache_link) {
-            newDealData.attache_link = '';
-        }
-        if (newDealData.attache_link) {
-            newDealData.attache_link = '';
-        }
-        if (newDealData.attache_link) {
-            newDealData.attache_link = '';
-        }
-
         console.log(newDealData)
-        return new Promise(function (resolve, reject) {
+        return new Promise(async function (resolve, reject) {
             models.Deals.create({
                 user_id: newDealData.user_id,
                 sub_category_id: newDealData.sub_category_id,
@@ -763,18 +745,15 @@ var dealsRepository = {
                 deal_Inclusions_link: newDealData.deal_Inclusions_link,
                 deal_exclusions: newDealData.deal_exclusions,
                 deal_exclusions_link: newDealData.deal_exclusions_link
-            }).then(deal => {
+            }).then(async deal => {
 
-                console.log("deal");
-                console.log(newDealData.info);
-                console.log(newDealData.conditions);
 
                 // creating images deal if has
                 for (let k in newDealData.images) {
                     var temp_data = {};
                     temp_data['deal_id'] = deal.deal_id;
                     temp_data['source'] = newDealData.images[k];
-                    dealsRepository.create_deal_image(temp_data)
+                    await dealsRepository.create_deal_image(temp_data)
                 }
 
 
@@ -782,95 +761,43 @@ var dealsRepository = {
                 if (newDealData.sub_deal) {
                     for (let k in newDealData.sub_deal) {
                         newDealData.sub_deal[k]['deal_id'] = deal.deal_id;
-                        dealsRepository.create_sub_deal(newDealData.sub_deal[k]);
+                        if (newDealData.sub_deal[k]['title_en'] && newDealData.sub_deal[k]['title_ar'] && newDealData.sub_deal[k]['title_ar'] != '' && newDealData.sub_deal[k]['title_en'] != '')
+                            await dealsRepository.create_sub_deal(newDealData.sub_deal[k]);
+                    }
+                }
+
+
+                //create conditions of deals if there is any 
+                if (newDealData.deals_conditions) {
+                    for (let k in newDealData.deals_conditions) {
+                        newDealData.deals_conditions[k]['deal_id'] = deal.deal_id;
+                        if (newDealData.deals_conditions[k]['details_en'] && newDealData.deals_conditions[k]['details_ar'] && newDealData.deals_conditions[k]['details_en'] != '' && newDealData.deals_conditions[k]['details_ar'] != '')
+                            await dealsRepository.create_deal_condition(newDealData.deals_conditions[k]);
                     }
                 }
 
                 // creating info deal if has
-                if (newDealData.info) {
-                    var length = newDealData.info.length;
-
-                    for (let k in newDealData.info) {
-                        newDealData.info[k]['deal_id'] = deal.deal_id;
-                        dealsRepository.create_deal_info(newDealData.info[k]).then(result => {
-                            length--;
-                            if (!length) {
-
-
-
-                                //create conditions of deals if there is any 
-                                if (newDealData.conditions) {
-                                    var length = newDealData.conditions.length;
-                                    for (let k in newDealData.conditions) {
-                                        newDealData.conditions[k]['deal_id'] = deal.deal_id;
-                                        dealsRepository.create_deal_condition(newDealData.conditions[k]).then(result => {
-                                            length--;
-                                            if (!length) {
-                                                dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
-                                                    console.log("back1");
-                                                    console.log(deal);
-                                                    resolve(deal);
-                                                });
-                                            }
-                                        });
-                                    }
-                                } else {
-                                    dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
-                                        console.log("back2");
-                                        console.log(deal);
-                                        resolve(deal);
-                                    });
-                                }
-
-
-
-
-
-                            }
-                        });
-                    }
-                } else if (newDealData.conditions) {
-                    //create conditions of deals if there is any 
-                    if (newDealData.conditions) {
-                        var length = newDealData.conditions.length;
-                        for (let k in newDealData.conditions) {
-                            newDealData.conditions[k]['deal_id'] = deal.deal_id;
-                            dealsRepository.create_deal_condition(newDealData.conditions[k]).then(result => {
-                                length--;
-                                if (!length) {
-                                    dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
-                                        console.log("back1");
-                                        console.log(deal);
-                                        resolve(deal);
-                                    });
-                                }
-                            });
+                if (newDealData.deals_infos) {
+                    for (let k in newDealData.deals_infos) {
+                        newDealData.deals_infos[k]['deal_id'] = deal.deal_id;
+                        if (newDealData.deals_infos[k]['details_en'] && newDealData.deals_infos[k]['details_ar'] && newDealData.deals_infos[k]['details_en'] != '' && newDealData.deals_infos[k]['details_ar'] != '') {
+                            await dealsRepository.create_deal_info(newDealData.deals_infos[k]);
                         }
-                    } else {
-                        dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
-                            console.log("back2");
-                            console.log(deal);
-                            resolve(deal);
-                        });
+
                     }
-                } else {
-                    console.log(deal.deal_id);
-                    dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
-                        console.log("back3");
-                        console.log(deal);
-                        resolve(deal);
-                    });
                 }
 
-
+                dealsRepository.get_deal_by_id_admin(deal.deal_id).then(deal => {
+                    resolve(deal);
+                });
 
             }, error => {
                 reject(error)
             });
         });
     },
-    create_sub_deal: function (newSubDealData) {
-        return new Promise(function (resolve, reject) {
+    create_sub_deal: async function (newSubDealData) {
+        return new Promise(async function (resolve, reject) {
             sub_deals.SubDeals.create({
                 deal_id: newSubDealData.deal_id,
                 title_en: newSubDealData.title_en,
@@ -884,8 +811,8 @@ var dealsRepository = {
             });
         });
     },
-    create_deal_info: function (newDealInfoData) {
-        return new Promise(function (resolve, reject) {
+    create_deal_info: async function (newDealInfoData) {
+        return new Promise(async function (resolve, reject) {
             info_deals.InfoDeals.create({
                 deal_id: newDealInfoData.deal_id,
                 details_en: newDealInfoData.details_en,
@@ -897,8 +824,8 @@ var dealsRepository = {
             });
         });
     },
-    create_deal_condition: function (newDealConditionData) {
-        return new Promise(function (resolve, reject) {
+    create_deal_condition: async function (newDealConditionData) {
+        return new Promise(async function (resolve, reject) {
             condition_deals.ConditionsDeals.create({
                 deal_id: newDealConditionData.deal_id,
                 details_en: newDealConditionData.details_en,
@@ -911,8 +838,8 @@ var dealsRepository = {
         });
     },
 
-    update_deal: function (newDealData) {
-        return new Promise(function (resolve, reject) {
+    update_deal: async function (newDealData) {
+        return new Promise(async function (resolve, reject) {
             models.Deals.update({
 
                 user_id: newDealData.user_id,
@@ -944,12 +871,55 @@ var dealsRepository = {
                 deal_exclusions: newDealData.deal_exclusions,
                 deal_exclusions_link: newDealData.deal_exclusions_link
 
-            }, { where: { deal_id: newDealData.deal_id } }).then(function (result) {
-                models.Deals.findOne({ where: { deal_id: newDealData.deal_id } }).then(deal => {
+            }, { where: { deal_id: newDealData.deal_id } }).then(async function (deal) {
+
+
+                console.log(newDealData);
+                // creating images deal if has
+                for (let k in newDealData.images) {
+                    var temp_data = {};
+                    temp_data['deal_id'] = newDealData.deal_id;
+                    temp_data['source'] = newDealData.images[k];
+                    await dealsRepository.create_deal_image(temp_data)
+                    console.log(temp_data)
+                }
+
+                // update sub deal if has
+                if (newDealData.sub_deal) {
+                    for (let k in newDealData.sub_deal) {
+                        newDealData.sub_deal[k]['deal_id'] = newDealData.deal_id;
+                        if (newDealData.sub_deal[k]['title_en'] && newDealData.sub_deal[k]['title_ar'] && newDealData.sub_deal[k]['id'] && newDealData.sub_deal[k]['title_ar'] != '' && newDealData.sub_deal[k]['title_en'] != '' && newDealData.sub_deal[k]['id'] != '')
+                            await dealsRepository.update_sub_deal(newDealData.sub_deal[k]);
+                    }
+                }
+
+
+                //update conditions of deals if there is any 
+                if (newDealData.deals_conditions) {
+                    for (let k in newDealData.deals_conditions) {
+                        newDealData.deals_conditions[k]['deal_id'] = newDealData.deal_id;
+                        if (newDealData.deals_conditions[k]['details_en'] && newDealData.deals_conditions[k]['details_ar'] && newDealData.deals_conditions[k]['condition_id'] && newDealData.deals_conditions[k]['details_en'] != '' && newDealData.deals_conditions[k]['details_ar'] != '' && newDealData.deals_conditions[k]['condition_id'] != '')
+                            await dealsRepository.update_deal_condition(newDealData.deals_conditions[k]);
+                    }
+                }
+
+                // update info deal if has
+                if (newDealData.deals_infos) {
+                    for (let k in newDealData.deals_infos) {
+                        newDealData.deals_infos[k]['deal_id'] = newDealData.deal_id;
+                        if (newDealData.deals_infos[k]['details_en'] && newDealData.deals_infos[k]['details_ar'] && newDealData.deals_infos[k]['info_id'] && newDealData.deals_infos[k]['details_en'] != '' && newDealData.deals_infos[k]['details_ar'] != '' && newDealData.deals_infos[k]['info_id'] != '') {
+                            await dealsRepository.update_deal_info(newDealData.deals_infos[k]);
+                        }
+
+                    }
+                }
+
+                dealsRepository.get_deal_by_id_admin(newDealData.deal_id).then(deal => {
                     resolve(deal);
-                }, error => {
-                    reject(error);
                 });
+
+
+
             }, function (error) {
                 reject(error);
             });
@@ -983,8 +953,8 @@ var dealsRepository = {
             });
         });
     },
-    create_deal_image: function (newDealData) {
-        return new Promise(function (resolve, reject) {
+    create_deal_image: async function (newDealData) {
+        return new Promise(async function (resolve, reject) {
             model_images.Images.create({
                 source: newDealData.source,
                 deal_id: newDealData.deal_id
@@ -1011,9 +981,70 @@ var dealsRepository = {
             });
         });
     },
+
+
+    update_sub_deal: async function (newSubDealData) {
+        return new Promise(async function (resolve, reject) {
+            sub_deals.SubDeals.update({
+                deal_id: newSubDealData.deal_id,
+                title_en: newSubDealData.title_en,
+                title_ar: newSubDealData.title_ar,
+                pre_price: newSubDealData.pre_price,
+                new_price: newSubDealData.new_price,
+            }, { where: { id: newSubDealData.id } }).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    update_deal_info: async function (newDealInfoData) {
+        return new Promise(async function (resolve, reject) {
+            info_deals.InfoDeals.update({
+                deal_id: newDealInfoData.deal_id,
+                details_en: newDealInfoData.details_en,
+                details_ar: newDealInfoData.details_ar
+            }, { where: { info_id: newDealInfoData.info_id } }).then(dealInfo => {
+                resolve(dealInfo);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
+    update_deal_condition: async function (newDealConditionData) {
+        return new Promise(async function (resolve, reject) {
+            condition_deals.ConditionsDeals.update({
+                deal_id: newDealConditionData.deal_id,
+                details_en: newDealConditionData.details_en,
+                details_ar: newDealConditionData.details_ar
+            }, { where: { condition_id: newDealConditionData.condition_id } }).then(dealCondition => {
+                resolve(dealCondition);
+            }, error => {
+                reject(error)
+            });
+        });
+    },
     delete_deal_image: function (img_id) {
         return new Promise(function (resolve, reject) {
             model_images.Images.destroy({ where: { img_id: img_id } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_deal_info: function (info_id) {
+        return new Promise(function (resolve, reject) {
+            info_deals.InfoDeals.destroy({ where: { info_id: info_id } }).then(deleted => {
+                resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_deal_condition: function (condition_id) {
+        return new Promise(function (resolve, reject) {
+            condition_deals.ConditionsDeals.destroy({ where: { condition_id: condition_id } }).then(deleted => {
                 resolve(deleted);
             }, error => {
                 reject(error);

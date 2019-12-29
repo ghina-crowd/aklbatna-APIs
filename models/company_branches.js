@@ -13,6 +13,9 @@ module.exports = function (sequelize, DataTypes) {
         status: {
             type: DataTypes.INTEGER,
         },
+        active: {
+            type: DataTypes.INTEGER,
+        },
         name_ar: {
             type: DataTypes.STRING(225),
         },

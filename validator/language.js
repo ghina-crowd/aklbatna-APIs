@@ -119,8 +119,12 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_IMAGE });
             } else if (type == 'EMPTY_FIELD_SHOP_CATEGORY_ID') {
                 resolve({ message: messages.EMPTY_FIELD_SHOP_CATEGORY_ID });
+            } else if (type == 'EMPTY_FIELD_INFO_ID') {
+                resolve({ message: messages.EMPTY_FIELD_INFO_ID });
             }
-
+            else if (type == 'EMPTY_FIELD_CONDITION_ID') {
+                resolve({ message: messages.EMPTY_FIELD_CONDITION_ID });
+            }
 
             else if (type == 'EMPTY_FIELD_SUB_NAME_EN') {
                 resolve({ message: messages.EMPTY_FIELD_SUB_NAME_EN });
@@ -204,6 +208,8 @@ var language = {
                 resolve({ message: messages.INVALID_SUB_DEAL_ID });
             } else if (type == 'INVALID_PASSWORD') {
                 resolve({ message: messages.INVALID_PASSWORD });
+            } else if (type == 'EMPTY_FIELD_BRANCH_ACTIVE_STATUS') {
+                resolve({ message: messages.EMPTY_FIELD_BRANCH_ACTIVE_STATUS });
             }
 
 

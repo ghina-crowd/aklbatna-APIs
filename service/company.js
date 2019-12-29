@@ -29,6 +29,15 @@ module.exports = {
             });
         });
     },
+    get_branch: function (branch_id) {
+        return new Promise(function (resolve, reject) {
+            CompanyRepository.get_branch(branch_id).then(branch => {
+                resolve(branch);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     update_company: function (credentials) {
         return new Promise(function (resolve, reject) {
             CompanyRepository.update_company(credentials).then(company => {

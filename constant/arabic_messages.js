@@ -129,6 +129,9 @@ var message = {
     EMPTY_FIELDS_COMPANY_ID: 'invalid company id',
     EMPTY_FIELDS_CATEGORY_ID: 'invalid category id',
     EMPTY_FIELDS_SUB_CATEGORY_ID: 'invalid sub category id',
+    EMPTY_FIELD_BRANCH_ACTIVE_STATUS: 'invalid active status',
+    EMPTY_FIELD_INFO_ID: 'invalid info id',
+    EMPTY_FIELD_CONDITION_ID: 'invalid conditIon id'
 
 };
 

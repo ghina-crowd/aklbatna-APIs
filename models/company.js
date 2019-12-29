@@ -9,6 +9,9 @@ module.exports = function (sequelize, DataTypes) {
         user_id: {
             type: DataTypes.INTEGER,
         },
+        active: {
+            type: DataTypes.INTEGER,
+        },
         company_name_en: {
             type: DataTypes.STRING(225),
         },

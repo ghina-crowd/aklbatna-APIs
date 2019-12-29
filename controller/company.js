@@ -241,6 +241,56 @@ router.get('/get/:company_id', async function (req, res) {
         })
     }
 });
+//get companies by admin
+router.get('/branch/get/:branch_id', async function (req, res) {
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            companyService.get_branch(req.params.branch_id).then(branch => {
+                resolve(branch);
+                if (branch == null || branch.length == 0) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: branch,
+                        });
+                    });
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.post('/admin/create', upload.single('icon'), async function (req, res) {
 
 
@@ -556,11 +606,11 @@ router.put('/admin/update', async function (req, res) {
 });
 
 //this will delete company also all branches,deals related to that company
-router.delete('/admin/delete', async function (req, res) {
+router.delete('/admin/delete/:company_id', async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credentials = req.body;
+        var credentials = req.params;
         var lang = req.headers.language;
 
         var token = req.headers.authorization;
@@ -782,15 +832,6 @@ router.put('/branch/update', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.company_id || credentials.company_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY_ID').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else if (!credentials.name_en || credentials.name_en == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_NAME_EN').then(msg => {
                     res.json({
@@ -818,6 +859,15 @@ router.put('/branch/update', async function (req, res) {
                         data: null
                     });
                 });
+            } else if (!credentials.active || credentials.active == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ACTIVE_STATUS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
             } else if (!credentials.longitude || credentials.longitude == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_LNG').then(msg => {
                     res.json({
@@ -828,7 +878,7 @@ router.put('/branch/update', async function (req, res) {
                     });
                 });
 
-            } else if (!credentials.address || credentials.address == '') {
+            } else if (!credentials.location_name || credentials.location_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ADDRESS').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -880,11 +930,11 @@ router.put('/branch/update', async function (req, res) {
 });
 
 //this will delete branch also all deals related to that branch
-router.delete('/branch/delete', async function (req, res) {
+router.delete('/branch/delete/:branch_id', async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credentials = req.body;
+        var credentials = req.params;
         var lang = req.headers.language;
 
         var token = req.headers.authorization;

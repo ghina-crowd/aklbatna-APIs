@@ -89,11 +89,9 @@ var service = {
             });
         });
     },
-    create_deal: function (credentials) {
-        return new Promise(function (resolve, reject) {
-            dealRepository.create_deal(credentials).then(deal => {
-                console.log("deal");
-                console.log(deal);
+    create_deal: async function (credentials) {
+        return new Promise(async function (resolve, reject) {
+            dealRepository.create_deal(credentials).then(async deal => {
 
                 userRepository.CreateActivity(credentials.user_id, '1', 'pending', deal.deal_id, null).then(activity => {
                     resolve(deal);
@@ -112,9 +110,9 @@ var service = {
             });
         });
     },
-    update_deal: function (credentials) {
-        return new Promise(function (resolve, reject) {
-            dealRepository.update_deal(credentials).then(deal => {
+    update_deal: async function (credentials) {
+        return new Promise(async function (resolve, reject) {
+            dealRepository.update_deal(credentials).then( async deal => {
                 resolve(deal);
             }, error => {
                 reject(error);
@@ -149,6 +147,24 @@ var service = {
             });
         });
     },
+    create_deal_info: function (credentials) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.create_deal_info(credentials).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    create_deal_condition: function (credentials) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.create_deal_condition(credentials).then(deal => {
+                resolve(deal);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     update_deal_image: function (credentials) {
         return new Promise(function (resolve, reject) {
             dealRepository.update_deal_image(credentials).then(deal => {
@@ -161,6 +177,24 @@ var service = {
     delete_deal_image: function (img_id) {
         return new Promise(function (resolve, reject) {
             dealRepository.delete_deal_image(img_id).then(response => {
+                resolve(response);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_deal_info: function (info_id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.delete_deal_info(info_id).then(response => {
+                resolve(response);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_deal_condition: function (condition_id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.delete_deal_condition(condition_id).then(response => {
                 resolve(response);
             }, error => {
                 reject(error);

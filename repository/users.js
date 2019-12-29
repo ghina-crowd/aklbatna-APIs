@@ -323,6 +323,8 @@ var UserRepository = {
     },
     update_profile: function (first_name, last_name, phone, email, subscribe, old_password, new_password) {
 
+        console.log(old_password);
+        console.log(new_password);
 
         return new Promise(function (resolve, reject) {
             if (new_password && old_password) {
@@ -330,7 +332,7 @@ var UserRepository = {
                 models.User.findOne({ where: { email: email }, attributes: ['password'] }).then(users => {
                     var passwordIsValid = bcrypt.compareSync(old_password, users.password);
                     if (!passwordIsValid) {
-                        resolve('0')
+                        resolve(0)
                     } else {
                         if (!subscribe) {
                             subscribe = 0;

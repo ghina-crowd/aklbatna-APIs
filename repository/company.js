@@ -86,7 +86,7 @@ var CompanyRepository = {
                 }
             }
             company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
-            company_model.Company.findAll({
+            company_model.Company.findOne({
                 limit: pageSize, offset: offset, attributes: company_attributes,
                 include: [{
                     model: company_model.Company_Branches,
@@ -116,20 +116,36 @@ var CompanyRepository = {
             // }
 
             company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
-            company_model.Company.findAll({
+            company_model.Company.findOne({
                 where: {
                     company_id: id
                 },
-                attributes: company_attributes,
                 include: [{
                     model: company_model.Company_Branches,
-                    attributes: company_branches_attributes
                 }]
             }).then(companies => {
                 if (companies == null) {
                     resolve([]);
                 } else {
                     resolve(companies);
+                }
+            }, error => {
+                reject(error);
+            });
+        }
+        );
+    },
+    get_branch: function (id) {
+        return new Promise(function (resolve, reject) {
+            company_model.Company_Branches.findOne({
+                where: {
+                    branch_id: id
+                }
+            }).then(branch => {
+                if (branch == null) {
+                    resolve([]);
+                } else {
+                    resolve(branch);
                 }
             }, error => {
                 reject(error);
@@ -238,6 +254,7 @@ var CompanyRepository = {
                     company_model.Company_Branches.update({
                         company_id: company_id,
                         status: 1,
+                        active: CompanyBranchData.active,
                         location_name: CompanyBranchData.location_name,
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
@@ -276,6 +293,7 @@ var CompanyRepository = {
                     company_model.Company_Branches.create({
                         company_id: company_id,
                         status: 1,
+                        active: 1,
                         location_name: CompanyBranchData.location_name,
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
@@ -311,6 +329,7 @@ var CompanyRepository = {
             company_model.Company_Branches.create({
                 company_id: CompanyBranchData.company_id,
                 status: 0,
+                active: 1,
                 location_name: CompanyBranchData.location_name,
                 latitude: CompanyBranchData.latitude,
                 longitude: CompanyBranchData.longitude,
@@ -326,9 +345,9 @@ var CompanyRepository = {
 
     delete_company_branch: function (branch_id) {
         return new Promise(function (resolve, reject) {
-            company_model.Company_Branches.destroy({ where: { branch_id: branch_id, status: 0 } }).then(deleted => {
-                deal_model.Deals.destroy({ where: { branch_id: branch_id } }).then(deleted => {
-                    resolve(deleted);
+            company_model.Company_Branches.destroy({ where: { branch_id: branch_id, status: 0 } }).then(deleted_company => {
+                deal_model.Deals.update({ active: 0 }, { where: { branch_id: branch_id } }).then(updated => {
+                    resolve(deleted_company);
                 }, error => {
                     reject(error);
                 });
@@ -341,9 +360,9 @@ var CompanyRepository = {
     update_company_branch: function (CompanyBranchData) {
         return new Promise(function (resolve, reject) {
             company_model.Company_Branches.update({
-                company_id: CompanyBranchData.company_id,
                 location_name: CompanyBranchData.location_name,
                 latitude: CompanyBranchData.latitude,
+                active: CompanyBranchData.active,
                 longitude: CompanyBranchData.longitude,
                 name_ar: CompanyBranchData.name_ar,
                 name_en: CompanyBranchData.name_en
@@ -378,6 +397,7 @@ var CompanyRepository = {
                 licence_number: newCompanyData.licence_number,
                 expiry_date: newCompanyData.expiry_date,
                 tax_number: newCompanyData.tax_number,
+                active: newCompanyData.active,
                 facebook_page: newCompanyData.facebook_page,
                 instagram_page: newCompanyData.instagram_page,
                 number_of_locations: newCompanyData.number_of_locations,
@@ -400,6 +420,7 @@ var CompanyRepository = {
                     branch['longitude'] = newCompanyData.longitude;
                     branch['name_ar'] = newCompanyData.company_name_ar;
                     branch['name_en'] = newCompanyData.company_name_en;
+                    branch['active'] = newCompanyData.active;
                     CompanyRepository.update_company_main_branch(branch, newCompanyData.company_id).then(companyBranch => {
                         company['dataValues'].branches = [];
                         company['dataValues'].branches.push(companyBranch);
