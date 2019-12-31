@@ -119,25 +119,23 @@ var service = {
             UserRepository.Check(email, password, first_name, last_name, phone, user_type).then(users => {
                 if (users == null) {
                     resolve(null);
-                } else if (creator_user_id) {
-                    UserRepository.CreateActivity(creator_user_id, '1', 'pending', null, users['dataValues'].user_admin_id).then((activity => {
-                        if (users == null) {
-                            resolve(null);
-                        } else {
-                            resolve(users['dataValues']);
-                        }
-                    })).catch((err) => {
-                        reject(error);
-                    });
-
                 } else {
-                    if (users == null) {
-                        resolve(null);
-                    } else {
-                        resolve(users['dataValues']);
-                    }
+                    resolve(users['dataValues']);
                 }
-
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    create_user_admin: function (email, password, first_name, last_name, phone, user_type) {
+        var password = bcrypt.hashSync(password, 8);
+        return new Promise(function (resolve, reject) {
+            UserRepository.CreateUserAdmin(email, password, first_name, last_name, phone, user_type).then(users => {
+                if (users == null) {
+                    resolve(null);
+                } else {
+                    resolve(users['dataValues']);
+                }
             }, error => {
                 reject(error);
             });

@@ -51,7 +51,6 @@ async function verifyToken(token, res, lang) {
     });
 }
 var languageService = require('../validator/language');
-
 var router = express.Router();
 
 //categories
@@ -195,6 +194,54 @@ router.get('/admin/sub_categories', async function (req, res) {
         })
     }
 });
+router.get('/admin/sub_categories/:category_id', async function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        var credentials = req.params;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            subcategoryServices.get_sub_category(credentials.category_id).then(categories => {
+                resolve(categories);
+                if (categories == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.post('/admin/create', async function (req, res) {
 
     var lang = req.headers.language;
@@ -256,15 +303,6 @@ router.post('/admin/create', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.active || credentials.active == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_ACTIVE').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else {
                 console.log(credentials);
                 subcategoryServices.create_sub_category(credentials).then(category => {
@@ -305,7 +343,7 @@ router.post('/admin/create', async function (req, res) {
     }
 
 });
-router.post('/admin/update', async function (req, res) {
+router.put('/admin/update', async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
@@ -412,13 +450,15 @@ router.post('/admin/update', async function (req, res) {
         })
     }
 });
-router.delete('/admin/delete', async function (req, res) {
+router.delete('/admin/delete/:sub_category_id', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        var credentials = req.body;
+
+        var credentials = req.params;
         var lang = req.headers.language;
         var token = req.headers.authorization;
+
         await verifyToken(token, res, lang);
         if (!id) {
             return;
@@ -481,5 +521,4 @@ router.delete('/admin/delete', async function (req, res) {
     }
 }
 );
-
 module.exports = router;

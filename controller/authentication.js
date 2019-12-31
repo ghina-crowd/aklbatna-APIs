@@ -310,7 +310,7 @@ router.post('/social', function (req, res) {
 );
 
 //register
-router.post('/register', upload.single('photo'), async function (req, res) {
+router.post('/register', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -858,150 +858,7 @@ router.get('/profile', function (req, res) {
     }
 });
 
-// // update profile
-// router.put('/update_profile', upload.single('picture'), function (req, res) {
 
-//     var path = req.file.path;
-//     console.log(path);
-
-//     var lang = req.headers.language;
-
-//     var errors = validationResult(req);
-//     if (errors.array().length == 0) {
-//         var header_data = req.headers;
-//         var data = req.body;
-
-//         if (data.first_name == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else if (data.last_name == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else if (data.address == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_ADDRESS').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else if (data.phone == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else if (data.lattitude == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_LAT').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else if (data.longitude == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_LONG').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else if (data.company_name == '') {
-//             languageService.get_lang(lang, 'EMPTY_FIELD_COMPANY').then(msg => {
-
-//                 res.json({
-//                     status: statics.STATUS_FAILURE,
-//                     code: codes.FAILURE,
-//                     message: msg.message,
-//                     data: null
-//                 });
-//             });
-//         } else {
-
-//             return new Promise(function (resolve, reject) {
-
-//                 authenticationService.check_token(header_data.authorization).then(user => {
-
-
-//                     resolve(user);
-//                     if (user == null) {
-//                         languageService.get_lang(lang, 'INVALID_TOKEN').then(msg => {
-
-//                             res.json({
-//                                 status: statics.STATUS_FAILURE,
-//                                 code: codes.FAILURE,
-//                                 message: msg.message,
-//                                 data: null
-//                             });
-//                         });
-
-//                     } else {
-//                         authenticationService.update_profile(header_data.token, data.first_name, data.last_name, data.address, data.phone, path, data.lattitude, data.longitude, data.company_name).then(user => {
-
-//                             resolve(user);
-//                             languageService.get_lang(lang, 'PROFILE_UPDATE').then(msg => {
-
-//                                 res.json({
-//                                     status: statics.STATUS_SUCCESS,
-//                                     code: codes.SUCCESS,
-//                                     message: msg.message,
-//                                     data: user,
-//                                 });
-//                             });
-
-//                         }, error => {
-//                             reject(error);
-//                         });
-//                     }
-
-
-//                 }, error => {
-//                     reject(error);
-//                 });
-
-
-//             }, error => {
-//                 reject(error);
-//             });
-
-
-//         }
-//     } else {
-//         languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-//             res.json({
-//                 status: statics.STATUS_FAILURE,
-//                 code: codes.INVALID_DATA,
-//                 message: msg.message,
-//                 data: errors.array()
-//             });
-//         });
-//     }
-// });
 
 //resend code
 router.put('/resend_code', async function (req, res) {

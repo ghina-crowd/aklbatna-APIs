@@ -8,13 +8,44 @@ const sequelize = require('sequelize');
 const Op = sequelize.Op;
 
 var UserRepository = {
-    GetAll: function () {
+    GetAll: function (page) {
         return new Promise(function (resolve, reject) {
-            models.User.findAll().then(existingUsers => {
-                resolve(existingUsers);
-            }, error => {
-                reject(error);
-            });
+            console.log('all with page')
+            var pageSize = 10; // page start from 0
+            const offset = page * pageSize;
+            models.User.findAndCountAll({ limit: pageSize, offset: offset })
+                .then(users => {
+                    var dealsTemp = users.rows;
+                    users.users = dealsTemp;
+                    delete users.rows;
+                    users.users.forEach(users => {
+                        delete users['dataValues'].password; // for security reason we are now allowing to send password to anyone via any api lol :_)
+                        delete users['dataValues'].otp;
+                    });
+                    resolve(users);
+                }, error => {
+                    reject(error);
+                });
+        });
+    },
+    GetAllByType: function (page, type) {
+        return new Promise(function (resolve, reject) {
+            console.log('all with page and type')
+            var pageSize = 10; // page start from 0
+            const offset = page * pageSize;
+            models.User.findAndCountAll({ where: { user_type: type }, limit: pageSize, offset: offset })
+                .then(users => {
+                    var dealsTemp = users.rows;
+                    users.users = dealsTemp;
+                    delete users.rows;
+                    users.users.forEach(users => {
+                        delete users['dataValues'].password; // for security reason we are now allowing to send password to anyone via any api lol :_)
+                        delete users['dataValues'].otp;
+                    });
+                    resolve(users);
+                }, error => {
+                    reject(error);
+                });
         });
     },
     getUser: function (email) {
@@ -22,7 +53,6 @@ var UserRepository = {
             models.User.findOne({ where: { email: email } }).then(user => {
                 if (user == null) {
                     resolve(null);
-
                 } else {
                     var isDeleted = delete user.dataValues['password'];
                     var isDeletedOTP = delete user.dataValues['otp'];
@@ -252,6 +282,42 @@ var UserRepository = {
             });
         });
     },
+    CreateUserAdmin: function (email, password, first_name, last_name, phone, user_type) {
+        return new Promise(function (resolve, reject) {
+            models.User.findOne({ attributes: ['user_admin_id'], where: { email: email } }).then(users => {
+                if (users == null) {
+                    var otp_val = Math.floor(1000 + Math.random() * 9000);
+                    models.User.create({
+                        email: email,
+                        account_status: 'Pending',
+                        password: password,
+                        first_name: first_name,
+                        last_name: last_name,
+                        phone: phone,
+                        otp: otp_val,
+                        user_type: user_type,
+                        photo: first_name,
+                        active: 1,
+                    }).then(users => {
+                        console.log(users['dataValues']);
+                        var isDeleted = delete users.dataValues['password'];
+                        console.log(users['dataValues']);
+                        if (isDeleted) {
+                            resolve(users);
+                        } else {
+                            resolve(null);
+                        }
+                    }, error => {
+                        reject(error)
+                    });
+                } else {
+                    resolve(null)
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
 
     Check_otp: function (email, otp) {
         return new Promise(function (resolve, reject) {
@@ -398,8 +464,9 @@ var UserRepository = {
         return new Promise(function (resolve, reject) {
             models.User.update({
                 account_status: body.account_status,
+                active: body.active,
             }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
-                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['account_status'] }).then(users => {
+                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_admin_id', 'account_status', 'active'] }).then(users => {
                     resolve(users);
                 }, error => {
                     reject(error);

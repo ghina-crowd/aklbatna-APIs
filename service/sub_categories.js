@@ -20,13 +20,22 @@ var service = {
             });
         });
     },
+    get_sub_category: function (category_id) {
+        return new Promise(function (resolve, reject) {
+            subcategoryRepository.get_sub_category(category_id).then(categories => {
+                resolve(categories);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     create_sub_category: function (credentials) {
         return new Promise(function (resolve, reject) {
             subcategoryRepository.Create_sub_category(credentials).then(categories => {
                 resolve(categories);
             }, error => {
                 reject(error);
-            }); 
+            });
         });
     },
     update_sub_category: function (credentials) {

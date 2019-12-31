@@ -17,8 +17,6 @@ const upload = multer({
 
 const jwt = require('jsonwebtoken');
 var router = express.Router();
-
-
 var id;
 async function verifyToken(token, res, lang) {
     id = undefined;
@@ -47,7 +45,7 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-         id = decoded.id;
+        id = decoded.id;
         if (!id) {
             languageService.get_lang(lang, 'FAILED_AUTHENTICATE_TOKEN').then(msg => {
                 res.send({
@@ -64,7 +62,6 @@ async function verifyToken(token, res, lang) {
 
     });
 }
-
 router.get('/get_categories_subCategories', function (req, res) {
 
     var lang = req.headers.language;
@@ -260,7 +257,7 @@ router.get('/admin/categories', async function (req, res) {
     }
 
 });
-router.post('/admin/create', upload.single('image'), async function (req, res) {
+router.post('/admin/create', async function (req, res) {
 
 
 
@@ -275,7 +272,7 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
-        if (!req.file) {
+        if (!credentials.icon || credentials.icon == '') {
             languageService.get_lang(lang, 'EMPTY_FIELD_IMAGE').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,
@@ -286,11 +283,6 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
             });
             return;
         }
-        const relative_ptah = '/images/categories';
-        const imagePath = path.join(__dirname, '..' + relative_ptah);
-        const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
-        const filename = await fileUpload.save(req.file.buffer);
-
 
         return new Promise(function (resolve, reject) {
 
@@ -340,7 +332,6 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
                     });
                 });
             } else {
-                credentials['icon'] = relative_ptah + '/' + filename;
                 console.log(JSON.stringify(credentials));
                 categoryServices.create_category(credentials).then(category => {
                     resolve(category);
@@ -380,11 +371,10 @@ router.post('/admin/create', upload.single('image'), async function (req, res) {
     }
 
 });
-router.post('/admin/update', upload.single('image'), async function (req, res) {
+router.put('/admin/update', async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
-    var token = req.headers.authorization;
     var token = req.headers.authorization;
     await verifyToken(token, res, lang);
     if (!id) {
@@ -394,18 +384,18 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
-        //check if there is any file update
-        if (req.file) {
-            const relative_ptah = '/images/categories';
-            const imagePath = path.join(__dirname, '..' + relative_ptah);
-            const fileUpload = new Resize(imagePath, new Date().getTime() + '.png');
-            const filename = await fileUpload.save(req.file.buffer);
-            credentials['icon'] = relative_ptah + '/' + filename;
-        }
-
         return new Promise(function (resolve, reject) {
             if (!credentials || !credentials.shop_category_id || credentials.shop_category_id == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_SHOP_CATEGORY_ID').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.name_ar || credentials.name_ar == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_NAME_AR').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -479,13 +469,13 @@ router.post('/admin/update', upload.single('image'), async function (req, res) {
         })
     }
 });
-router.delete('/admin/delete', async function (req, res) {
+router.delete('/admin/delete/:shop_category_id', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
 
-        var credentials = req.body;
+        var credentials = req.params;
         var lang = req.headers.language;
         var token = req.headers.authorization;
         await verifyToken(token, res, lang);
@@ -504,9 +494,7 @@ router.delete('/admin/delete', async function (req, res) {
                     data: null
                 })
             });
-
         } else {
-
             return new Promise(function (resolve, reject) {
                 categoryServices.delete_category(credentials.shop_category_id).then(response => {
                     resolve(response);

@@ -23,6 +23,20 @@ var SubCategoryRepository = {
             });
         });
     },
+
+    get_sub_category: function (category_id) {
+        return new Promise(function (resolve, reject) {
+            models.SubCategory.findAll({ where: { active: 1, shop_category_id: category_id } }).then(categories => {
+                if (categories == null) {
+                    resolve(null);
+                } else {
+                    resolve(categories);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     Get_categories_products: function () {
         var cat_attributes, sub_cat_attributes;
         return new Promise(function (resolve, reject) {
@@ -78,9 +92,6 @@ var SubCategoryRepository = {
             }, error => {
                 reject(error);
             });
-
-
-
         });
     },
     Create_sub_category: function (newSubCategoryData) {
@@ -89,7 +100,8 @@ var SubCategoryRepository = {
                 sub_name_en: newSubCategoryData.sub_name_en,
                 sub_name_ar: newSubCategoryData.sub_name_ar,
                 short_details: newSubCategoryData.short_details,
-                shop_category_id: newSubCategoryData.shop_category_id
+                shop_category_id: newSubCategoryData.shop_category_id,
+                active: 1 // default
             }).then(category => {
                 console.log(category['dataValues']);
                 resolve(category);

@@ -28,7 +28,7 @@ var CategoryRepository = {
                 name_ar: newCategoryData.name_ar,
                 url_rewrite: newCategoryData.url_rewrite,
                 short_desc: newCategoryData.short_desc,
-                active: newCategoryData.active,
+                active: 1, // default 
                 keyword: newCategoryData.keyword,
                 icon: newCategoryData.icon
             }).then(category => {
@@ -63,7 +63,7 @@ var CategoryRepository = {
     },
     deleteCategory: function (shop_category_id) {
         return new Promise(function (resolve, reject) {
-            models.Categories.destroy({ where: { shop_category_id: shop_category_id } }).then(deleted => {
+            models.Categories.update({ active: 0 }, { where: { shop_category_id: shop_category_id } }).then(deleted => {
                 resolve(deleted);
             }, error => {
                 reject(error);
@@ -74,10 +74,10 @@ var CategoryRepository = {
         var sub_cat_attributes, cat_attributes;
         return new Promise(function (resolve, reject) {
             if (lang.acceptedLanguage == 'en') {
-                cat_attributes = ['shop_category_id', ['name_en', 'name'],'icon'];
+                cat_attributes = ['shop_category_id', ['name_en', 'name'], 'icon'];
                 sub_cat_attributes = ['sub_category_id', ['sub_name_en', 'sub_name']];
             } else {
-                cat_attributes = ['shop_category_id', ['name_ar', 'name'],'icon'];
+                cat_attributes = ['shop_category_id', ['name_ar', 'name'], 'icon'];
                 sub_cat_attributes = ['sub_category_id', ['sub_name_ar', 'sub_name']];
             }
             models.Categories.hasMany(sub_category_model.SubCategory, { foreignKey: 'shop_category_id' });
