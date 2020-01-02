@@ -12,22 +12,7 @@ module.exports = function(sequelize, DataTypes) {
         name_ar: {
             type: DataTypes.STRING(225),
         },
-        url_rewrite: {
-            type: DataTypes.STRING(225),
-        },
-        keyword: {
-            type: DataTypes.STRING(225),
-        },
-        short_desc: {
-            type: DataTypes.STRING(225),
-        },
         active: {
-            type: DataTypes.STRING(225),
-        },
-        arrange: {
-            type: DataTypes.STRING(225),
-        },
-        lang_iso: {
             type: DataTypes.STRING(225),
         },
         icon: {

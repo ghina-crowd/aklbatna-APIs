@@ -24,6 +24,26 @@ var SubCategoryRepository = {
         });
     },
 
+    Get_sub_categories_All: function () {
+        return new Promise(function (resolve, reject) {
+            models.SubCategory.belongsTo(category_model.Categories, { foreignKey: 'shop_category_id' })
+            models.SubCategory.findAll({
+                include: [{
+                    attributes: ['name_ar', 'name_en'],
+                    model: category_model.Categories,
+                }]
+            }).then(categories => {
+                if (categories == null) {
+                    resolve(null);
+                } else {
+                    resolve(categories);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
     get_sub_category: function (category_id) {
         return new Promise(function (resolve, reject) {
             models.SubCategory.findAll({ where: { active: 1, shop_category_id: category_id } }).then(categories => {
@@ -53,6 +73,7 @@ var SubCategoryRepository = {
             deals_model.Deals.belongsTo(company_model.Company_Branches, { foreignKey: 'branch_id' })
             category_model.Categories.findAll({
                 attributes: cat_attributes,
+                where: { active: 1 },
                 include: [{
                     order: [['start_time', 'DESC']],
                     attributes: sub_cat_attributes,

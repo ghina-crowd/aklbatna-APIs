@@ -21,6 +21,15 @@ var service = {
             });
         });
     },
+    get_categories_sub_categories_All: function () {
+        return new Promise(function (resolve, reject) {
+            categoryRepository.get_categories_sub_categories_All().then(categories => {
+                resolve(categories);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     create_category: function (credentials) {
         return new Promise(function (resolve, reject) {
             categoryRepository.Create_category(credentials).then(categories => {

@@ -15,9 +15,6 @@ module.exports = function (sequelize, DataTypes) {
         sub_name_ar: {
             type: DataTypes.STRING(225),
         },
-        short_details: {
-            type: DataTypes.STRING(225),
-        },
         created_time: {
             type: DataTypes.STRING(225),
         },

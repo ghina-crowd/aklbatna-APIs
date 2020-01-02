@@ -157,7 +157,7 @@ router.get('/admin/sub_categories', async function (req, res) {
             return;
         }
         return new Promise(function (resolve, reject) {
-            subcategoryServices.get_sub_categories().then(categories => {
+            subcategoryServices.get_sub_categories_All().then(categories => {
                 resolve(categories);
                 if (categories == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -285,15 +285,6 @@ router.post('/admin/create', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.short_details || credentials.short_details == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DETAILS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else if (!credentials.shop_category_id || credentials.shop_category_id == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_SHOP_CATEGORY').then(msg => {
                     res.json({
@@ -385,26 +376,8 @@ router.put('/admin/update', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.short_details || credentials.short_details == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DETAILS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else if (!credentials.sub_category_id || credentials.sub_category_id == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_SHOP_CATEGORY').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.active || credentials.active == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_ACTIVE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,

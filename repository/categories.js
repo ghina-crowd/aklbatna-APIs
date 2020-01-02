@@ -96,6 +96,21 @@ var CategoryRepository = {
 
         });
     },
+    get_categories_sub_categories_All: function () {
+        return new Promise(function (resolve, reject) {
+            models.Categories.hasMany(sub_category_model.SubCategory, { foreignKey: 'shop_category_id' });
+            models.Categories.findAll({
+                include: [{
+                    model: sub_category_model.SubCategory,
+                }]
+            }).then(deals => {
+                resolve(deals);
+            }, error => {
+                reject(error);
+            });
+
+        });
+    },
 };
 
 

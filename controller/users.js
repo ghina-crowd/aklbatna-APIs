@@ -719,9 +719,6 @@ router.get('/admin/get_best_seller', async function (req, res) {
     });
 });
 
-
-
-
 //register
 router.post('/admin/create', async function (req, res) {
     var lang = req.headers.language;

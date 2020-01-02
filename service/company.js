@@ -11,9 +11,9 @@ module.exports = {
     },
 
 
-    get_companies: function (page, keyword) {
+    get_companiesAdmin: function (page) {
         return new Promise(function (resolve, reject) {
-            CompanyRepository.get_companies(page, keyword).then(companies => {
+            CompanyRepository.get_companiesAdmin(page).then(companies => {
                 resolve(companies);
             }, error => {
                 reject(error);

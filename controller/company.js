@@ -128,7 +128,7 @@ router.get('/filter', function (req, res) {
 });
 
 //get companies by admin
-router.get('/admin/get_companies', async function (req, res) {
+router.get('/admin/get_companies/:page', async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -141,8 +141,7 @@ router.get('/admin/get_companies', async function (req, res) {
         }
 
 
-        var page = req.body.page; // start from 0
-        var keyword = req.body.keyword ? req.body.keyword : 0;
+        var page = req.params.page; // start from 0
         if (!page || page < 0) {
             languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {
                 res.json({
@@ -154,7 +153,7 @@ router.get('/admin/get_companies', async function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                companyService.get_companies(page, keyword).then(companies => {
+                companyService.get_companiesAdmin(page).then(companies => {
                     resolve(companies);
                     if (companies == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {

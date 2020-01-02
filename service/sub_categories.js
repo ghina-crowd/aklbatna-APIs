@@ -20,6 +20,15 @@ var service = {
             });
         });
     },
+    get_sub_categories_All: function () {
+        return new Promise(function (resolve, reject) {
+            subcategoryRepository.Get_sub_categories_All().then(categories => {
+                resolve(categories);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     get_sub_category: function (category_id) {
         return new Promise(function (resolve, reject) {
             subcategoryRepository.get_sub_category(category_id).then(categories => {

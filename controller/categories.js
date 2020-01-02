@@ -206,19 +206,13 @@ router.get('/categories', function (req, res) {
     }
 
 });
-router.get('/admin/categories', async function (req, res) {
+router.get('/admin/categories', function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
-        var token = req.headers.authorization;
-        await verifyToken(token, res, lang);
-        if (!id) {
-            return;
-        }
-
         return new Promise(function (resolve, reject) {
-            categoryServices.get_categories().then(categories => {
+            categoryServices.get_categories_sub_categories_All().then(categories => {
                 resolve(categories);
                 if (categories == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -313,24 +307,6 @@ router.post('/admin/create', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.keyword || credentials.keyword == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_KEYWORD').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.short_desc || credentials.short_desc == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else {
                 console.log(JSON.stringify(credentials));
                 categoryServices.create_category(credentials).then(category => {
@@ -405,24 +381,6 @@ router.put('/admin/update', async function (req, res) {
                 });
             } else if (!credentials.name_ar || credentials.name_ar == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_NAME_AR').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.keyword || credentials.keyword == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_KEYWORD').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.short_desc || credentials.short_desc == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_SHORT_DEC').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,

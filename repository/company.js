@@ -1,5 +1,6 @@
 var company_model = require('../models/company_model');
 var deal_model = require('../models/deals_model');
+var models = require('../models/models');
 var commonRepository = require('./common.js');
 var lang = require('../app');
 const sequelize = require('sequelize');
@@ -96,6 +97,37 @@ var CompanyRepository = {
                 if (companies == null) {
                     resolve([]);
                 } else {
+                    resolve(companies);
+                }
+            }, error => {
+                reject(error);
+            });
+        }
+        );
+    },
+    get_companiesAdmin: function (page) {
+        var pageSize = 12; // page start from 0
+        const offset = page * pageSize;
+        return new Promise(function (resolve, reject) {
+
+            company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
+            company_model.Company.belongsTo(models.User, { foreignKey: 'user_id' });
+            company_model.Company.findAndCountAll({
+                limit: pageSize, offset: offset,
+                include: [{
+                    model: company_model.Company_Branches,
+                }, {
+                    model: models.User,
+                }]
+            }).then(companies => {
+                if (companies == null) {
+                    resolve([]);
+                } else {
+
+                    var companiesTemp = companies.rows;
+                    companies.companies = companiesTemp;
+                    delete companies.rows;
+
                     resolve(companies);
                 }
             }, error => {
