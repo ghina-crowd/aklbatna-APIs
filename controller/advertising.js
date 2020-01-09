@@ -74,7 +74,7 @@ router.get('', function (req, res) {
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         return new Promise(function (resolve, reject) {
-            AdvertisingService.GetAllAdvertising().then(advertising => {
+            AdvertisingService.GetAll().then(advertising => {
                 resolve(advertising);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
@@ -110,7 +110,7 @@ router.get('/admin/get_advertising', async function (req, res) {
             return;
         }
         return new Promise(function (resolve, reject) {
-            AdvertisingService.GetAllAdvertising().then(categories => {
+            AdvertisingService.GetAll().then(categories => {
                 resolve(categories);
                 if (categories == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -265,7 +265,7 @@ router.post('/admin/create', async function (req, res) {
     }
 
 });
-router.post('/admin/update', async function (req, res) {
+router.put('/admin/update', async function (req, res) {
 
     var lang = req.headers.language;
     var credentials = req.body;
@@ -316,24 +316,6 @@ router.post('/admin/update', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.type || credentials.type == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_TYPE').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.status || credentials.status == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_STATUS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else if (!credentials.start_date || credentials.start_date == '' || !new Date(credentials.start_date).getTime()) {
                 languageService.get_lang(lang, 'EMPTY_FIELD_START_DATE').then(msg => {
                     res.json({
@@ -353,7 +335,6 @@ router.post('/admin/update', async function (req, res) {
                     });
                 });
             } else {
-
                 AdvertisingService.update_advertising(credentials).then(advertise => {
                     resolve(advertise);
                     if (advertise == null) {
@@ -462,6 +443,54 @@ router.delete('/admin/delete/:add_id', async function (req, res) {
     }
 }
 );
+
+router.get('/admin/get/:id', async function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            AdvertisingService.GetAllAdvertising(req.params.id).then(categories => {
+                resolve(categories);
+                if (categories == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 
 
 module.exports = router;

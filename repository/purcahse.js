@@ -1,5 +1,6 @@
 var models = require('../models/models.js');
 var models_deals = require('../models/deals_model');
+var models_company = require('../models/company_model');
 var models_sub_deals = require('../models/sub_deals_model');
 var commonRepository = require('./common.js');
 
@@ -39,7 +40,8 @@ var PurchaseRepository = {
 
         } else {
             return new Promise(function (resolve, reject) {
-                models.Purchase.findAll().then(purchases => {
+                models.Purchase.belongsTo(models_sub_deals.SubDeals, { foreignKey: 'sub_deal_id' })
+                models.Purchase.findAll({ include: [{ model: models_sub_deals.SubDeals }] }).then(purchases => {
                     resolve(purchases);
                 }, error => {
                     reject(error);
@@ -47,6 +49,43 @@ var PurchaseRepository = {
             });
         }
 
+    },
+    GetAllCompany: function (company_id) {
+        var data = {};
+        data = { company_id: company_id };
+        return new Promise(function (resolve, reject) {
+            models.Purchase.belongsTo(models_deals.Deals, { foreignKey: 'deal_id' })
+            models.Purchase.belongsTo(models_sub_deals.SubDeals, { foreignKey: 'sub_deal_id' })
+            models.Purchase.belongsTo(models.User, { foreignKey: 'user_id' })
+            models_deals.Deals.belongsTo(models_company.Company, { foreignKey: 'company_id' })
+            models.Purchase.findAll({
+                include: [
+                    {
+                        model: models_deals.Deals,
+                        include: [
+                            { where: data, model: models_company.Company },
+                        ]
+                    }
+                    ,
+                    { model: models_sub_deals.SubDeals }
+                    ,
+                    { model: models.User }
+                ]
+            }).then(purchases => {
+                for (let k in purchases) {
+                    if (!purchases[k]['dataValues'].deal) {
+                        delete purchases[k];
+                    }
+                }
+
+                var filtered = purchases.filter(function (el) {
+                    return el != null;
+                });
+                resolve(filtered);
+            }, error => {
+                reject(error);
+            });
+        });
     },
 
 
@@ -58,16 +97,14 @@ var PurchaseRepository = {
             } else {
                 data = { status: 1 };
             }
-            models.Purchase.findAll({ where: data }).then(purchases => {
+            models.Purchase.belongsTo(models_sub_deals.SubDeals, { foreignKey: 'sub_deal_id' })
+            models.Purchase.findAll({ where: data, include: [{ model: models_sub_deals.SubDeals }] }).then(purchases => {
                 resolve(purchases);
             }, error => {
                 reject(error);
             });
         });
     },
-
-
-
     GetAllUnused: function (id) {
 
         var data = {};
@@ -76,8 +113,10 @@ var PurchaseRepository = {
         } else {
             data = { status: 0 };
         }
+        console.log(data);
         return new Promise(function (resolve, reject) {
-            models.Purchase.findAll({ where: data }).then(purchases => {
+            models.Purchase.belongsTo(models_sub_deals.SubDeals, { foreignKey: 'sub_deal_id' })
+            models.Purchase.findAll({ where: data, include: [{ model: models_sub_deals.SubDeals }] }).then(purchases => {
                 resolve(purchases);
             }, error => {
                 reject(error);

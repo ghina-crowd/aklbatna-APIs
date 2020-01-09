@@ -58,6 +58,16 @@ var service = {
         });
     },
 
+    filter_dealsAdmin: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.filter_dealsAdmin(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
+                resolve(deals);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
 
     create_rate: function (user_id, deal_id, rate, comment) {
         return new Promise(function (resolve, reject) {
@@ -112,7 +122,7 @@ var service = {
     },
     update_deal: async function (credentials) {
         return new Promise(async function (resolve, reject) {
-            dealRepository.update_deal(credentials).then( async deal => {
+            dealRepository.update_deal(credentials).then(async deal => {
                 resolve(deal);
             }, error => {
                 reject(error);
@@ -122,6 +132,15 @@ var service = {
     delete_deal: function (deal_id) {
         return new Promise(function (resolve, reject) {
             dealRepository.delete_deal(deal_id).then(response => {
+                resolve(response);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    delete_review: function (rating_id) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.delete_review(rating_id).then(response => {
                 resolve(response);
             }, error => {
                 reject(error);

@@ -315,6 +315,72 @@ router.post('/filter', function (req, res) {
         })
     }
 });
+router.post('/admin/filter', function (req, res) {
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var data = req.body;
+        var category_id = Number(data.category_id) ? Number(data.category_id) : 0;
+        var sub_category_id = Number(data.sub_category_id) ? Number(data.sub_category_id) : 0;
+        var min_price = data.min_price ? data.min_price : 0;
+        var max_price = data.max_price ? data.max_price : 0;
+        var latitude = Number(data.latitude) ? Number(data.latitude) : 0;
+        var longitude = Number(data.longitude) ? Number(data.longitude) : 0;
+        var date = data.date ? data.date : '';
+        var monthly_new = data.monthly_new ? data.monthly_new : ''; // 1 => monthly , 2 => new
+        var sort_by = data.sort_by ? data.sort_by : ''; // 1 => price low to high , 2 => price high to low , 3 => distance
+        var rating = data.rating ? data.rating : '';
+
+        var page = req.body.page; // start from 0
+        var keyword = req.body.keyword ? req.body.keyword : 0;
+        if (page < 0) {
+            languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: [],
+                })
+            })
+        } else {
+            return new Promise(function (resolve, reject) {
+                dealServices.filter_dealsAdmin(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
+                    resolve(deals);
+                    if (deals == null || deals.length == 0) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: {},
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deals,
+                            });
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 
 router.post('/rating', async function (req, res) {
 
@@ -473,6 +539,65 @@ router.get('/reviews/:id/:page', function (req, res) {
     }
 
 });
+router.delete('/admin/reviews/delete/:rating_id', async function (req, res) {
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var credentials = req.params;
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+       
+
+        return new Promise(function (resolve, reject) {
+            dealServices.delete_review(credentials.rating_id).then(response => {
+                resolve(response);
+                if (response == 0) {
+                    languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: response
+                        });
+                    });
+                }
+
+            }
+                ,
+                error => {
+                    reject(error);
+                }
+            );
+        });
+
+
+
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+});
 
 router.get('/sub_deals/:id', function (req, res) {
     var lang = req.headers.language;
@@ -620,11 +745,11 @@ router.get('/ServicePro/get_deals/:page', async function (req, res) {
         })
     }
 });
-router.get('/admin/get_deals', function (req, res) {
+router.get('/admin/get_deals/:page', function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
         var lang = req.headers.language;
-        var page = req.body.page; // start from 0
+        var page = req.params.page; // start from 0
         var keyword = req.body.keyword ? req.body.keyword : 0;
         if (!page || page < 0) {
             languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {

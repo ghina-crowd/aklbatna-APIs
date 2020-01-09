@@ -9,6 +9,15 @@ module.exports = {
             });
         });
     },
+    GetAllPurchaseCompany: function (company_id) {
+        return new Promise(function (resolve, reject) {
+            PurchaseRepository.GetAllCompany(company_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     GetAllUased: function (id) {
         return new Promise(function (resolve, reject) {
             PurchaseRepository.GetAllUsed(id).then(user => {

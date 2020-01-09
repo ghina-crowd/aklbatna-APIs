@@ -2,6 +2,7 @@
 const sharp = require('sharp');
 const path = require('path');
 
+
 class Resize {
     constructor(folder, filename) {
         this.folder = folder;

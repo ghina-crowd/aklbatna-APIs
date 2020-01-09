@@ -56,7 +56,6 @@ var router = express.Router();
 //categories
 router.get('/home', function (req, res) {
 
-
     var ip = (req.headers['x-forwarded-for'] || '').split(',').pop() ||
         req.connection.remoteAddress ||
         req.socket.remoteAddress ||

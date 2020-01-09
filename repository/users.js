@@ -492,25 +492,42 @@ var UserRepository = {
     },
 
     getUserActivities: function (user_id) {
+
+        console.log('checked')
         return new Promise(function (resolve, reject) {
-            models.Activities.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' });
-            models.Activities.belongsTo(models.User, { foreignKey: 'user_id' });
-            models.Activities.findAll({
+            models.User.findOne({
                 where: {
-                    admin_user_id: user_id
-                }, include: [{
-                    model: model_deal.Deals
-                }, {
-                    model: models.User
-                }]
-            }).then(activitiesDeals => {
-                resolve(activitiesDeals);
+                    user_admin_id: user_id
+                }
+            }).then(user => {
+                models.Activities.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' });
+                models.Activities.belongsTo(models.User, { foreignKey: 'user_id' });
+                models.Activities.findAll({
+                    where: {
+                        admin_user_id: user_id
+                    }, include: [
+                        {
+                            model: model_deal.Deals
+                        },
+                        {
+                            model: models.User
+                        }]
+                }).then(activities => {
+                    console.log(activities)
+                    user['dataValues'].activities = activities;
+                    resolve(user);
+                }, error => {
+                    reject(error);
+                });
+
             }, error => {
                 reject(error);
             });
+
+
+
         });
 
-        // 
         // , where: { deal_id: deal_id }
     }, getBestSeller: function () {
         return new Promise(function (resolve, reject) {

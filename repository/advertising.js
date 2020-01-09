@@ -7,9 +7,9 @@ const Op = sequelize.Op;
 var AdvertisingRepository = {
     GetAll: function () {
         return new Promise(function (resolve, reject) {
+            console.log('we are in call')
             models.Advertising.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' })
             models.Advertising.findAll({
-                where: { status: 1 },
                 [Op.or]: [{
                     start_date: {
                         [Op.between]: [new Date()]
@@ -30,12 +30,30 @@ var AdvertisingRepository = {
         });
 
     },
+
+    Get: function (id) {
+        return new Promise(function (resolve, reject) {
+            models.Advertising.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' })
+            models.Advertising.findAll({
+                where: { user_id: id },
+                include: [{
+                    model: model_deal.Deals
+                }]
+            }).then(advertising => {
+                resolve(advertising);
+            }, error => {
+                reject(error);
+            });
+        });
+
+    },
     create_advertising: function (newAdvertisingData) {
         return new Promise(function (resolve, reject) {
             models.Advertising.create({
                 deal_id: newAdvertisingData.deal_id,
                 user_id: newAdvertisingData.user_id,
                 type: newAdvertisingData.type,
+                image: newAdvertisingData.image,
                 status: newAdvertisingData.status,
                 start_date: newAdvertisingData.start_date,
                 end_date: newAdvertisingData.end_date,
@@ -55,6 +73,7 @@ var AdvertisingRepository = {
                 deal_id: newAdvertisingData.deal_id,
                 user_id: newAdvertisingData.user_id,
                 type: newAdvertisingData.type,
+                image: newAdvertisingData.image,
                 status: newAdvertisingData.status,
                 start_date: newAdvertisingData.start_date,
                 end_date: newAdvertisingData.end_date,

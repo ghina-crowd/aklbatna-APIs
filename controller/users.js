@@ -1000,4 +1000,50 @@ router.post('/admin/create', async function (req, res) {
     }
 }
 );
+// get profile info
+router.get('/admin/ServicePro/details/:user_id', async function (req, res) {
+    var lang = req.headers.language;
+
+    var token = req.headers.authorization;
+    var params = req.params;
+    await verifyToken(token, res, lang);
+    if (!id) {
+        return;
+    }
+
+    UserService.GetAllUserData(params.user_id).then(user => {
+        var errors = validationResult(req);
+        if (errors.array().length == 0) {
+            if (user == null) {
+                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: user
+                    });
+                });
+            } else {
+                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: user
+                    });
+                });
+            }
+        } else {
+            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.INVALID_DATA,
+                    message: msg.message,
+                    data: errors.array()
+                });
+            })
+        }
+
+    });
+});
 module.exports = router;

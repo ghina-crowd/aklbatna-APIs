@@ -1,8 +1,17 @@
 var AdvertisingRepository = require('../repository/advertising');
 module.exports = {
-    GetAllAdvertising: function () {
+    GetAll: function () {
         return new Promise(function (resolve, reject) {
             AdvertisingRepository.GetAll().then(advertising => {
+                resolve(advertising);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    GetAllAdvertising: function (id) {
+        return new Promise(function (resolve, reject) {
+            AdvertisingRepository.Get(id).then(advertising => {
                 resolve(advertising);
             }, error => {
                 reject(error);
@@ -15,7 +24,7 @@ module.exports = {
                 resolve(advertising);
             }, error => {
                 reject(error);
-            }); 
+            });
         });
     },
     update_advertising: function (credentials) {

@@ -9,7 +9,8 @@ const path = require('path');
 const Resize = require('../util/Resize');
 const jwt = require('jsonwebtoken');
 var router = express.Router();
-var fs = require('fs');
+const Jimp = require('jimp');
+
 
 
 var storage = multer.diskStorage({
@@ -150,6 +151,12 @@ router.post('/deal/images', upload.array('images'), async function (req, res) {
                 const imagePath = path.join(__dirname, '..' + relative_ptah);
                 const fileUpload = new Resize(imagePath, new Date().getTime() + '.' + filetype);
                 const filename = await fileUpload.save(req.files[k].buffer);
+
+                const image = await Jimp.read(path.resolve(`${imagePath + filename}`));
+                await image.resize(50, 50);
+                await image.quality(0.000001);
+                let base = await image.getBase64Async(Jimp.MIME_PNG);
+                console.log(base)
                 temp_images.push(relative_ptah + filename);
             }
         }
