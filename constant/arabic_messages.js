@@ -131,7 +131,20 @@ var message = {
     EMPTY_FIELDS_SUB_CATEGORY_ID: 'invalid sub category id',
     EMPTY_FIELD_BRANCH_ACTIVE_STATUS: 'invalid active status',
     EMPTY_FIELD_INFO_ID: 'invalid info id',
-    EMPTY_FIELD_CONDITION_ID: 'invalid conditIon id'
+    EMPTY_FIELD_CONDITION_ID: 'invalid conditIon id',
+    INVALID_REQUEST_FROM: 'invalid request from',
+    INVALID_REQUEST_TO: 'invalid request to',
+    INVALID_TYPE: 'invalid type for request',
+    INVALID_FIRST_NAME: 'invalid first name',
+    INVALID_LAST_NAME: 'invalid last name',
+    INVALID_PHONE: 'invalid phone number',
+    INVALID_REQUEST_ID: 'invalid request id',
+    EMPTY_FIELD_CATEGORY: 'advertising category missing',
+    PLEASE_CHECK_YOUR_EMAIL:'please check your email'
+
+
+
+
 
 };
 

@@ -8,12 +8,23 @@ const sequelize = require('sequelize');
 const Op = sequelize.Op;
 
 var UserRepository = {
-    GetAll: function (page) {
+    GetAll: function (page, keyword) {
         return new Promise(function (resolve, reject) {
-            console.log('all with page')
+            console.log('all with page' + keyword)
             var pageSize = 10; // page start from 0
             const offset = page * pageSize;
-            models.User.findAndCountAll({ limit: pageSize, offset: offset })
+
+            var data = {};
+
+            if (keyword && keyword != 'all') {
+                data = {
+                    [Op.or]: [{ first_name: { [Op.like]: '%' + keyword + '%' } }, { last_name: { [Op.like]: '%' + keyword + '%' } }, { email: { [Op.like]: '%' + keyword + '%' } }, { phone: { [Op.like]: '%' + keyword + '%' } }, { user_type: { [Op.like]: '%' + keyword + '%' } }, { user_admin_id: { [Op.like]: '%' + (Number(keyword) - 1000) + '%' } }]
+                }
+            }
+
+            models.User.findAndCountAll({
+                limit: pageSize, offset: offset, where: data
+            })
                 .then(users => {
                     var dealsTemp = users.rows;
                     users.users = dealsTemp;
@@ -21,6 +32,12 @@ var UserRepository = {
                     users.users.forEach(users => {
                         delete users['dataValues'].password; // for security reason we are now allowing to send password to anyone via any api lol :_)
                         delete users['dataValues'].otp;
+                        if (String(users['dataValues'].user_type).toLowerCase() === 'salesrep') {
+                            users['dataValues'].code = String(1000 + Number(users['dataValues'].user_admin_id));
+                        } else {
+                            users['dataValues'].code = '';
+                        }
+
                     });
                     resolve(users);
                 }, error => {
@@ -116,7 +133,13 @@ var UserRepository = {
                     resolve(null);
                 } else {
                     delete user.dataValues['password'];
-                    resolve(user);
+
+                    if (user.dataValues['user_type'] == 'servicePro') {
+                        resolve(user);
+                    }
+                    else {
+                        resolve(null);
+                    }
                 }
             }, error => {
                 reject(error);
@@ -189,6 +212,7 @@ var UserRepository = {
             var otp_val = Math.floor(1000 + Math.random() * 9000);
             models.User.update({ otp: otp_val }, { where: { email: email } }).then(function (result) {
                 models.User.findOne({ attributes: ['email'], where: { email: email } }).then(users => {
+                    users['otp'] = otp_val;
                     resolve(users);
                 }, error => {
                     reject(error);
@@ -466,7 +490,7 @@ var UserRepository = {
                 account_status: body.account_status,
                 active: body.active,
             }, { where: { user_admin_id: body.user_admin_id } }).then(function (result) {
-                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_admin_id', 'account_status', 'active'] }).then(users => {
+                models.User.findOne({ where: { user_admin_id: body.user_admin_id }, attributes: ['user_admin_id', 'account_status', 'active', 'user_type', 'email', 'first_name', 'last_name'] }).then(users => {
                     resolve(users);
                 }, error => {
                     reject(error);
@@ -492,40 +516,23 @@ var UserRepository = {
     },
 
     getUserActivities: function (user_id) {
-
-        console.log('checked')
         return new Promise(function (resolve, reject) {
-            models.User.findOne({
+            models.Activities.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' });
+            models.Activities.belongsTo(models.User, { foreignKey: 'user_id' });
+            models.Activities.findAll({
                 where: {
-                    user_admin_id: user_id
-                }
-            }).then(user => {
-                models.Activities.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' });
-                models.Activities.belongsTo(models.User, { foreignKey: 'user_id' });
-                models.Activities.findAll({
-                    where: {
-                        admin_user_id: user_id
-                    }, include: [
-                        {
-                            model: model_deal.Deals
-                        },
-                        {
-                            model: models.User
-                        }]
-                }).then(activities => {
-                    console.log(activities)
-                    user['dataValues'].activities = activities;
-                    resolve(user);
-                }, error => {
-                    reject(error);
-                });
-
+                    admin_user_id: user_id
+                }, include: [{
+                    model: model_deal.Deals
+                }, {
+                    model: models.User
+                }]
+            }).then(activitiesDeals => {
+                console.log(activitiesDeals);
+                resolve(activitiesDeals);
             }, error => {
                 reject(error);
             });
-
-
-
         });
 
         // , where: { deal_id: deal_id }

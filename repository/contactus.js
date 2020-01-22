@@ -2,6 +2,20 @@ var models = require('../models/models.js');
 var commonRepository = require('./common.js');
 
 var ContactRepository = {
+    get: function () {
+        return new Promise(function (resolve, reject) {
+            models.ContactUs.findAll().then((contact => {
+                if (contact == null) {
+                    resolve(null);
+                } else {
+                    resolve(contact);
+                }
+            }), error => {
+                reject(error);
+            })
+        });
+    },
+
     getAllContactUS: function () {
         return new Promise(function (resolve, reject) {
             models.ContactUs.findAll().then((contact => {

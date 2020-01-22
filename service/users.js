@@ -2,9 +2,9 @@ var UserRepository = require('../repository/users.js');
 var fields = require('../constant/field.js');
 var models = require('../models/models.js');
 module.exports = {
-    GetAllUser: function (page) {
+    GetAllUser: function (page,keyword) {
         return new Promise(function (resolve, reject) {
-            UserRepository.GetAll(page).then(users => {
+            UserRepository.GetAll(page, keyword).then(users => {
                 resolve(users);
             }, error => {
                 reject(error);

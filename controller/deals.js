@@ -3,11 +3,12 @@ const { validationResult } = require('express-validator/check');
 var statics = require('../constant/static.js');
 var codes = require('../constant/code.js');
 var dealServices = require('../service/deals.js');
-const multer = require('multer');
 var languageService = require('../validator/language');
 var config = require('../constant/config.js');
 const path = require('path');
 const Resize = require('../util/Resize');
+const utils = require('../util/utils');
+const multer = require('multer');
 
 const upload = multer({
     limits: {
@@ -260,6 +261,7 @@ router.post('/filter', function (req, res) {
         var max_price = data.max_price ? data.max_price : 0;
         var latitude = Number(data.latitude) ? Number(data.latitude) : 0;
         var longitude = Number(data.longitude) ? Number(data.longitude) : 0;
+        var city = Number(data.city_id) ? Number(data.city_id) : 0;
         var date = data.date ? data.date : '';
         var monthly_new = data.monthly_new ? data.monthly_new : ''; // 1 => monthly , 2 => new
         var sort_by = data.sort_by ? data.sort_by : ''; // 1 => price low to high , 2 => price high to low , 3 => distance
@@ -278,7 +280,52 @@ router.post('/filter', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                dealServices.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
+                dealServices.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude, city).then(deals => {
+                    resolve(deals);
+                    if (deals == null || deals.length == 0) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: {},
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: deals,
+                            });
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.post('/bestsales', function (req, res) {
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var data = req.body;
+        var category_id = Number(data.category_id) ? Number(data.category_id) : 0;
+        var sub_category_id = Number(data.sub_category_id) ? Number(data.sub_category_id) : 0; {
+            return new Promise(function (resolve, reject) {
+                dealServices.bestsales(category_id, sub_category_id).then(deals => {
                     resolve(deals);
                     if (deals == null || deals.length == 0) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -326,6 +373,7 @@ router.post('/admin/filter', function (req, res) {
         var max_price = data.max_price ? data.max_price : 0;
         var latitude = Number(data.latitude) ? Number(data.latitude) : 0;
         var longitude = Number(data.longitude) ? Number(data.longitude) : 0;
+        var city = Number(data.city_id) ? Number(data.city_id) : 0;
         var date = data.date ? data.date : '';
         var monthly_new = data.monthly_new ? data.monthly_new : ''; // 1 => monthly , 2 => new
         var sort_by = data.sort_by ? data.sort_by : ''; // 1 => price low to high , 2 => price high to low , 3 => distance
@@ -344,7 +392,7 @@ router.post('/admin/filter', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                dealServices.filter_dealsAdmin(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
+                dealServices.filter_dealsAdmin(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude, city).then(deals => {
                     resolve(deals);
                     if (deals == null || deals.length == 0) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -550,7 +598,7 @@ router.delete('/admin/reviews/delete/:rating_id', async function (req, res) {
         if (!id) {
             return;
         }
-       
+
 
         return new Promise(function (resolve, reject) {
             dealServices.delete_review(credentials.rating_id).then(response => {
@@ -800,12 +848,14 @@ router.get('/admin/get_deals/:page', function (req, res) {
     }
 });
 router.post('/admin/create',
-    // upload.array('images'),
+    upload.array('images'),
     async function (req, res) {
 
 
         var lang = req.headers.language;
         var credentials = req.body;
+
+        console.log(credentials)
 
         var errors = validationResult(req);
         if (errors.array().length == 0) {
@@ -959,7 +1009,6 @@ router.post('/admin/create',
                                     data: deal,
                                 });
                             })
-
                         } else {
                             languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
                                 res.json({
@@ -968,7 +1017,14 @@ router.post('/admin/create',
                                     message: msg.message,
                                     data: deal,
                                 });
-                            })
+                            });
+                            if (servicePro) {
+                                utils.SendEmail(config.adminemail, 'New Deal Created', ' <p>Hello Admin</p> . </p> <p> Services provider created new deal into your platform please visit this <a href= "' + config.adminurl + 'pages/deal_details/' + deal.deal_id + '" target = "_self"> link </a> to see more details.</p>   ');
+                            } else if (salesRep) {
+                                utils.SendEmail(config.adminemail, 'New Deal Created', ' <p>Hello Admin</p> . </p> <p> Sales Pin Code:' + String(1000 + Number(id)) + ' created new deal into your platform please visit this <a href= "' + config.adminurl + 'pages/deal_details/' + deal.deal_id + '" target = "_self"> link </a> to see more details.</p>   ');
+                            } else {
+                                console.log('by any other user');
+                            }
                         }
                     }, error => {
                         reject(error);
@@ -989,14 +1045,14 @@ router.post('/admin/create',
     });
 
 router.put('/admin/update',
-    // upload.array('images'),
+    upload.array('images'),
     async function (req, res) {
 
 
         var lang = req.headers.language;
         var credentials = req.body;
         var token = req.headers.authorization;
-
+        console.log(credentials)
         var errors = validationResult(req);
         if (errors.array().length == 0) {
 
@@ -1833,7 +1889,6 @@ router.delete('/admin/Sub_delete/:id', async function (req, res) {
     }
 }
 );
-
 
 //Info Deals Routers
 router.post('/admin/info/create', async function (req, res) {

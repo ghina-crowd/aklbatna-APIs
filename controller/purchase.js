@@ -6,7 +6,13 @@ var codes = require('../constant/code.js');
 var PurchaseService = require('../service/purcahse');
 const jwt = require('jsonwebtoken');
 var config = require('../constant/config.js');
+const multer = require('multer');
 
+const upload = multer({
+    limits: {
+        fileSize: 4 * 1024 * 1024,
+    }
+});
 
 var router = express.Router();
 var id;
@@ -268,6 +274,61 @@ router.post('/create', async function (req, res) {
     }
 });
 
+
+
+
+router.post('/createMany',
+    // upload.array('images'),
+    async function (req, res) {
+        var lang = req.headers.language;
+        var errors = validationResult(req);
+        if (errors.array().length == 0) {
+
+            var credentials = req.body;
+            var lang = req.headers.language;
+            var token = req.headers.authorization;
+            await verifyToken(token, res, lang);
+            if (!id) {
+                return;
+            }
+
+            return new Promise(function (resolve, reject) {
+                {
+                    return new Promise(function (resolve, reject) {
+                        PurchaseService.CreatePurchaseMany(credentials).then(purchase => {
+                            resolve(purchase);
+                            languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: msg.message,
+                                    data: purchase
+                                });
+                            });
+                        }
+                            ,
+                            error => {
+                                reject(error);
+                            }
+                        );
+                    });
+                }
+            })
+        } else {
+            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.INVALID_DATA,
+                    message: msg.message,
+                    data: errors.array()
+                });
+            });
+
+        }
+    });
+
+
+
 router.get('/user/getAll', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
@@ -378,7 +439,42 @@ router.get('/user/getused', async function (req, res) {
         })
     }
 });
-
+router.get('/admin/get/:deal_id', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            PurchaseService.GetAllByDeal(req.params.deal_id).then(purchases => {
+                resolve(purchases);
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: purchases
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 
 router.delete('/admin/delete/:purchase_id', async function (req, res) {
     lang = req.headers.language;
@@ -413,45 +509,6 @@ router.delete('/admin/delete/:purchase_id', async function (req, res) {
                         });
                     });
                 }
-            }, error => {
-                reject(error);
-            });
-        });
-    } else {
-        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.INVALID_DATA,
-                message: msg.message,
-                data: errors.array()
-            });
-        })
-    }
-});
-
-router.get('/admin/get/:company_id', async function (req, res) {
-    lang = req.headers.language;
-    var errors = validationResult(req);
-    if (errors.array().length == 0) {
-        var lang = req.headers.language;
-
-        var token = req.headers.authorization;
-        await verifyToken(token, res, lang);
-        if (!id) {
-            return;
-        }
-
-        return new Promise(function (resolve, reject) {
-            PurchaseService.GetAllPurchaseCompany(req.params.company_id).then(purchases => {
-                resolve(purchases);
-                languageService.get_lang(lang, 'SUCCESS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: purchases
-                    });
-                });
             }, error => {
                 reject(error);
             });

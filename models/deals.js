@@ -27,7 +27,6 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(225),
             foreignKey: true,
         },
-
         attache_link: {
             type: DataTypes.STRING(225),
         },
@@ -47,6 +46,23 @@ module.exports = function (sequelize, DataTypes) {
             type: DataTypes.STRING(225)
         },
 
+
+
+        deal_Inclusions_ar: {
+            type: DataTypes.STRING(225)
+        },
+        prior_booking_message_ar: {
+            type: DataTypes.STRING(225)
+        },
+        deal_exclusions_ar: {
+            type: DataTypes.STRING(225)
+        },
+        terms_and_conditions_ar: {
+            type: DataTypes.STRING(225)
+        },
+        purchased_voucher_ar: {
+            type: DataTypes.STRING(225)
+        },
 
         branch_id: {
             type: DataTypes.STRING(225),

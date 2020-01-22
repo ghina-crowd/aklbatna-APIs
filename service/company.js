@@ -1,8 +1,8 @@
 var CompanyRepository = require('../repository/company');
 module.exports = {
-    filter_companies: function (latitude, longitude, location_name, page) {
+    filter_companies: function (page, title) {
         return new Promise(function (resolve, reject) {
-            CompanyRepository.filter_companies(latitude, longitude, location_name, page).then(companies => {
+            CompanyRepository.filter_companies(page, title).then(companies => {
                 resolve(companies);
             }, error => {
                 reject(error);
@@ -103,6 +103,9 @@ module.exports = {
 
             if (!newCompanyData.icon) {
                 newCompanyData.icon = '';
+            }
+            if (!newCompanyData.city_id) {
+                newCompanyData.city_id = '0';
             }
             CompanyRepository.create_company(newCompanyData).then(company => {
                 resolve(company);

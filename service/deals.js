@@ -48,9 +48,9 @@ var service = {
         });
     },
 
-    filter_deals: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude) {
+    filter_deals: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude,city) {
         return new Promise(function (resolve, reject) {
-            dealRepository.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
+            dealRepository.filter_deals(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude,city).then(deals => {
                 resolve(deals);
             }, error => {
                 reject(error);
@@ -58,9 +58,19 @@ var service = {
         });
     },
 
-    filter_dealsAdmin: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude) {
+    bestsales: function (category_id, sub_category_id) {
         return new Promise(function (resolve, reject) {
-            dealRepository.filter_dealsAdmin(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude).then(deals => {
+            dealRepository.bestsales(category_id, sub_category_id).then(deals => {
+                resolve(deals);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+    filter_dealsAdmin: function (category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude,city) {
+        return new Promise(function (resolve, reject) {
+            dealRepository.filter_dealsAdmin(category_id, sub_category_id, min_price, max_price, date, monthly_new, sort_by, rating, page, keyword, latitude, longitude,city).then(deals => {
                 resolve(deals);
             }, error => {
                 reject(error);
@@ -103,7 +113,7 @@ var service = {
         return new Promise(async function (resolve, reject) {
             dealRepository.create_deal(credentials).then(async deal => {
 
-                userRepository.CreateActivity(credentials.user_id, '1', 'pending', deal.deal_id, null).then(activity => {
+                userRepository.CreateActivity(credentials.user_id, '1', '1', deal.deal_id, null).then(activity => {
                     resolve(deal);
                 })
             }, error => {

@@ -67,11 +67,10 @@ async function verifyToken(token, res, lang) {
     });
 }
 
-router.get('/admin/users/:page', async function (req, res) {
+router.get('/admin/users/:page/:keyword', async function (req, res) {
 
 
     var lang = req.headers.language;
-    var params = req.params;
     var token = req.headers.authorization;
     await verifyToken(token, res, lang);
     if (!id) {
@@ -79,14 +78,14 @@ router.get('/admin/users/:page', async function (req, res) {
     }
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        UserService.GetAllUser(params.page).then(function (result) {
+        UserService.GetAllUser(req.params.page, req.params.keyword).then(function (result) {
             res.json({ status: statics.STATUS_SUCCESS, code: codes.SUCCESS, message: messages.DATA_FOUND, data: result });
         }, function (error) {
             logger.error(messages.SERVER_ERROR + ' ' + error);
             res.json({
                 status: statics.STATUS_FAILURE,
                 code: codes.FAILURE,
-                message: messages.INCORRECT_PASSWORD_USER,
+                message: messages.INVALID_DATA,
                 data: null
             });
         });
@@ -103,6 +102,7 @@ router.get('/admin/users/:page', async function (req, res) {
     }
 
 });
+
 
 router.get('/admin/users/:page/:user_type', async function (req, res) {
 
@@ -392,6 +392,11 @@ router.put('/admin/account_status', async function (req, res) {
                         });
                     });
                 } else {
+
+                    if (user.user_type === 'servicePro') {
+                        utils.SendEmail(user.email, 'Verification', ' <p>Hello ' + user.first_name + '' + user.last_name + '</p> . </p> <p>Your account is successfully verified by admin please visit this <a href= "' + config.adminurl + '" target = "_self"> link </a> to see more details.</p>   ');
+                    }
+
                     languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
                         res.json({
                             status: statics.STATUS_SUCCESS,
@@ -547,47 +552,6 @@ router.get('/ServicePro/details', async function (req, res) {
         }
 
     });
-});
-router.put('/admin/update', async function (req, res) {
-
-    var lang = req.headers.language;
-    var credentials = req.body;
-    var errors = validationResult(req);
-
-    if (errors.array().length == 0) {
-
-        var token = req.headers.authorization;
-        await verifyToken(token, res, lang);
-        if (!id) {
-            return;
-        }
-        return new Promise(function (resolve, reject) {
-            UserService.UpdateUserStatus(credentials).then(user => {
-                resolve(user);
-                languageService.get_lang(lang, 'SUCCESS').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            }, error => {
-                reject(error);
-            });
-        });
-
-
-
-
-    } else {
-        res.json({
-            status: statics.STATUS_FAILURE,
-            code: codes.INVALID_DATA,
-            message: messages.INVALID_DATA,
-            data: errors.array()
-        });
-    }
 });
 // get activities for by own user
 router.get('/user/activities', async function (req, res) {
@@ -796,7 +760,7 @@ router.post('/admin/create', async function (req, res) {
                     // checking if user has no password means this request is from Sales Representative for service provider account.
                     var temp_password = ""
                     if (!credentials.password) {
-                        temp_password = Math.floor(1000 + Math.random() * 9000) + '';
+                        temp_password = Math.floor(1000 + Math.random() * 90000000) + '';
                         credentials.password = temp_password;
                     } else {
                         temp_password = credentials.password;
@@ -890,7 +854,7 @@ router.post('/admin/create', async function (req, res) {
                                     var token = jwt.sign(user_data, config.secret, {});
                                     user.token = token;
 
-                                    utils.SendEmail(user.email, 'Coboney', '<p>Hi ' + user.first_name + " " + user.last_name + '</p> Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "https://www.coboney.com" target = "_self"> link </a> to see more details.</p>  <p>Email is : <strong> ' + tempuser.email + ' </strong> .</p>      <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
+                                    utils.SendEmail(user.email, 'Coboney', '<p>Hi ' + user.first_name + " " + user.last_name + '</p> Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "' + config.adminurl + '" target = "_self"> link </a> to see more details.</p>  <p>Email is : <strong> ' + tempuser.email + ' </strong> .</p>      <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
 
 
                                 }).catch(err => {
@@ -938,7 +902,7 @@ router.post('/admin/create', async function (req, res) {
                                     var token = jwt.sign(user_data, config.secret, {});
                                     user.token = token;
 
-                                    utils.SendEmail(user.email, 'Coboney', ' <p>Hi ' + user.first_name + " " + user.last_name + '</p> Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "https://www.coboney.com" target = "_self"> link </a> to see more details.</p>   <p>Email is : <strong> ' + tempuser.email + ' </strong> .</p>    <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
+                                    utils.SendEmail(user.email, 'Coboney', ' <p>Hi ' + user.first_name + " " + user.last_name + '</p> Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "' + config.adminurl + '" target = "_self"> link </a> to see more details.</p>   <p>Email is : <strong> ' + tempuser.email + ' </strong> .</p>    <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
 
 
                                 }).catch(err => {
@@ -968,6 +932,7 @@ router.post('/admin/create', async function (req, res) {
                                         user_type: user.user_type,
                                         photo: user.photo,
                                         token: user.token,
+                                        code: String(1000 + Number(user.user_admin_id))
                                     }
 
                                     res.json({

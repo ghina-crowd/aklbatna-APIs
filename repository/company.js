@@ -9,53 +9,59 @@ const sequelize = require('sequelize');
 const Op = sequelize.Op;
 var deal_attributes, company_attributes, company_branches_attributes
 var CompanyRepository = {
-    filter_companies: function (latitude, longitude, location_name, page) {
+    filter_companies: function (page, title) {
         var pageSize = 12; // page start from 0
         const offset = page * pageSize;
         return new Promise(function (resolve, reject) {
-            if (lang.acceptedLanguage == 'en') {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_location_name', 'is_monthly', , ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
-                company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
-            } else {
-                deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_location_name', 'is_monthly', , ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
-                company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link', 'icon'];
-                company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
-            }
+            // if (lang.acceptedLanguage == 'en') {
+            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_en', 'deal_title'], 'location_location_name', 'is_monthly', , ['details_en', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            //     company_attributes = ['company_id', ['company_name_en', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_en', 'description'], 'website_link', 'icon'];
+            //     company_branches_attributes = ['branch_id', ['name_en', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
+            // } else {
+            //     deal_attributes = ['deal_id', 'shop_category_id', ['deal_title_ar', 'deal_title'], 'location_location_name', 'is_monthly', , ['details_ar', 'details'], 'pre_price', 'new_price', 'start_time', 'end_time', 'main_image', 'final_rate', 'active'];
+            //     company_attributes = ['company_id', ['company_name_ar', 'company_name'], 'latitude', 'longitude', 'location_name', ['description_ar', 'description'], 'website_link', 'icon'];
+            //     company_branches_attributes = ['branch_id', ['name_ar', 'name'], 'company_id', 'status', 'location_name', 'latitude', 'longitude'];
+            // }
 
             var data = {};
-            if (location_name) {
+            if (title && title != 'all') {
                 if (lang.acceptedLanguage == 'en') {
-                    data.location_name = {
-                        [Op.like]: '%' + location_name + '%'
+                    data.company_name_en = {
+                        [Op.like]: '%' + title + '%'
                     }
                 } else {
-                    data.location_name = {
-                        [Op.like]: '%' + location_name + '%'
+                    data.company_name_ar = {
+                        [Op.like]: '%' + title + '%'
                     }
                 }
             }
-            company_model.Company.hasMany(deal_model.Deals, { foreignKey: 'company_id' })
-            company_model.Company.findAll({
-                attributes: company_attributes,
-                // offset: offset,
+            company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
+            company_model.Company.belongsTo(models.User, { foreignKey: 'user_id' });
+            company_model.Company.findAndCountAll({
+                // attributes: company_attributes,
+                offset: offset,
                 where: data,
                 include: [{
-                    model: deal_model.Deals,
-                    attributes: deal_attributes,
+                    model: company_model.Company_Branches,
+                }, {
+                    model: models.User,
                 }]
             }).then(companies => {
+                var dealsTemp = companies.rows;
+                companies.companies = dealsTemp;
+                delete companies.rows;
+                resolve(companies);
 
-                var filtercompanies = [];
-                companies.forEach(item => {
-                    var distance = calcDistance(item.latitude, item.longitude, latitude, longitude);
-                    if (distance <= 10) {
-                        item["dataValues"].distance = distance;
-                        filtercompanies.push(item);
-                    }
-                });
-                filtercompanies.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
-                resolve(filtercompanies);
+                // var filtercompanies = [];
+                // companies.forEach(item => {
+                //     var distance = calcDistance(item.latitude, item.longitude, latitude, longitude);
+                //     if (distance <= 10) {
+                //         item["dataValues"].distance = distance;
+                //         filtercompanies.push(item);
+                //     }
+                // });
+                // filtercompanies.sort((a, b) => parseFloat(a["dataValues"].distance) - parseFloat(b["dataValues"].distance));
+                resolve(companies);
             }, error => {
                 reject(error);
             });
@@ -106,35 +112,67 @@ var CompanyRepository = {
         );
     },
     get_companiesAdmin: function (page) {
-        var pageSize = 12; // page start from 0
-        const offset = page * pageSize;
-        return new Promise(function (resolve, reject) {
 
-            company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
-            company_model.Company.belongsTo(models.User, { foreignKey: 'user_id' });
-            company_model.Company.findAndCountAll({
-                limit: pageSize, offset: offset,
-                include: [{
-                    model: company_model.Company_Branches,
-                }, {
-                    model: models.User,
-                }]
-            }).then(companies => {
-                if (companies == null) {
-                    resolve([]);
-                } else {
+        if (page) {
+            var pageSize = 12; // page start from 0
+            const offset = page * pageSize;
+            return new Promise(function (resolve, reject) {
 
-                    var companiesTemp = companies.rows;
-                    companies.companies = companiesTemp;
-                    delete companies.rows;
+                company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
+                company_model.Company.belongsTo(models.User, { foreignKey: 'user_id' });
+                company_model.Company.findAndCountAll({
+                    limit: pageSize, offset: offset,
+                    include: [{
+                        model: company_model.Company_Branches,
+                    }, {
+                        model: models.User,
+                    }]
+                }).then(companies => {
+                    if (companies == null) {
+                        resolve([]);
+                    } else {
 
-                    resolve(companies);
-                }
-            }, error => {
-                reject(error);
-            });
+                        var companiesTemp = companies.rows;
+                        companies.companies = companiesTemp;
+                        delete companies.rows;
+
+                        resolve(companies);
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+            );
+        } else {
+
+            return new Promise(function (resolve, reject) {
+
+                company_model.Company.hasMany(company_model.Company_Branches, { foreignKey: 'company_id' });
+                company_model.Company.belongsTo(models.User, { foreignKey: 'user_id' });
+                company_model.Company.findAndCountAll({
+                    include: [{
+                        model: company_model.Company_Branches,
+                    }, {
+                        model: models.User,
+                    }]
+                }).then(companies => {
+                    if (companies == null) {
+                        resolve([]);
+                    } else {
+
+                        var companiesTemp = companies.rows;
+                        companies.companies = companiesTemp;
+                        delete companies.rows;
+
+                        resolve(companies);
+                    }
+                }, error => {
+                    reject(error);
+                });
+            }
+            );
         }
-        );
+
     },
     get_company: function (id) {
         return new Promise(function (resolve, reject) {
@@ -196,7 +234,8 @@ var CompanyRepository = {
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
-                        name_en: CompanyBranchData.name_en
+                        name_en: CompanyBranchData.name_en,
+                        city_id: CompanyBranchData.city_id
                     }).then(branch => {
                         resolve(branch);
                     }, error => {
@@ -210,7 +249,8 @@ var CompanyRepository = {
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
-                        name_en: CompanyBranchData.name_en
+                        name_en: CompanyBranchData.name_en,
+                        city_id: CompanyBranchData.city_id
                     }).then(branch => {
                         resolve(branch);
                     }, error => {
@@ -254,14 +294,13 @@ var CompanyRepository = {
                 company_role: newCompanyData.company_role,
             }).then(company => {
 
-                // console.log(company);
-
                 var branch = {};
                 branch['location_name'] = newCompanyData.location_name;
                 branch['latitude'] = newCompanyData.latitude;
                 branch['longitude'] = newCompanyData.longitude;
                 branch['name_ar'] = newCompanyData.company_name_ar;
                 branch['name_en'] = newCompanyData.company_name_en;
+                branch['city_id'] = newCompanyData.city_id;
                 CompanyRepository.create_company_main_branch(branch, company.company_id).then(companyBranch => {
                     company['dataValues'].branches = [];
                     company['dataValues'].branches.push(companyBranch);
@@ -271,9 +310,8 @@ var CompanyRepository = {
                 })
 
             }, error => {
-                console.log('error');
+                console.log('error while creating company or branch');
                 console.log(error);
-
                 reject(error)
             });
         });
@@ -291,7 +329,8 @@ var CompanyRepository = {
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
-                        name_en: CompanyBranchData.name_en
+                        name_en: CompanyBranchData.name_en,
+                        city_id: CompanyBranchData.city_id
 
                     }, { where: { branch_id: branch_id['dataValues'].branch_id } }).then(branch => {
                         company_model.Company_Branches.findOne({ where: { company_id: company_id, status: 1 } }).then(branches => {
@@ -317,8 +356,6 @@ var CompanyRepository = {
     create_company_main_branch: function (CompanyBranchData, company_id) {
         return new Promise(function (resolve, reject) {
             company_model.Company_Branches.findOne({ where: { status: 1, company_id: company_id } }).then(branch => {
-                console.log("branch");
-                console.log(branch);
                 if (branch) {
                     resolve(branch);
                 } else {
@@ -330,7 +367,8 @@ var CompanyRepository = {
                         latitude: CompanyBranchData.latitude,
                         longitude: CompanyBranchData.longitude,
                         name_ar: CompanyBranchData.name_ar,
-                        name_en: CompanyBranchData.name_en
+                        name_en: CompanyBranchData.name_en,
+                        city_id: CompanyBranchData.city_id
                     }).then(response => {
                         if (response) {
                             company_model.Company_Branches.findOne({ where: { company_id: company_id, status: 1 } }).then(branch => {
@@ -366,7 +404,8 @@ var CompanyRepository = {
                 latitude: CompanyBranchData.latitude,
                 longitude: CompanyBranchData.longitude,
                 name_ar: CompanyBranchData.name_ar,
-                name_en: CompanyBranchData.name_en
+                name_en: CompanyBranchData.name_en,
+                city_id: CompanyBranchData.city_id
             }).then(branch => {
                 resolve(branch);
             }, error => {
@@ -397,7 +436,8 @@ var CompanyRepository = {
                 active: CompanyBranchData.active,
                 longitude: CompanyBranchData.longitude,
                 name_ar: CompanyBranchData.name_ar,
-                name_en: CompanyBranchData.name_en
+                name_en: CompanyBranchData.name_en,
+                city_id: CompanyBranchData.city_id
             }, { where: { branch_id: CompanyBranchData.branch_id } }).then(response => {
                 company_model.Company_Branches.findOne({ where: { branch_id: CompanyBranchData.branch_id } }).then(branch => {
                     resolve(branch);

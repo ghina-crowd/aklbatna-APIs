@@ -67,17 +67,13 @@ async function verifyToken(token, res, lang) {
 
 
 // get filter of all companies with their companies
-router.get('/filter', function (req, res) {
+router.get('/filter/:page/:keyword', function (req, res) {
     var errors = validationResult(req);
     if (errors.array().length == 0) {
 
         var lang = req.headers.language;
-        var lang = req.headers.language;
-        var data = req.body;
-        var latitude = Number(data.latitude) ? Number(data.latitude) : 0;
-        var longitude = Number(data.longitude) ? Number(data.longitude) : 0;
-        var location_name = data.location_name ? data.location_name : '';
-        var page = req.body.page; // start from 0
+        var title = req.params.keyword ? req.params.keyword : '';
+        var page = req.params.page; // start from 0
         if (page < 0) {
             languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {
                 res.json({
@@ -89,7 +85,7 @@ router.get('/filter', function (req, res) {
             })
         } else {
             return new Promise(function (resolve, reject) {
-                companyService.filter_companies(latitude, longitude, location_name, page).then(companies => {
+                companyService.filter_companies(page, title).then(companies => {
                     resolve(companies);
                     if (companies == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -154,6 +150,59 @@ router.get('/admin/get_companies/:page', async function (req, res) {
         } else {
             return new Promise(function (resolve, reject) {
                 companyService.get_companiesAdmin(page).then(companies => {
+                    resolve(companies);
+                    if (companies == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: [],
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: companies,
+                            });
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+//get companies by admin
+router.get('/admin/get_companies', async function (req, res) {
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+
+
+        {
+            return new Promise(function (resolve, reject) {
+                companyService.get_companiesAdmin(undefined).then(companies => {
                     resolve(companies);
                     if (companies == null) {
                         languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -851,15 +900,6 @@ router.put('/branch/update', async function (req, res) {
                 });
             } else if (!credentials.latitude || credentials.latitude == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_LAT').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.active || credentials.active == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_BRANCH_ACTIVE_STATUS').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,

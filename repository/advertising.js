@@ -7,9 +7,9 @@ const Op = sequelize.Op;
 var AdvertisingRepository = {
     GetAll: function () {
         return new Promise(function (resolve, reject) {
-            console.log('we are in call')
             models.Advertising.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' })
             models.Advertising.findAll({
+                where: { status: 1 },
                 [Op.or]: [{
                     start_date: {
                         [Op.between]: [new Date()]
@@ -30,12 +30,26 @@ var AdvertisingRepository = {
         });
 
     },
-
-    Get: function (id) {
+    GetAllAdmin: function () {
         return new Promise(function (resolve, reject) {
             models.Advertising.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' })
             models.Advertising.findAll({
-                where: { user_id: id },
+                include: [{
+                    model: model_deal.Deals
+                }]
+            }).then(advertising => {
+                resolve(advertising);
+            }, error => {
+                reject(error);
+            });
+        });
+
+    },
+    GetAllAdmin: function (category) {
+        return new Promise(function (resolve, reject) {
+            models.Advertising.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' })
+            models.Advertising.findAll({
+                where: { category: category },
                 include: [{
                     model: model_deal.Deals
                 }]
@@ -57,6 +71,7 @@ var AdvertisingRepository = {
                 status: newAdvertisingData.status,
                 start_date: newAdvertisingData.start_date,
                 end_date: newAdvertisingData.end_date,
+                category: newAdvertisingData.category,
             }).then(category => {
                 console.log(category['dataValues']);
                 resolve(category);
@@ -77,6 +92,7 @@ var AdvertisingRepository = {
                 status: newAdvertisingData.status,
                 start_date: newAdvertisingData.start_date,
                 end_date: newAdvertisingData.end_date,
+                category: newAdvertisingData.category,
             }, { where: { add_id: newAdvertisingData.add_id } }).then(function (result) {
                 models.Advertising.findOne({ where: { add_id: newAdvertisingData.add_id } }).then(advertising => {
                     resolve(advertising);
@@ -93,6 +109,21 @@ var AdvertisingRepository = {
         return new Promise(function (resolve, reject) {
             models.Advertising.destroy({ where: { add_id: add_id } }).then(deleted => {
                 resolve(deleted);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    get_advertising: function (user_id) {
+        return new Promise(function (resolve, reject) {
+            models.Advertising.belongsTo(model_deal.Deals, { foreignKey: 'deal_id' })
+            models.Advertising.findAll({
+                where: { user_id: user_id },
+                include: [{
+                    model: model_deal.Deals
+                }]
+            }).then(advertising => {
+                resolve(advertising);
             }, error => {
                 reject(error);
             });

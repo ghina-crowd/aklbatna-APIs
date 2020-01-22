@@ -191,6 +191,10 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_COMPANY_ID });
             } else if (type == 'MISSING_COMPANY_DETAILS') {
                 resolve({ message: messages.MISSING_COMPANY_DETAILS });
+            } else if (type == 'EMPTY_FIELD_CATEGORY') {
+                resolve({ message: messages.EMPTY_FIELD_CATEGORY });
+            } else if (type == 'PLEASE_CHECK_YOUR_EMAIL') {
+                resolve({ message: messages.PLEASE_CHECK_YOUR_EMAIL });
             }
 
 
@@ -212,6 +216,29 @@ var language = {
                 resolve({ message: messages.EMPTY_FIELD_BRANCH_ACTIVE_STATUS });
             }
 
+
+
+            else if (type == 'INVALID_REQUEST_FROM') {
+                resolve({ message: messages.INVALID_REQUEST_FROM });
+            } else if (type == 'INVALID_REQUEST_TO') {
+                resolve({ message: messages.INVALID_REQUEST_TO });
+            } else if (type == 'INVALID_TYPE') {
+                resolve({ message: messages.INVALID_TYPE });
+            }
+            else if (type == 'INVALID_REQUEST_ID') {
+                resolve({ message: messages.INVALID_REQUEST_ID });
+            }
+
+
+
+
+            else if (type == 'INVALID_FIRST_NAME') {
+                resolve({ message: messages.INVALID_FIRST_NAME });
+            } else if (type == 'INVALID_LAST_NAME') {
+                resolve({ message: messages.INVALID_LAST_NAME });
+            } else if (type == 'INVALID_PHONE') {
+                resolve({ message: messages.INVALID_PHONE });
+            }
 
 
 

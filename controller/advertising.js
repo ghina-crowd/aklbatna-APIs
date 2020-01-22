@@ -34,6 +34,7 @@ async function verifyToken(token, res, lang) {
                 auth: false,
                 data: null
             });
+
         });
         return
     }
@@ -74,7 +75,7 @@ router.get('', function (req, res) {
     if (errors.array().length == 0) {
         var lang = req.headers.language;
         return new Promise(function (resolve, reject) {
-            AdvertisingService.GetAll().then(advertising => {
+            AdvertisingService.GetAllAdvertising().then(advertising => {
                 resolve(advertising);
                 languageService.get_lang(lang, 'SUCCESS').then(msg => {
                     res.json({
@@ -110,7 +111,50 @@ router.get('/admin/get_advertising', async function (req, res) {
             return;
         }
         return new Promise(function (resolve, reject) {
-            AdvertisingService.GetAll().then(categories => {
+            AdvertisingService.GetAllAdmin().then(categories => {
+                resolve(categories);
+                if (categories == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.get('/get_advertising/:cagetgory_id', async function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var token = req.headers.authorization;
+        return new Promise(function (resolve, reject) {
+            AdvertisingService.GetAllAdmin(req.params.cagetgory_id).then(categories => {
                 resolve(categories);
                 if (categories == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -192,6 +236,15 @@ router.post('/admin/create', async function (req, res) {
                 });
             } else if (!credentials.type || credentials.type == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_TYPE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
+            } else if (!credentials.category || credentials.category == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_CATEGORY').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
@@ -443,43 +496,43 @@ router.delete('/admin/delete/:add_id', async function (req, res) {
     }
 }
 );
-
-router.get('/admin/get/:id', async function (req, res) {
+router.get('/admin/get/:user_id', async function (req, res) {
     var lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
+        var credentials = req.body;
+        var lang = req.headers.language;
+
         var token = req.headers.authorization;
         await verifyToken(token, res, lang);
         if (!id) {
             return;
         }
-        return new Promise(function (resolve, reject) {
-            AdvertisingService.GetAllAdvertising(req.params.id).then(categories => {
-                resolve(categories);
-                if (categories == null) {
-                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
-                        res.json({
-                            status: statics.STATUS_FAILURE,
-                            code: codes.FAILURE,
-                            message: msg.message,
-                            data: categories,
-                        });
-                    });
-                } else {
-                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+
+        {
+            return new Promise(function (resolve, reject) {
+                AdvertisingService.get_advertising(req.params.user_id).then(response => {
+                    resolve(response);
+                    languageService.get_lang(lang, 'SUCCESS').then(msg => {
                         res.json({
                             status: statics.STATUS_SUCCESS,
                             code: codes.SUCCESS,
                             message: msg.message,
-                            data: categories,
+                            data: response
                         });
                     });
 
                 }
-            }, error => {
-                reject(error);
+                    ,
+                    error => {
+                        reject(error);
+                    }
+                );
             });
-        });
+        }
+
+
+
     } else {
         languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
             res.json({
@@ -488,9 +541,11 @@ router.get('/admin/get/:id', async function (req, res) {
                 message: msg.message,
                 data: errors.array()
             });
-        })
+        });
+
     }
-});
+}
+);
 
 
 module.exports = router;

@@ -2,12 +2,16 @@ var express = require("express");
 var bodyparser = require('body-parser');
 var morgan = require('morgan');
 var UserRouter = require('./controller/users.js');
+var CoboneyRouter = require('./controller/coboney');
+var DashboardRouter = require('./controller/dashboard');
 var MapsRouter = require('./controller/maps');
 var AccountRouter = require('./controller/accounts');
+var CitiesRouter = require('./controller/cities');
 var UploadRouter = require('./controller/upload');
 var PurchaseRouter = require('./controller/purchase');
 var ContactUsRouter = require('./controller/contactus');
 var CompanyRouter = require('./controller/company');
+var RequestsRouter = require('./controller/requests');
 var AdvertisingRouter = require('./controller/advertising');
 var authenticationRouter = require('./controller/authentication.js');
 var subcategoriesRouter = require('./controller/sub_categories.js');
@@ -50,10 +54,14 @@ app.get("/", function (req, res) {
 
 //Register routers
 app.use('/user', UserRouter);
+app.use('/coboney', CoboneyRouter);
+app.use('/dashboard', DashboardRouter);
 app.use('/account', AccountRouter);
+app.use('/cities', CitiesRouter);
 app.use('/upload', UploadRouter);
 app.use('/contact', ContactUsRouter);
 app.use('/company', CompanyRouter);
+app.use('/requests', RequestsRouter);
 app.use('/purchase', PurchaseRouter);
 app.use('/advertising', AdvertisingRouter);
 app.use('/authenticate', authenticationRouter);

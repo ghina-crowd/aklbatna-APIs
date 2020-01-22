@@ -1,6 +1,6 @@
 var AdvertisingRepository = require('../repository/advertising');
 module.exports = {
-    GetAll: function () {
+    GetAllAdvertising: function () {
         return new Promise(function (resolve, reject) {
             AdvertisingRepository.GetAll().then(advertising => {
                 resolve(advertising);
@@ -9,9 +9,18 @@ module.exports = {
             });
         });
     },
-    GetAllAdvertising: function (id) {
+    GetAllAdmin: function () {
         return new Promise(function (resolve, reject) {
-            AdvertisingRepository.Get(id).then(advertising => {
+            AdvertisingRepository.GetAllAdmin().then(advertising => {
+                resolve(advertising);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    GetAllAdmin: function (category) {
+        return new Promise(function (resolve, reject) {
+            AdvertisingRepository.GetAllAdmin(category).then(advertising => {
                 resolve(advertising);
             }, error => {
                 reject(error);
@@ -39,6 +48,15 @@ module.exports = {
     delete_advertising: function (add_id) {
         return new Promise(function (resolve, reject) {
             AdvertisingRepository.delete_advertising(add_id).then(advertising => {
+                resolve(advertising);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    get_advertising: function (user_id) {
+        return new Promise(function (resolve, reject) {
+            AdvertisingRepository.get_advertising(user_id).then(advertising => {
                 resolve(advertising);
             }, error => {
                 reject(error);

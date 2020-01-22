@@ -9,18 +9,18 @@ module.exports = {
             });
         });
     },
-    GetAllPurchaseCompany: function (company_id) {
+    GetAllUased: function (id) {
         return new Promise(function (resolve, reject) {
-            PurchaseRepository.GetAllCompany(company_id).then(user => {
+            PurchaseRepository.GetAllUsed(id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
             });
         });
     },
-    GetAllUased: function (id) {
+    GetAllByDeal: function (deal_id) {
         return new Promise(function (resolve, reject) {
-            PurchaseRepository.GetAllUsed(id).then(user => {
+            PurchaseRepository.GetAllByDeal(deal_id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
@@ -39,6 +39,15 @@ module.exports = {
     CreatePurchase: function (newPurchaseData) {
         return new Promise(function (resolve, reject) {
             PurchaseRepository.CreatePurchase(newPurchaseData).then(function (result) {
+                resolve(result);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    CreatePurchaseMany: function (newPurchaseData) {
+        return new Promise(function (resolve, reject) {
+            PurchaseRepository.CreatePurchaseMany(newPurchaseData).then(function (result) {
                 resolve(result);
             }, function (error) {
                 reject(error);
