@@ -1,43 +1,31 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('users', {
-    user_id: {
+  return sequelize.define('Banner', {
+    banner_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true
     },
-    email: {
+    url: {
       type: DataTypes.STRING,
     },
-    password: {
+    button: {
       type: DataTypes.STRING,
     },
-    first_name: {
+    description_en: {
       type: DataTypes.STRING,
     },
-    joining_date: {
+    description_ar: {
       type: DataTypes.STRING,
     },
-    phone: {
+    redirect: {
       type: DataTypes.STRING,
     },
-    last_name: {
-      type: DataTypes.STRING,
-    },
-    otp: {
-      type: DataTypes.INTEGER
-    },
-    active: {
-      type: DataTypes.INTEGER
-    },
-    user_type: {
-      type: DataTypes.STRING,
-    },
-    profile: {
+    image: {
       type: DataTypes.STRING,
     },
   }, {
-    tableName: 'users'
+    tableName: 'Banner'
   });
 };

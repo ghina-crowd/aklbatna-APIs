@@ -2,30 +2,22 @@ var express = require("express");
 var bodyparser = require('body-parser');
 var morgan = require('morgan');
 var UserRouter = require('./controller/users.js');
-var CoboneyRouter = require('./controller/coboney');
-var DashboardRouter = require('./controller/dashboard');
-var MapsRouter = require('./controller/maps');
-var AccountRouter = require('./controller/accounts');
-var CitiesRouter = require('./controller/cities');
-var UploadRouter = require('./controller/upload');
-var PurchaseRouter = require('./controller/purchase');
-var ContactUsRouter = require('./controller/contactus');
-var CompanyRouter = require('./controller/company');
-var RequestsRouter = require('./controller/requests');
-var AdvertisingRouter = require('./controller/advertising');
-var authenticationRouter = require('./controller/authentication.js');
-var subcategoriesRouter = require('./controller/sub_categories.js');
-var categoriesRouter = require('./controller/categories.js');
-var dealsRouter = require('./controller/deals.js');
+var authenticationRouter = require('./controller/authentication');
+var CategoryRouter = require('./controller/Category');
+var ContactRouter = require('./controller/Contact');
+var FavouriteRouter = require('./controller/Favourite');
+var TypeRouter = require('./controller/Types');
+var KitchenRouter = require('./controller/Kitchen');
+var MenuRouter = require('./controller/Menu');
+var BannerRouter = require('./controller/Banners');
+var MealsRouter = require('./controller/Meals');
+var AlkabetnaRouter = require('./controller/alkabetna');
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
-var path = require('path');
-
+var UploadRouter = require('./controller/upload');
 
 //need to remove this maybe just for testing in local host.
 var cors = require('cors')
-
-
 var app = express();
 
 
@@ -53,22 +45,18 @@ app.get("/", function (req, res) {
 
 
 //Register routers
-app.use('/user', UserRouter);
-app.use('/coboney', CoboneyRouter);
-app.use('/dashboard', DashboardRouter);
-app.use('/account', AccountRouter);
-app.use('/cities', CitiesRouter);
 app.use('/upload', UploadRouter);
-app.use('/contact', ContactUsRouter);
-app.use('/company', CompanyRouter);
-app.use('/requests', RequestsRouter);
-app.use('/purchase', PurchaseRouter);
-app.use('/advertising', AdvertisingRouter);
+app.use('/user', UserRouter);
 app.use('/authenticate', authenticationRouter);
-app.use('/sub_categories', subcategoriesRouter);
-app.use('/categories', categoriesRouter);
-app.use('/deals', dealsRouter);
-app.use('/maps', MapsRouter);
+app.use('/category', CategoryRouter);
+app.use('/kitchen', KitchenRouter);
+app.use('/menu', MenuRouter);
+app.use('/banner', BannerRouter);
+app.use('/meals', MealsRouter);
+app.use('/alkabetna', AlkabetnaRouter);
+app.use('/contact', ContactRouter);
+app.use('/favourite', FavouriteRouter);
+app.use('/type', TypeRouter);
 
 //for images only
 app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));

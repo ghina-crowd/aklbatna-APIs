@@ -1,22 +1,25 @@
 var { sequelize, Sequelize } = require('../util/db.js');
-var user_admin = require('./users.js');
-var activities = require('./activities');
-var account = require('./account.js');
-var purchase = require('./purchase');
-var advertising = require('./advertising');
-var contactus = require('./contactus');
-var requests = require('./requests');
-var cities = require('./city');
-var coboney = require('./coboney');
+var users = require('./users.js');
+var kitchens = require('./Kitchen');
+var categories = require('./Category');
+var meals = require('./Meals');
+var menu = require('./Menu');
+var reviews = require('./Reviews');
+var banners = require('./Banners');
+var contact = require('./Contact');
+var favourite = require('./Favourite');
+var types = require('./Type');
 
 module.exports = {
-    User: user_admin(sequelize, Sequelize),
-    Account: account(sequelize, Sequelize),
-    Purchase: purchase(sequelize, Sequelize),
-    Advertising: advertising(sequelize, Sequelize),
-    Activities: activities(sequelize, Sequelize),
-    ContactUs: contactus(sequelize, Sequelize),
-    Requests: requests(sequelize, Sequelize),
-    Cities: cities(sequelize, Sequelize),
-    Coboney: coboney(sequelize, Sequelize),
+    User: users(sequelize, Sequelize),
+    kitchens: kitchens(sequelize, Sequelize),
+    Categories: categories(sequelize, Sequelize),
+    Meals: meals(sequelize, Sequelize),
+    Menu: menu(sequelize, Sequelize),
+    Reviews: reviews(sequelize, Sequelize),
+    Banners: banners(sequelize, Sequelize),
+    Contact: contact(sequelize, Sequelize),
+    Favourite: favourite(sequelize, Sequelize),
+    Type: types(sequelize, Sequelize),
+
 };

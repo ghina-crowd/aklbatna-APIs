@@ -16,8 +16,6 @@ const utils = require('../util/utils');
 
 var router = express.Router();
 var email;
-var servicePro;
-var salesRep;
 var id;
 async function verifyToken(token, res, lang) {
     id = undefined;
@@ -46,8 +44,6 @@ async function verifyToken(token, res, lang) {
             });
             return
         }
-        salesRep = decoded.salesRep;
-        servicePro = decoded.servicePro;
         email = decoded.email;
         id = decoded.id;
         if (!id) {
@@ -66,7 +62,6 @@ async function verifyToken(token, res, lang) {
 
     });
 }
-
 router.get('/admin/users/:page/:keyword', async function (req, res) {
 
 
@@ -102,7 +97,6 @@ router.get('/admin/users/:page/:keyword', async function (req, res) {
     }
 
 });
-
 
 router.get('/admin/users/:page/:user_type', async function (req, res) {
 
@@ -682,7 +676,6 @@ router.get('/admin/get_best_seller', async function (req, res) {
 
     });
 });
-
 //register
 router.post('/admin/create', async function (req, res) {
     var lang = req.headers.language;
@@ -784,7 +777,7 @@ router.post('/admin/create', async function (req, res) {
                                 languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
                                     var tempuser = {
-                                        user_admin_id: user.user_admin_id,
+                                        user_id: user.user_id,
                                         email: user.email,
                                         first_name: user.first_name,
                                         last_name: user.last_name,
@@ -803,7 +796,7 @@ router.post('/admin/create', async function (req, res) {
                                 });
                                 user.user_type = 'normal';
                                 var user_data = {
-                                    id: user.user_admin_id,
+                                    id: user.user_id,
                                     email: user.email,
                                     password: user.password,
                                 }
@@ -816,14 +809,14 @@ router.post('/admin/create', async function (req, res) {
 
                                 // creating user as service provider when request is from salesRep
 
-                                credentials.company['user_id'] = user.user_admin_id;
+                                credentials.company['user_id'] = user.user_id;
                                 console.log(credentials.company);
                                 companyService.create_company(credentials.company).then(company => {
 
                                     languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
                                         var tempuser = {
-                                            user_admin_id: user.user_admin_id,
+                                            user_id: user.user_id,
                                             email: user.email,
                                             first_name: user.first_name,
                                             last_name: user.last_name,
@@ -846,7 +839,7 @@ router.post('/admin/create', async function (req, res) {
 
                                     //normal user after
                                     var user_data = {
-                                        id: user.user_admin_id,
+                                        id: user.user_id,
                                         email: user.email,
                                         password: user.password,
                                         servicePro: true
@@ -864,14 +857,14 @@ router.post('/admin/create', async function (req, res) {
 
                             } else if (user.user_type === 'servicePro' && !salesRep) {
                                 // creating user as service provider when request is from service provider.
-                                credentials.company['user_id'] = user.user_admin_id;
+                                credentials.company['user_id'] = user.user_id;
                                 console.log(credentials.company);
                                 companyService.create_company(credentials.company).then(company => {
 
                                     languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
                                         var tempuser = {
-                                            user_admin_id: user.user_admin_id,
+                                            user_id: user.user_id,
                                             email: user.email,
                                             first_name: user.first_name,
                                             last_name: user.last_name,
@@ -894,7 +887,7 @@ router.post('/admin/create', async function (req, res) {
 
                                     //normal user after
                                     var user_data = {
-                                        id: user.user_admin_id,
+                                        id: user.user_id,
                                         email: user.email,
                                         password: user.password,
                                         servicePro: true
@@ -913,18 +906,18 @@ router.post('/admin/create', async function (req, res) {
                             } else if (user.user_type === 'salesRep') {
                                 //normal user after
                                 var user_data = {
-                                    id: user.user_admin_id,
+                                    id: user.user_id,
                                     email: user.email,
                                     password: user.password,
                                     salesRep: true
                                 }
                                 var token = jwt.sign(user_data, config.secret, {});
                                 user.token = token;
-                                utils.SendEmail(user.email, 'Coboney', ' <p>Hi ' + user.first_name + " " + user.last_name + '</p> <p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney Password  is: ' + temp_password + '</p>  <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_admin_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
+                                utils.SendEmail(user.email, 'Coboney', ' <p>Hi ' + user.first_name + " " + user.last_name + '</p> <p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney Password  is: ' + temp_password + '</p>  <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
                                 languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
                                     var tempuser = {
-                                        user_admin_id: user.user_admin_id,
+                                        user_id: user.user_id,
                                         email: user.email,
                                         first_name: user.first_name,
                                         last_name: user.last_name,
@@ -932,7 +925,7 @@ router.post('/admin/create', async function (req, res) {
                                         user_type: user.user_type,
                                         photo: user.photo,
                                         token: user.token,
-                                        code: String(1000 + Number(user.user_admin_id))
+                                        code: String(1000 + Number(user.user_id))
                                     }
 
                                     res.json({

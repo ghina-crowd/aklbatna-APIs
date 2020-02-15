@@ -28,121 +28,14 @@ var message = {
     EMPTY_FIELD_COMPANY: 'Please type company name.',
     PROFILE_UPDATE: 'Profile updated.',
     RESEND: 'OTP SENT',
-    DATA_FOR_RESET: 'Security code sent to you email to reset password',
+    DATA_FOR_RESET: 'Security code sent to you email, please check your email',
     NO_TOKEN: 'No token provided.',
     FAILED_AUTHENTICATE_TOKEN: 'Please Login.',
     INVALID_EMAIL: 'Invalid Email',
     SUCCESS: 'Success',
     FAILED: 'Failed',
     MISSING_PAGE_NUMBER: 'Missing Page number',
-
-
-    EMPTY_FIELD_CARD_TYPE: 'Invalid Card Type',
-    EMPTY_FIELD_CARD_NUMBER: 'Invalid Card number',
-    EMPTY_FIELD_EXPIRY_DATE: 'Invalid Expiry date',
-    EMPTY_FIELD_CVC: 'Invalid CVC',
-    EMPTY_FIELD_OWNER_NAME: 'Invalid Owner name',
-    EMPTY_FIELD_USER_ID: 'Invalid User id.',
-
-
-    INVALID_USER_ID: 'invalid user id',
-    INVALID_DEAL_ID: 'invalid deal id',
-    INVALID_STATUS: 'invalid status',
-    INVALID_DATE: 'invalid date',
-    EMPTY_FIELD_ACCOUNT_ID: 'invalid account id',
-
-    EMPTY_FIELD_NAME_AR: 'invalid name in arabic',
-    EMPTY_FIELD_NAME_EN: 'invalid name in english',
-    EMPTY_FIELD_KEYWORD: 'invalid keyword',
-    EMPTY_FIELD_SHORT_DEC: 'invalid short description',
-    EMPTY_FIELD_IMAGE: 'please provide image',
-    EMPTY_FIELD_SHOP_CATEGORY_ID: 'category id is missing',
-
-
-    EMPTY_FIELD_ACTIVE: 'invalid field active',
-    EMPTY_FIELD_SHOP_CATEGORY: 'invalid shop category id',
-    EMPTY_FIELD_SHORT_DETAILS: 'invalid short details',
-    EMPTY_FIELD_SUB_CATEGORY_NAME_AR: 'invalid name in arabic',
-    EMPTY_FIELD_SUB_NAME_EN: 'invalid name in english',
-    EMPTY_FIELD_SUB_CATEGORY_ID: 'invalid sub category id',
-    EMPTY_FIELD_DEAL_ID: 'invalid deal id',
-    EMPTY_FIELD_SUB_DEAL_ID: 'invalid sub deal id',
-    EMPTY_FIELD_TITLE_EN: 'invalid title in english',
-    EMPTY_FIELD_TITLE_AR: 'invalid title in arabic',
-    EMPTY_FIELD_PRE_PRICE: 'invalid pre price',
-    EMPTY_FIELD_NEW_PRICE: 'invalid new price',
-    EMPTY_FIELD_COUNT_BOUGHT: 'invalid count bought',
-    EMPTY_FIELD_IMG_ID: 'invalid image id',
-
-    EMPTY_FIELD_USER_ID: 'invalid deal id',
-    EMPTY_FIELD_COMPANY_NAME_EN: 'invalid company name in english',
-    EMPTY_FIELD_COMPANY_NAME_AR: 'invalid company name in arabic',
-    EMPTY_FIELD_DEC_EN: 'invalid description in english',
-    EMPTY_FIELD_DEC_AR: 'invalid description in arabic',
-    EMPTY_FIELD_LATITUDE: 'invalid latitude for company',
-    EMPTY_FIELD_LONGITUDE: 'invalid longitude for company',
-    EMPTY_FIELD_LOCATION: 'invalid location for company',
-    EMPTY_FIELD_WEBSITE_LINK: 'invalid website link',
-    EMPTY_FIELD_COMPANY_ID: 'invalid company id',
-
-
-    EMPTY_FIELD_ADVERTISING_ID: 'invalid advertising id',
-    EMPTY_FIELD_TYPE: 'invalid type of advertising',
-    EMPTY_FIELD_STATUS: 'invalid advertising status',
-    MISSING_COMPANY_DETAILS: 'missing company details',
-    EMPTY_FIELD_USER_TYPE: 'user type is missing',
-    ONLY_SALES_CAN_CREATE_ACCOUNT: 'only sales representative can create sp accounts',
-    COMPANY_DETAILS_IS_MISSING: 'company details is missing while creating sp account',
-    EMPTY_FIELD_MAIN_IMAGE: 'main image for deal is required',
-
-    EMPTY_FIELD_BRANCH_NAME_EN: 'invalid branch name in english',
-    EMPTY_FIELD_BRANCH_NAME_AR: 'invalid branch name in arabic',
-    EMPTY_FIELD_BRANCH_LAT: 'invalid gps latitude',
-    EMPTY_FIELD_BRANCH_LNG: 'invalid gps longitude',
-    EMPTY_FIELD_BRANCH_ADDRESS: 'invalid branch address',
-    EMPTY_FIELD_BRANCH_ID: 'invalid branch id',
-    ACCOUNT_ALREADY_EXIST: 'same account already exist',
-    INVALID_ACCOUNT_ID: 'invalid account id',
-    EMPTY_FIELD_START_DATE: 'invalid start date',
-    EMPTY_FIELD_END_DATE: 'invalid end date',
-
-    EMPTY_FIELD_SUBJECT: 'invalid subject',
-    EMPTY_FIELD_PHONE: 'invalid phone',
-    EMPTY_FIELD_EMAIL: 'invalid email',
-    EMPTY_FIELD_NAME: 'invalid name',
-    EMPTY_FIELD_MESSAGE: 'invalid message',
-    INVALID_SUB_DEAL_ID: 'sub deal id is missing',
-    INVALID_PASSWORD: 'invalid password',
-
-
-    EMPTY_FIELDS_DETAILS_AR: 'invalid details ar',
-    EMPTY_FIELDS_DETAILS_EN: 'invalid details en',
-    EMPTY_FIELDS_NEW_PRICE: 'invalid new price',
-    EMPTY_FIELDS_START_DATE: 'invalid start date',
-    EMPTY_FIELDS_ACTIVE: 'invalid active status',
-
-    EMPTY_FIELDS_IS_MONTHLY: 'invalid month check',
-    EMPTY_FIELDS_DEAL_TITLE_AR: 'invalid title ar',
-    EMPTY_FIELDS_BRANCH_ID: 'invalid branch',
-    EMPTY_FIELDS_COMPANY_ID: 'invalid company id',
-    EMPTY_FIELDS_CATEGORY_ID: 'invalid category id',
-    EMPTY_FIELDS_SUB_CATEGORY_ID: 'invalid sub category id',
-    EMPTY_FIELD_BRANCH_ACTIVE_STATUS: 'invalid active status',
-    EMPTY_FIELD_INFO_ID: 'invalid info id',
-    EMPTY_FIELD_CONDITION_ID: 'invalid conditIon id',
-    INVALID_REQUEST_FROM: 'invalid request from',
-    INVALID_REQUEST_TO: 'invalid request to',
-    INVALID_TYPE: 'invalid type for request',
-
-    INVALID_FIRST_NAME: 'invalid first name',
-    INVALID_LAST_NAME: 'invalid last name',
-    INVALID_PHONE: 'invalid phone number',
-    EMPTY_FIELD_CATEGORY: 'advertising category missing',
-    INVALID_REQUEST_ID: 'invalid request id',
-    PLEASE_CHECK_YOUR_EMAIL:'please check your email'
-
-
-
+    PLEASE_CHECK_YOUR_EMAIL: 'please check your email'
 
 };
 

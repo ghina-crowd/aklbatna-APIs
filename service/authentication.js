@@ -30,7 +30,6 @@ var service = {
             });
         });
     },
-
     getLanguage: function (req) {
         if (req.headers.language == 'ar') {
             return trans_message = ar_messages;
@@ -40,7 +39,6 @@ var service = {
             return trans_message = messages;
         }
     },
-
     checkLanguage: function (req) {
         if (req.headers.language == 'ar') {
             return ar_messages;
@@ -50,7 +48,6 @@ var service = {
             return messages;
         }
     },
-
     login_token: function (id) {
         return new Promise(function (resolve, reject) {
             UserRepository.Login_Token(id, token).then(users => {
@@ -93,12 +90,11 @@ var service = {
             });
         });
     },
-
-    check_user_social: function (email, password, first_name, last_name) {
+    check_user_social: function (email, password, first_name, last_name, profile) {
 
         var password = bcrypt.hashSync(password, 8);
         return new Promise(function (resolve, reject) {
-            UserRepository.CheckSocial(email, password, first_name, last_name).then(users => {
+            UserRepository.CheckSocial(email, password, first_name, last_name, profile).then(users => {
                 if (users == null) {
                     resolve(null);
                 } else {
@@ -110,9 +106,7 @@ var service = {
             });
         });
     },
-
-
-    check_user: function (email, password, first_name, last_name, phone, user_type, creator_user_id) {
+    check_user: function (email, password, first_name, last_name, phone, user_type) {
 
         var password = bcrypt.hashSync(password, 8);
         return new Promise(function (resolve, reject) {
@@ -271,9 +265,9 @@ var service = {
     logout: function () {
         console.log("Invalidate token.");
     },
-    get_user: function (token) {
+    get_user: function (user_id) {
         return new Promise(function (resolve, reject) {
-            UserRepository.Get_user(token).then(users => {
+            UserRepository.Get_user(user_id).then(users => {
                 if (users == null) {
                     resolve(null);
                 } else {

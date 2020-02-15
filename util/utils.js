@@ -3,7 +3,6 @@
 const nodemailer = require('nodemailer');
 var utils = {
     SendEmail(to, subject, message) {
-        console.log('sending email')
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -12,7 +11,7 @@ var utils = {
             }
         });
         const mailOptions = {
-            from: 'Coboney <coboney@admin.com>', // sender address
+            from: 'ALKBETNA', // sender address
             to: to, // list of receivers
             subject: subject,
             html: message
@@ -35,7 +34,7 @@ var utils = {
             }
         });
         const mailOptions = {
-            from: 'Coboney <coboney@admin.com>', // sender address
+            from: 'ALKBETNA', // sender address
             to: to, // list of receivers
             subject: subject,
             html: message
