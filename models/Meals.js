@@ -28,6 +28,9 @@ module.exports = function (sequelize, DataTypes) {
     price_monthly: {
       type: DataTypes.INTEGER,
     },
+    active: {
+      type: DataTypes.INTEGER,
+    },
     price_weekly: {
       type: DataTypes.INTEGER
     },

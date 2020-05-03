@@ -34,6 +34,22 @@ var CategoryRepository = {
             });
         });
     },
+    get_categoriesAdmin: function () {
+
+        models.Categories.hasMany(models.kitchens, { foreignKey: 'category_id' });
+        return new Promise(function (resolve, reject) {
+            models.Categories.findAll({
+            }).then(categories => {
+                if (categories == null) {
+                    resolve([]);
+                } else {
+                    resolve(categories);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     get_category: function (categor_id, page, keyword) {
 
         var pageSize = 12; // page start from 0
@@ -71,43 +87,83 @@ var CategoryRepository = {
         }
 
 
-
-        return new Promise(function (resolve, reject) {
-            models.Categories.findOne({
-                where: { category_id: categor_id }, attributes: Category, limit: pageSize,
-                offset: offset,
-            }).then(categories => {
-                if (categories == null) {
-                    resolve({});
-                } else {
-                    models.kitchens.findAndCountAll({
-                        distinct: true, attributes: kitchens,
-                        where: [{ category_id: categor_id }, data], include: [{
-                            model: models.Menu,
-                            attributes: Menu,
-                            include: [{
-                                model: models.Meals,
-                                attributes: Meals,
+        if (page == -1) {
+            return new Promise(function (resolve, reject) {
+                models.Categories.findOne({
+                    where: { category_id: categor_id }, attributes: Category,
+                }).then(categories => {
+                    if (categories == null) {
+                        resolve({});
+                    } else {
+                        models.kitchens.findAndCountAll({
+                            distinct: true, attributes: kitchens,
+                            where: [{ category_id: categor_id }, data], include: [{
+                                model: models.Menu,
+                                attributes: Menu,
+                                include: [{
+                                    model: models.Meals,
+                                    attributes: Meals,
+                                }]
                             }]
-                        }]
-                    }).then(kitchens => {
-                        if (kitchens == null) {
-                            resolve({});
-                        } else {
-                            var kitchensTemp = kitchens.rows;
-                            kitchens.kitchens = kitchensTemp;
-                            delete kitchens.rows;
-                            categories['dataValues'].kitchens = kitchens;
-                            resolve(categories);
-                        }
-                    }, error => {
-                        reject(error);
-                    });
-                }
-            }, error => {
-                reject(error);
+                        }).then(kitchens => {
+                            if (kitchens == null) {
+                                resolve({});
+                            } else {
+                                var kitchensTemp = kitchens.rows;
+                                kitchens.kitchens = kitchensTemp;
+                                delete kitchens.rows;
+                                categories['dataValues'].kitchens = kitchens;
+                                resolve(categories);
+                            }
+                        }, error => {
+                            reject(error);
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
             });
-        });
+        } else {
+            return new Promise(function (resolve, reject) {
+                models.Categories.findOne({
+                    where: { category_id: categor_id }, attributes: Category, limit: pageSize,
+                    offset: offset,
+                }).then(categories => {
+                    if (categories == null) {
+                        resolve({});
+                    } else {
+                        models.kitchens.findAndCountAll({
+                            distinct: true, attributes: kitchens,
+                            where: [{ category_id: categor_id }, data], include: [{
+                                model: models.Menu,
+                                attributes: Menu,
+                                include: [{
+                                    model: models.Meals,
+                                    attributes: Meals,
+                                }]
+                            }]
+                        }).then(kitchens => {
+                            if (kitchens == null) {
+                                resolve({});
+                            } else {
+                                var kitchensTemp = kitchens.rows;
+                                kitchens.kitchens = kitchensTemp;
+                                delete kitchens.rows;
+                                categories['dataValues'].kitchens = kitchens;
+                                resolve(categories);
+                            }
+                        }, error => {
+                            reject(error);
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+
+
+
     },
     create_category: function (newCategoryData) {
         return new Promise(function (resolve, reject) {

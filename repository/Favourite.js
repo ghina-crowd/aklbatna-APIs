@@ -7,15 +7,17 @@ var Menu, Meals, Category, kitchens;
 var KitchenRepository = {
 
 
-    get: function (user_id) {
+    get: function (user_id, page) {
 
+        var pageSize = 12; // page start from 0
+        const offset = page * pageSize;
         if (lang.acceptedLanguage == 'en') {
-            kitchens = ['kitchen_id', 'category_id', ['name_en', 'name'], 'user_id', 'image', ['description_en', 'description'], 'final_rate', 'start_time', 'end_time', 'served_count', 'featured', 'final_order_pakaging_rate', 'final_value_rate', 'final_delivery_rate', 'final_quality_rate'];
+            kitchens = ['kitchen_id', 'category_id', ['name_en', 'name'], 'user_id', 'image', ['description_en', 'description'], 'final_rate', 'start_time', 'end_time', 'served_count', 'featured', 'final_order_pakaging_rate', 'final_value_rate', 'final_delivery_rate', 'final_quality_rate', 'busy','is_delivery'];
             Meals = ['meal_id', ['name_en', 'name'], 'menu_id', 'image', 'price_weekly', 'type', 'price', 'price_monthly', 'total_served', 'featured'];
             Category = ['category_id', ['name_en', 'name'], 'active', 'image'];
 
         } else {
-            kitchens = ['kitchen_id', 'category_id', ['name_ar', 'name'], 'user_id', 'image', ['description_ar', 'description'], 'final_rate', 'start_time', 'end_time', 'served_count', 'featured', 'final_order_pakaging_rate', 'final_value_rate', 'final_delivery_rate', 'final_quality_rate'];
+            kitchens = ['kitchen_id', 'category_id', ['name_ar', 'name'], 'user_id', 'image', ['description_ar', 'description'], 'final_rate', 'start_time', 'end_time', 'served_count', 'featured', 'final_order_pakaging_rate', 'final_value_rate', 'final_delivery_rate', 'final_quality_rate', 'busy','is_delivery'];
             Meals = ['meal_id', ['name_ar', 'name'], 'menu_id', 'image', 'price_weekly', 'type', 'price', 'price_monthly', 'total_served', 'featured'];
             Category = ['category_id', ['name_ar', 'name'], 'active', 'image'];
 
@@ -28,8 +30,9 @@ var KitchenRepository = {
 
         return new Promise(function (resolve, reject) {
             models.Favourite.findAll({
-                attributes: Menu, where: { user_id: user_id }, include: [{
+                where: { user_id: user_id }, limit: pageSize, offset: offset, include: [{
                     model: models.Meals,
+
                     attributes: Meals
                     , include: [{ model: models.kitchens, attributes: kitchens }, { model: models.Categories, attributes: Category }]
                 }]

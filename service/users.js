@@ -2,9 +2,9 @@ var UserRepository = require('../repository/users.js');
 var fields = require('../constant/field.js');
 var models = require('../models/models.js');
 module.exports = {
-    GetAllUser: function (page,keyword) {
+    GetAllUser: function (body) {
         return new Promise(function (resolve, reject) {
-            UserRepository.GetAll(page, keyword).then(users => {
+            UserRepository.GetAll(body).then(users => {
                 resolve(users);
             }, error => {
                 reject(error);
@@ -12,15 +12,7 @@ module.exports = {
         });
     },
 
-    GetAllUserByType: function (page, type) {
-        return new Promise(function (resolve, reject) {
-            UserRepository.GetAllByType(page, type).then(users => {
-                resolve(users);
-            }, error => {
-                reject(error);
-            });
-        });
-    },
+
     GetUser: function (email) {
         return new Promise(function (resolve, reject) {
             UserRepository.getUser(email).then(user => {
@@ -73,9 +65,35 @@ module.exports = {
             });
         });
     },
-    Update: function (first_name, last_name, phone, email, subscribe, new_password, old_password) {
+    Update: function (first_name, last_name, phone, email, newsletter, new_password, old_password, profile, fcm) {
         return new Promise(function (resolve, reject) {
-            UserRepository.update_profile(first_name, last_name, phone, email, subscribe, new_password, old_password).then(user => {
+            UserRepository.update_profile(first_name, last_name, phone, email, newsletter, new_password, old_password, profile, fcm).then(user => {
+                resolve(user);
+            }, function (error) {
+                reject(error);
+            });
+
+        }, error => {
+            reject(error);
+        });
+
+    },
+    UpdateFCM: function (fcm, email) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.UpdateFCM(fcm, email).then(user => {
+                resolve(user);
+            }, function (error) {
+                reject(error);
+            });
+
+        }, error => {
+            reject(error);
+        });
+
+    },
+    update_profile_picture: function (profile, user_id) {
+        return new Promise(function (resolve, reject) {
+            UserRepository.update_profile_picture(profile, user_id).then(user => {
                 resolve(user);
             }, function (error) {
                 reject(error);
@@ -99,9 +117,9 @@ module.exports = {
         });
 
     },
-    UpdateAccountStatus: function (body) {
+    blockOrUnblock: function (body) {
         return new Promise(function (resolve, reject) {
-            UserRepository.update_account_status(body).then(user => {
+            UserRepository.blockOrUnblock(body).then(user => {
                 resolve(user);
             }, function (error) {
                 reject(error);

@@ -52,7 +52,7 @@ async function verifyToken(token, res, lang) {
         return decoded.id;
     });
 }
-router.get('/get', async function (req, res) {
+router.get('/get/:page', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -63,7 +63,7 @@ router.get('/get', async function (req, res) {
             return;
         }
         return new Promise(function (resolve, reject) {
-            FavouriteService.get(id).then(meals => {
+            FavouriteService.get(id, req.params.page).then(meals => {
                 resolve(meals);
                 if (meals == null) {
                     meals = [];

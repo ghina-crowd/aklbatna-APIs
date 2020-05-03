@@ -7,7 +7,11 @@ var CategoryRouter = require('./controller/Category');
 var ContactRouter = require('./controller/Contact');
 var FavouriteRouter = require('./controller/Favourite');
 var TypeRouter = require('./controller/Types');
+var CityRouter = require('./controller/City');
 var KitchenRouter = require('./controller/Kitchen');
+var AddressRouter = require('./controller/Address');
+var OrderRouter = require('./controller/Order')
+var AccountsRouter = require('./controller/Accounts')
 var MenuRouter = require('./controller/Menu');
 var BannerRouter = require('./controller/Banners');
 var MealsRouter = require('./controller/Meals');
@@ -15,6 +19,9 @@ var AlkabetnaRouter = require('./controller/alkabetna');
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
 var UploadRouter = require('./controller/upload');
+var OffersRouter = require('./controller/Offers');
+var SubsRouter = require('./controller/Subscription');
+var NotificationsRouter = require('./controller/Notifications');
 
 //need to remove this maybe just for testing in local host.
 var cors = require('cors')
@@ -57,6 +64,14 @@ app.use('/alkabetna', AlkabetnaRouter);
 app.use('/contact', ContactRouter);
 app.use('/favourite', FavouriteRouter);
 app.use('/type', TypeRouter);
+app.use('/city', CityRouter);
+app.use('/address', AddressRouter);
+app.use('/order', OrderRouter);
+app.use('/account', AccountsRouter);
+app.use('/offers', OffersRouter);
+app.use('/subscription', SubsRouter);
+app.use('/notifications', NotificationsRouter);
+
 
 //for images only
 app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));

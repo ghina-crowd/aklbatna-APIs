@@ -25,6 +25,9 @@ module.exports = function (sequelize, DataTypes) {
     image: {
       type: DataTypes.STRING,
     },
+    active: {
+      type: DataTypes.INTEGER,
+    }
   }, {
     tableName: 'Banner'
   });

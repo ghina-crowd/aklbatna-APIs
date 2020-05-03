@@ -5,6 +5,47 @@ var lang = require('../app');
 var Menu, Meals;
 
 var KitchenRepository = {
+
+    getAllAdmin: function () {
+
+        models.Menu.hasMany(models.Meals, { foreignKey: 'menu_id' });
+        return new Promise(function (resolve, reject) {
+            models.Menu.findAll({
+                include: [{
+                    model: models.Meals,
+                }]
+            }).then((Menu => {
+                if (Menu == null) {
+                    resolve([]);
+                } else {
+                    resolve(Menu);
+                }
+            }), error => {
+                reject(error);
+            })
+        });
+    },
+    getAdmin: function (menu_id) {
+
+        models.Menu.hasMany(models.Meals, { foreignKey: 'menu_id' });
+        return new Promise(function (resolve, reject) {
+            models.Menu.findOne({
+                where: { menu_id: menu_id }, include: [{
+                    model: models.Meals,
+                }]
+            }).then((Menu => {
+                if (Menu == null) {
+                    resolve({});
+                } else {
+                    resolve(Menu);
+                }
+            }), error => {
+                reject(error);
+            })
+        });
+    },
+
+
     getAll: function () {
 
         if (lang.acceptedLanguage == 'en') {
@@ -34,8 +75,6 @@ var KitchenRepository = {
             })
         });
     },
-
-
     get: function (menu_id) {
         if (lang.acceptedLanguage == 'en') {
             Meals = ['meal_id', ['name_en', 'name'], 'menu_id', 'image', 'price_weekly', 'type', 'price', 'price_monthly', 'total_served'];
@@ -56,6 +95,23 @@ var KitchenRepository = {
             }).then((Menu => {
                 if (Menu == null) {
                     resolve({});
+                } else {
+                    resolve(Menu);
+                }
+            }), error => {
+                reject(error);
+            })
+        });
+    },
+    getMenuByKitchen: function (kitchen_id) {
+
+        models.Menu.belongsTo(models.kitchens, { foreignKey: 'kitchen_id' });
+        return new Promise(function (resolve, reject) {
+            models.Menu.findAll({
+                where: { kitchen_id: kitchen_id }, include: [{ model: models.kitchens }]
+            }).then((Menu => {
+                if (Menu == null) {
+                    resolve([]);
                 } else {
                     resolve(Menu);
                 }

@@ -10,6 +10,15 @@ var service = {
             });
         });
     },
+    get_types_admin: function () {
+        return new Promise(function (resolve, reject) {
+            typeRepository.get_types_admin().then(types => {
+                resolve(types);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
 
     get_type: function (type_id, page, keyword) {
         return new Promise(function (resolve, reject) {

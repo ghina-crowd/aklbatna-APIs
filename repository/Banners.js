@@ -1,10 +1,52 @@
 var models = require('../models/models');
 var commonRepository = require('./common.js');
 const Sequelize = require('sequelize');
-var CategoryRepository = {
+var Banners;
+var lang = require('../app');
+
+
+var BannersRepository = {
+
+    getAllAdmin: function () {
+        return new Promise(function (resolve, reject) {
+            models.Banners.findAll().then(Banners => {
+                if (Banners == null) {
+                    resolve([]);
+                } else {
+                    resolve(Banners);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     get: function () {
         return new Promise(function (resolve, reject) {
-            models.Banners.findAll({ where: { active: 1 } }).then(Banners => {
+
+            if (lang.acceptedLanguage == 'en') {
+                Banners = ['banner_id', ['description_en', 'description'], 'button', 'redirect', 'url', 'image'];
+
+            } else {
+                Banners = ['banner_id', ['description_ar', 'description'], 'button', 'redirect', 'url', 'image'];
+            }
+
+
+            models.Banners.findAll({ where: { active: 1 }, attributes: Banners }).then(Banners => {
+                if (Banners == null) {
+                    resolve([]);
+                } else {
+                    resolve(Banners);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+    getCount: function () {
+        return new Promise(function (resolve, reject) {
+
+            models.Banners.findAll().then(Banners => {
                 if (Banners == null) {
                     resolve([]);
                 } else {
@@ -68,5 +110,5 @@ var CategoryRepository = {
 };
 
 
-Object.assign(CategoryRepository, commonRepository);
-module.exports = CategoryRepository;
+Object.assign(BannersRepository, commonRepository);
+module.exports = BannersRepository;

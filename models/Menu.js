@@ -16,6 +16,9 @@ module.exports = function (sequelize, DataTypes) {
     name_en: {
       type: DataTypes.STRING,
     },
+    active: {
+      type: DataTypes.STRING,
+    },
   }, {
     tableName: 'Menu'
   });

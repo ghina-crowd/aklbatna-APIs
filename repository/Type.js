@@ -5,8 +5,23 @@ const Op = sequelize.Op;
 var lang = require('../app');
 var type;
 var typeRepository = {
-    get_types: function () {
 
+
+    get_types_admin: function () {
+        return new Promise(function (resolve, reject) {
+            models.Type.findAll({
+            }).then(types => {
+                if (types == null) {
+                    resolve([]);
+                } else {
+                    resolve(types);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    get_types: function () {
 
         if (lang.acceptedLanguage == 'en') {
             type = ['type_id', ['name_en', 'name']];
@@ -27,15 +42,36 @@ var typeRepository = {
             });
         });
     },
+    get: function (type_id) {
 
+        return new Promise(function (resolve, reject) {
+            models.Type.findOne({
+                where: { type_id: type_id }
+            }).then(types => {
+                if (types == null) {
+                    resolve([]);
+                } else {
+                    resolve(types);
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     create_type: function (newtypeData) {
         return new Promise(function (resolve, reject) {
             models.Type.create({
                 name_en: newtypeData.name_en,
                 name_ar: newtypeData.name_ar,
+                active: newtypeData.active,
             }).then(type => {
                 console.log(type['dataValues']);
-                resolve(type);
+                typeRepository.get(type['dataValues'].type_id).then((type) => {
+                    resolve(type);
+                }).catch((error) => {
+                    reject(error)
+                })
+
             }, error => {
                 reject(error)
             });

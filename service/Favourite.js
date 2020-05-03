@@ -2,9 +2,9 @@ var FavouriteRepository = require('../repository/Favourite');
 
 
 module.exports = {
-    get: function (user_id) {
+    get: function (user_id,page) {
         return new Promise(function (resolve, reject) {
-            FavouriteRepository.get(user_id).then(user => {
+            FavouriteRepository.get(user_id,page).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);

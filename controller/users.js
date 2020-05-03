@@ -1,12 +1,10 @@
 var express = require('express');
-const { check, validationResult } = require('express-validator/check');
-var format = require('string-format');
+const { validationResult } = require('express-validator/check');
 var languageService = require('../validator/language');
 var logger = require('../util/logger.js');
 var statics = require('../constant/static.js');
 var messages = require('../constant/message.js');
 var codes = require('../constant/code.js');
-var fields = require('../constant/field.js');
 var UserService = require('../service/users.js');
 const jwt = require('jsonwebtoken');
 var config = require('../constant/config.js');
@@ -62,7 +60,7 @@ async function verifyToken(token, res, lang) {
 
     });
 }
-router.get('/admin/users/:page/:keyword', async function (req, res) {
+router.post('/admin/get', async function (req, res) {
 
 
     var lang = req.headers.language;
@@ -73,7 +71,7 @@ router.get('/admin/users/:page/:keyword', async function (req, res) {
     }
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        UserService.GetAllUser(req.params.page, req.params.keyword).then(function (result) {
+        UserService.GetAllUser(req.body).then(function (result) {
             res.json({ status: statics.STATUS_SUCCESS, code: codes.SUCCESS, message: messages.DATA_FOUND, data: result });
         }, function (error) {
             logger.error(messages.SERVER_ERROR + ' ' + error);
@@ -98,47 +96,6 @@ router.get('/admin/users/:page/:keyword', async function (req, res) {
 
 });
 
-router.get('/admin/users/:page/:user_type', async function (req, res) {
-
-    var lang = req.headers.language;
-    var token = req.headers.authorization;
-    var params = req.params;
-    await verifyToken(token, res, lang);
-    if (!id) {
-        return;
-    }
-    var errors = validationResult(req);
-    if (errors.array().length == 0) {
-        UserService.GetAllUserByType(params.page, params.user_type).then(function (result) {
-            res.json({ status: statics.STATUS_SUCCESS, code: codes.SUCCESS, message: messages.DATA_FOUND, data: result });
-        }, function (error) {
-            logger.error(messages.SERVER_ERROR + ' ' + error);
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.FAILURE,
-                message: messages.INCORRECT_PASSWORD_USER,
-                data: error
-            });
-        });
-
-    } else {
-        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.INVALID_DATA,
-                message: msg.message,
-                data: errors.array()
-            });
-        })
-    }
-
-
-
-
-
-
-});
-
 router.put('/edit_profile', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
@@ -150,6 +107,7 @@ router.put('/edit_profile', async function (req, res) {
         if (!id) {
             return;
         }
+        console.log(credentials);
         if (email) {
             if (!credentials.first_name || credentials.first_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_FIRST').then(msg => {
@@ -158,7 +116,7 @@ router.put('/edit_profile', async function (req, res) {
                         code: codes.FAILURE,
                         message: msg.message,
                         data: null
-                    });
+                    }); 123123
                 });
             } else if (!credentials.last_name || credentials.last_name == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_LAST').then(msg => {
@@ -170,18 +128,69 @@ router.put('/edit_profile', async function (req, res) {
                         data: null
                     });
                 });
-            } else if (!credentials.phone || credentials.phone == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_PHONE').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
             } else {
                 return new Promise(function (resolve, reject) {
-                    UserService.Update(credentials.first_name, credentials.last_name, credentials.phone, credentials.email, credentials.subscribe, credentials.old_password, credentials.new_password).then(user => {
+                    UserService.Update(credentials.first_name, credentials.last_name, credentials.phone, credentials.email, credentials.newsletter, credentials.old_password, credentials.new_password, credentials.profile, credentials.fcm).then(user => {
+                        resolve(user);
+                        if (user) {
+                            languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: msg.message,
+                                    data: user
+                                });
+                            });
+                        } else {
+                            languageService.get_lang(lang, 'INVALID_PASSWORD').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.FAILURE,
+                                    message: msg.message,
+                                    data: user
+                                });
+                            });
+                        }
+
+
+
+                    }, error => {
+                        reject(error);
+                    });
+                });
+
+            }
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+
+}
+);
+router.put('/fcm', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var credentials = req.body;
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        console.log(credentials);
+        if (email) {
+            {
+                return new Promise(function (resolve, reject) {
+                    UserService.UpdateFCM(credentials.fcm, email).then(user => {
                         resolve(user);
                         if (user) {
                             languageService.get_lang(lang, 'SUCCESS').then(msg => {
@@ -360,8 +369,9 @@ router.get('/details/:id', async function (req, res) {
 
     });
 });
+
 // admin update user account_status
-router.put('/admin/account_status', async function (req, res) {
+router.put('/admin/Kitchen/ApproveOrReject/:user_id/:active', async function (req, res) {
     var lang = req.headers.language;
     var credentials = req.body;
     var errors = validationResult(req);
@@ -374,7 +384,9 @@ router.put('/admin/account_status', async function (req, res) {
         }
 
         return new Promise(function (resolve, reject) {
-            UserService.UpdateAccountStatus(credentials).then(user => {
+            credentials.user_id = req.params.user_id;
+            credentials.active = req.params.active;
+            UserService.blockOrUnblock(credentials).then(user => {
                 resolve(user);
                 if (user == null) {
                     languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
@@ -415,45 +427,6 @@ router.put('/admin/account_status', async function (req, res) {
             code: codes.INVALID_DATA,
             message: messages.INVALID_DATA,
             data: errors.array()
-        });
-    }
-});
-// get service provider Full profile
-router.get('/servicePro/profile', async function (req, res) {
-    var lang = req.headers.language;
-    var errors = validationResult(req);
-    var token = req.headers.authorization;
-    await verifyToken(token, res, lang);
-    if (!id) {
-        return;
-    }
-    if (errors.array().length == 0 && salesRep) {
-        return new Promise(function (resolve, reject) {
-            UserService.GetUser(email).then(user => {
-                resolve(user);
-                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: user,
-                    });
-                });
-            }, error => {
-                reject(error);
-            });
-        }, error => {
-            reject(error);
-        });
-    } else {
-        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-            res.json({
-                status: statics.STATUS_FAILURE,
-                code: codes.INVALID_DATA,
-                message: msg.message,
-                data: errors.array()
-            });
         });
     }
 });
@@ -502,180 +475,6 @@ router.delete('/delete/:id', async function (req, res) {
 
     });
 });
-// get profile info
-router.get('/ServicePro/details', async function (req, res) {
-    var lang = req.headers.language;
-
-    var token = req.headers.authorization;
-    await verifyToken(token, res, lang);
-    if (!id) {
-        return;
-    }
-
-    UserService.GetAllUserData(id).then(user => {
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            if (user == null) {
-                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            } else {
-                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            }
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
-                });
-            })
-        }
-
-    });
-});
-// get activities for by own user
-router.get('/user/activities', async function (req, res) {
-    var lang = req.headers.language;
-
-    var token = req.headers.authorization;
-    await verifyToken(token, res, lang);
-    if (!id) {
-        return;
-    }
-
-    UserService.getUserActivities(id).then(user => {
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            if (user == null) {
-                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            } else {
-                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            }
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
-                });
-            })
-        }
-
-    });
-});
-// get activities for by admin
-router.get('/admin/activities/:user_id', async function (req, res) {
-    var lang = req.headers.language;
-
-    var token = req.headers.authorization;
-    await verifyToken(token, res, lang);
-    if (!id) {
-        return;
-    }
-
-    UserService.getUserActivities(req.params.user_id).then(user => {
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            if (user == null) {
-                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            } else {
-                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            }
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
-                });
-            })
-        }
-
-    });
-});
-
-// get activities for by admin
-router.get('/admin/get_best_seller', async function (req, res) {
-    var lang = req.headers.language;
-    UserService.getBestSeller().then(users => {
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            if (users == null) {
-                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: users
-                    });
-                });
-            } else {
-                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: users
-                    });
-                });
-            }
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
-                });
-            })
-        }
-
-    });
-});
 //register
 router.post('/admin/create', async function (req, res) {
     var lang = req.headers.language;
@@ -690,17 +489,7 @@ router.post('/admin/create', async function (req, res) {
             return;
         }
         return new Promise(function (resolve, reject) {
-            if (credentials.user_type == 'servicePro' && !credentials.company) {
-                languageService.get_lang(lang, 'COMPANY_DETAILS_IS_MISSING').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    })
-                });
-            }
-            else if (!credentials.user_type && credentials.user_type == '') {
+            if (!credentials.user_type && credentials.user_type == '') {
                 languageService.get_lang(lang, 'EMPTY_FIELD_USER_TYPE').then(msg => {
                     res.json({
                         status: statics.STATUS_FAILURE,
@@ -748,18 +537,31 @@ router.post('/admin/create', async function (req, res) {
                         data: null
                     });
                 });
+            } else if (!credentials.active || credentials.active == '') {
+                languageService.get_lang(lang, 'EMPTY_FIELD_ACTIVE').then(msg => {
+                    res.json({
+                        status: statics.STATUS_FAILURE,
+                        code: codes.FAILURE,
+                        message: msg.message,
+                        data: null
+                    });
+                });
             } else {
                 return new Promise(function (resolve, reject) {
                     // checking if user has no password means this request is from Sales Representative for service provider account.
+
                     var temp_password = ""
-                    if (!credentials.password) {
-                        temp_password = Math.floor(1000 + Math.random() * 90000000) + '';
-                        credentials.password = temp_password;
-                    } else {
-                        temp_password = credentials.password;
+
+                    if (credentials.user_type !== 'normal') {
+                        if (!credentials.password) {
+                            temp_password = Math.floor(1000 + Math.random() * 90000000) + '';
+                            credentials.password = temp_password;
+                        } else {
+                            temp_password = credentials.password;
+                        }
                     }
 
-                    authenticationService.create_user_admin(credentials.email, temp_password, credentials.first_name, credentials.last_name, credentials.phone, credentials.user_type).then(user => {
+                    authenticationService.create_user_admin(credentials.email, temp_password, credentials.first_name, credentials.last_name, credentials.phone, credentials.user_type, credentials.active, credentials.profile).then(user => {
                         resolve(user);
                         if (user == null) {
                             languageService.get_lang(lang, 'EMAIL_REGISTERED').then(msg => {
@@ -783,8 +585,6 @@ router.post('/admin/create', async function (req, res) {
                                         last_name: user.last_name,
                                         phone: user.phone,
                                         user_type: user.user_type,
-                                        photo: user.photo,
-                                        token: user.token,
                                     }
 
                                     res.json({
@@ -794,127 +594,17 @@ router.post('/admin/create', async function (req, res) {
                                         data: tempuser,
                                     });
                                 });
-                                user.user_type = 'normal';
-                                var user_data = {
-                                    id: user.user_id,
-                                    email: user.email,
-                                    password: user.password,
-                                }
-                                var token = jwt.sign(user_data, config.secret, {});
-                                user.token = token;
+                                console.log(user.first_name + " " + user.last_name);
+                                console.log(user.email);
+                                console.log(user.otp);
 
-                                utils.SendEmail(user.email, 'OTP', '<p>Your Password is ' + temp_password + '</p>');
+                                utils.sendOTPEmail(user.first_name + " " + user.last_name, user.email, user.otp);
 
-                            } else if (user.user_type === 'servicePro' && salesRep) {
+                            } else {
 
                                 // creating user as service provider when request is from salesRep
 
-                                credentials.company['user_id'] = user.user_id;
-                                console.log(credentials.company);
-                                companyService.create_company(credentials.company).then(company => {
-
-                                    languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
-
-                                        var tempuser = {
-                                            user_id: user.user_id,
-                                            email: user.email,
-                                            first_name: user.first_name,
-                                            last_name: user.last_name,
-                                            phone: user.phone,
-                                            user_type: user.user_type,
-                                            photo: user.photo,
-                                            token: user.token,
-                                            company: company
-                                        }
-
-                                        res.json({
-                                            status: statics.STATUS_SUCCESS,
-                                            code: codes.SUCCESS,
-                                            message: msg.message,
-                                            data: tempuser,
-                                        });
-                                    });
-
-
-
-                                    //normal user after
-                                    var user_data = {
-                                        id: user.user_id,
-                                        email: user.email,
-                                        password: user.password,
-                                        servicePro: true
-                                    }
-                                    var token = jwt.sign(user_data, config.secret, {});
-                                    user.token = token;
-
-                                    utils.SendEmail(user.email, 'Coboney', '<p>Hi ' + user.first_name + " " + user.last_name + '</p> Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "' + config.adminurl + '" target = "_self"> link </a> to see more details.</p>  <p>Email is : <strong> ' + tempuser.email + ' </strong> .</p>      <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
-
-
-                                }).catch(err => {
-
-                                });
-
-
-                            } else if (user.user_type === 'servicePro' && !salesRep) {
-                                // creating user as service provider when request is from service provider.
-                                credentials.company['user_id'] = user.user_id;
-                                console.log(credentials.company);
-                                companyService.create_company(credentials.company).then(company => {
-
-                                    languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
-
-                                        var tempuser = {
-                                            user_id: user.user_id,
-                                            email: user.email,
-                                            first_name: user.first_name,
-                                            last_name: user.last_name,
-                                            phone: user.phone,
-                                            user_type: user.user_type,
-                                            photo: user.photo,
-                                            token: user.token,
-                                            company: company
-                                        }
-
-                                        res.json({
-                                            status: statics.STATUS_SUCCESS,
-                                            code: codes.SUCCESS,
-                                            message: msg.message,
-                                            data: tempuser,
-                                        });
-                                    });
-
-
-
-                                    //normal user after
-                                    var user_data = {
-                                        id: user.user_id,
-                                        email: user.email,
-                                        password: user.password,
-                                        servicePro: true
-                                    }
-                                    var token = jwt.sign(user_data, config.secret, {});
-                                    user.token = token;
-
-                                    utils.SendEmail(user.email, 'Coboney', ' <p>Hi ' + user.first_name + " " + user.last_name + '</p> Thank you for register with Coboney, our team will verify your account shortly. </p> <p> or visit this <a href= "' + config.adminurl + '" target = "_self"> link </a> to see more details.</p>   <p>Email is : <strong> ' + tempuser.email + ' </strong> .</p>    <p>Account password is : <strong> ' + temp_password + ' </strong> .</p> ');
-
-
-                                }).catch(err => {
-
-                                });
-
-
-                            } else if (user.user_type === 'salesRep') {
-                                //normal user after
-                                var user_data = {
-                                    id: user.user_id,
-                                    email: user.email,
-                                    password: user.password,
-                                    salesRep: true
-                                }
-                                var token = jwt.sign(user_data, config.secret, {});
-                                user.token = token;
-                                utils.SendEmail(user.email, 'Coboney', ' <p>Hi ' + user.first_name + " " + user.last_name + '</p> <p>Congratulations ... you are now a member of Coboney family. </p> <p>Your Coboney Password  is: ' + temp_password + '</p>  <p>Your Coboney PIN Code is: ' + String(1000 + Number(user.user_id)) + '</p> </br> </br><p>    * You will be asked to enter your Coboney PIN code during the registering of your service providers in <a href = "https://www.coboney.com" target = "_self">Coboney.com;</a> to collect your commission' + ' with each sale of a coupon related to that service provider.</p> <p><a href = "https://www.coboney.com" target = "_self" >My List</a></p>');
-                                languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
+                                languageService.get_lang(lang, 'ACTIVATED_USER').then(msg => {
 
                                     var tempuser = {
                                         user_id: user.user_id,
@@ -923,9 +613,6 @@ router.post('/admin/create', async function (req, res) {
                                         last_name: user.last_name,
                                         phone: user.phone,
                                         user_type: user.user_type,
-                                        photo: user.photo,
-                                        token: user.token,
-                                        code: String(1000 + Number(user.user_id))
                                     }
 
                                     res.json({
@@ -935,6 +622,25 @@ router.post('/admin/create', async function (req, res) {
                                         data: tempuser,
                                     });
                                 });
+
+
+
+                                //normal user after
+                                var user_data = {
+                                    id: user.user_id,
+                                    email: user.email,
+                                    password: user.password,
+                                    servicePro: true
+                                }
+                                var token = jwt.sign(user_data, config.secret, {});
+                                user.token = token;
+
+                                utils.sendPasswordEmail(user.first_name + " " + user.last_name, user.email, temp_password);
+
+
+
+
+
                             }
                         }
                     },
@@ -958,50 +664,4 @@ router.post('/admin/create', async function (req, res) {
     }
 }
 );
-// get profile info
-router.get('/admin/ServicePro/details/:user_id', async function (req, res) {
-    var lang = req.headers.language;
-
-    var token = req.headers.authorization;
-    var params = req.params;
-    await verifyToken(token, res, lang);
-    if (!id) {
-        return;
-    }
-
-    UserService.GetAllUserData(params.user_id).then(user => {
-        var errors = validationResult(req);
-        if (errors.array().length == 0) {
-            if (user == null) {
-                languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            } else {
-                languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
-                    res.json({
-                        status: statics.STATUS_SUCCESS,
-                        code: codes.SUCCESS,
-                        message: msg.message,
-                        data: user
-                    });
-                });
-            }
-        } else {
-            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.INVALID_DATA,
-                    message: msg.message,
-                    data: errors.array()
-                });
-            })
-        }
-
-    });
-});
 module.exports = router;

@@ -11,6 +11,35 @@ module.exports = {
             });
         });
     },
+    getMenuByKitchen: function (kitchen_id) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getMenuByKitchen(kitchen_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getAllAdmin: function () {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getAllAdmin().then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
+
+    getAdmin: function (menu_id) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getAdmin(menu_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     getAll: function () {
         return new Promise(function (resolve, reject) {
             KitchensRepository.getAll().then(user => {
@@ -20,6 +49,7 @@ module.exports = {
             });
         });
     },
+
     update: function (credentials) {
         return new Promise(function (resolve, reject) {
             KitchensRepository.update(credentials).then(user => {

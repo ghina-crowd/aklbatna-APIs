@@ -96,6 +96,49 @@ router.get('/get', function (req, res) {
         })
     }
 });
+router.get('/admin/get', function (req, res) {
+
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        return new Promise(function (resolve, reject) {
+            BannerServices.getAllAdmin().then(categories => {
+                resolve(categories);
+                if (categories == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    })
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.post('/admin/create', async function (req, res) {
 
 
@@ -190,32 +233,19 @@ router.put('/admin/update', async function (req, res) {
     if (errors.array().length == 0) {
 
         return new Promise(function (resolve, reject) {
-            if (!credentials || !credentials.category_id || credentials.category_id == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_CATEGORY_ID').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
+            if (!credentials || !credentials.banner_id || credentials.banner_id == '') {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: 'EMPTY_FIELD_BANNER_ID',
+                    data: null
                 });
-            } else if (!credentials.name_ar || credentials.name_ar == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_NAME_AR').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
-                });
-            } else if (!credentials.name_ar || credentials.name_ar == '') {
-                languageService.get_lang(lang, 'EMPTY_FIELD_NAME_AR').then(msg => {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: msg.message,
-                        data: null
-                    });
+            } else if (!credentials.image || credentials.image == '') {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: 'EMPTY_FIELD_IMAGE',
+                    data: null
                 });
             } else {
                 console.log(JSON.stringify(credentials));

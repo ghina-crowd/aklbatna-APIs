@@ -12,6 +12,16 @@ module.exports = {
             });
         });
     },
+
+    getAdmin(Kitchen_id) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getAdmin(Kitchen_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     get_featured: function (page) {
         return new Promise(function (resolve, reject) {
             KitchensRepository.get_featured(page).then(user => {
@@ -30,6 +40,35 @@ module.exports = {
             });
         });
     },
+
+    getByCategoryID: function (category_id) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getByCategoryID(category_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getAllByLocation: function (body) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getAllByLocation(body).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getAllAdmin: function (filters) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.getAllAdmin(filters).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
     update: function (newKitchenData) {
         return new Promise(function (resolve, reject) {
             KitchensRepository.update(newKitchenData).then(user => {
@@ -42,6 +81,15 @@ module.exports = {
     create: function (newKitchenData) {
         return new Promise(function (resolve, reject) {
             KitchensRepository.create(newKitchenData).then(function (result) {
+                resolve(result);
+            }, function (error) {
+                reject(error);
+            });
+        });
+    },
+    createWithSP: function (newKitchenData) {
+        return new Promise(function (resolve, reject) {
+            KitchensRepository.createWithSP(newKitchenData).then(function (result) {
                 resolve(result);
             }, function (error) {
                 reject(error);

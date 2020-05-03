@@ -9,6 +9,18 @@ var banners = require('./Banners');
 var contact = require('./Contact');
 var favourite = require('./Favourite');
 var types = require('./Type');
+var city = require('./City');
+var address = require('./Address');
+var accounts = require('./Account');
+var order = require('./Order');
+var suborder = require('./SubOrder');
+var offers = require('./Offers');
+var subscription = require('./Subscription');
+var profit = require('./Profit');
+var notifications = require('./Notifications');
+var constraints = require('./Constraints');
+
+
 
 module.exports = {
     User: users(sequelize, Sequelize),
@@ -21,5 +33,15 @@ module.exports = {
     Contact: contact(sequelize, Sequelize),
     Favourite: favourite(sequelize, Sequelize),
     Type: types(sequelize, Sequelize),
+    City: city(sequelize, Sequelize),
+    Address: address(sequelize, Sequelize),
+    Accounts: accounts(sequelize, Sequelize),
+    Order: order(sequelize, Sequelize),
+    SubOrder: suborder(sequelize, Sequelize),
+    Offers: offers(sequelize, Sequelize),
+    Subscription: subscription(sequelize, Sequelize),
+    Profit: profit(sequelize, Sequelize),
+    Notifications: notifications(sequelize, Sequelize),
+    Constraints: constraints(sequelize, Sequelize),
 
 };

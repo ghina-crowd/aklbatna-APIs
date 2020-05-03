@@ -12,6 +12,15 @@ module.exports = {
             });
         });
     },
+    getAllAdmin: function () {
+        return new Promise(function (resolve, reject) {
+            BannersRepository.getAllAdmin().then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
     update: function (newBannerData) {
         return new Promise(function (resolve, reject) {
             BannersRepository.update(newBannerData).then(user => {

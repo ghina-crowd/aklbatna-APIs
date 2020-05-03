@@ -13,6 +13,9 @@ module.exports = function (sequelize, DataTypes) {
     password: {
       type: DataTypes.STRING,
     },
+    fcm:{
+      type: DataTypes.TEXT,
+    },
     first_name: {
       type: DataTypes.STRING,
     },
@@ -37,6 +40,9 @@ module.exports = function (sequelize, DataTypes) {
     profile: {
       type: DataTypes.STRING,
     },
+    newsletter: {
+      type: DataTypes.INTEGER
+    }
   }, {
     tableName: 'users'
   });

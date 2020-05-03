@@ -149,6 +149,53 @@ router.post('/get/:category_id/:page', function (req, res) {
 
 
 });
+router.get('/admin/get', function (req, res) {
+
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        return new Promise(function (resolve, reject) {
+            categoryServices.get_categoriesAdmin().then(categories => {
+                resolve(categories);
+                if (categories == null) {
+                    languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    });
+                } else {
+                    languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                        res.json({
+                            status: statics.STATUS_SUCCESS,
+                            code: codes.SUCCESS,
+                            message: msg.message,
+                            data: categories,
+                        });
+                    })
+
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+
+
+    }
+
+
+});
 router.post('/admin/create', async function (req, res) {
 
 

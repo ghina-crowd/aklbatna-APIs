@@ -11,18 +11,18 @@ module.exports = {
             });
         });
     },
-    get_related_meals: function (meal_id, category_id, user_id) {
+    get_related_meals: function (category_id, user_id) {
         return new Promise(function (resolve, reject) {
-            MealsRepository.get_related_meals(meal_id, category_id, user_id).then(user => {
+            MealsRepository.get_related_meals(category_id, user_id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
             });
         });
     },
-    get_featured_meals: function (page, sortBy, user_id) {
+    get_featured_meals: function (page, sortBy, user_id, pageCount) {
         return new Promise(function (resolve, reject) {
-            MealsRepository.get_featured(page, sortBy, user_id).then(user => {
+            MealsRepository.get_featured(page, sortBy, user_id, pageCount).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);
@@ -38,10 +38,54 @@ module.exports = {
             });
         });
     },
-
-    getAll: function (user_id) {
+    filtersAdmin: function (filters, user_id) {
         return new Promise(function (resolve, reject) {
-            MealsRepository.getAll(user_id).then(user => {
+            MealsRepository.filtersAdmin(filters, user_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getAll: function (page, sortBy, user_id) {
+        return new Promise(function (resolve, reject) {
+            MealsRepository.getAll(page, sortBy, user_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getByKitchenId: function (user_id, Kitchen_id, page) {
+        return new Promise(function (resolve, reject) {
+            MealsRepository.getByKitchenId(user_id, Kitchen_id, page).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getByKitchenIdAdmin: function (Kitchen_id) {
+        return new Promise(function (resolve, reject) {
+            MealsRepository.getByKitchenIdWithoutPagination(Kitchen_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getAllAdmin: function (user_id) {
+        return new Promise(function (resolve, reject) {
+            MealsRepository.getAllAdmin(user_id).then(user => {
+                resolve(user);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+    getAdmin: function (meal_id, user_id) {
+        return new Promise(function (resolve, reject) {
+            MealsRepository.getAdmin(meal_id, user_id).then(user => {
                 resolve(user);
             }, error => {
                 reject(error);

@@ -142,7 +142,80 @@ router.post('/filter', async function (req, res) {
         })
     }
 });
-router.get('/get/related/:meal_id/:category_id', async function (req, res) {
+router.post('/admin/filter', async function (req, res) {
+    var errors = validationResult(req);
+    var token = req.headers.authorization;
+    await userInfoFromToken(token);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var data = req.body;
+        var category_id = Number(data.category_id) ? Number(data.category_id) : 0;
+        var kitchen_id = Number(data.kitchen_id) ? Number(data.kitchen_id) : 0;
+        var sort_by = data.sort_by ? data.sort_by : 0; // 1 => price low to high , 2 => price high to low , 3 => distance
+        var rating = data.rating ? data.rating : 0;
+        var page = req.body.page ? req.body.page : 0;
+        var type = req.body.type ? req.body.type : 0;
+        var keyword = req.body.keyword ? req.body.keyword : '';
+
+        var filters = {};
+        filters.category_id = category_id;
+        filters.sort_by = sort_by;
+        filters.type = type;
+        filters.rating = rating;
+        filters.page = page;
+        filters.keyword = keyword;
+        filters.kitchen_id = kitchen_id;
+
+        if (page < 0) {
+            languageService.get_lang(lang, 'MISSING_PAGE_NUMBER').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: [],
+                })
+            })
+        } else {
+            return new Promise(function (resolve, reject) {
+                MealsService.filtersAdmin(filters, id).then(meals => {
+                    resolve(meals);
+                    if (meals == null || meals.length == 0) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: [],
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: meals,
+                            });
+                        });
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+
+router.get('/get/related/:category_id', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -154,7 +227,7 @@ router.get('/get/related/:meal_id/:category_id', async function (req, res) {
         //     return;
         // }
         return new Promise(function (resolve, reject) {
-            MealsService.get_related_meals(req.params.meal_id, req.params.category_id, id).then(meals => {
+            MealsService.get_related_meals(req.params.category_id, id).then(meals => {
                 resolve(meals);
                 if (meals == null) {
                     meals = [];
@@ -184,7 +257,7 @@ router.get('/get/related/:meal_id/:category_id', async function (req, res) {
 });
 
 
-router.get('/get/featured/:page/:sortBy', async function (req, res) {
+router.get('/get/featured/:page/:pageCount/:sortBy', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -196,7 +269,7 @@ router.get('/get/featured/:page/:sortBy', async function (req, res) {
         //     return;
         // }
         return new Promise(function (resolve, reject) {
-            MealsService.get_featured_meals(req.params.page, req.params.sortBy, id).then(meals => {
+            MealsService.get_featured_meals(req.params.page, req.params.sortBy, id, req.params.pageCount).then(meals => {
                 resolve(meals);
                 if (meals == null) {
                     meals = [];
@@ -226,7 +299,7 @@ router.get('/get/featured/:page/:sortBy', async function (req, res) {
 });
 
 
-router.get('/get', async function (req, res) {
+router.get('/get/:page/:sortBy', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
     if (errors.array().length == 0) {
@@ -238,7 +311,47 @@ router.get('/get', async function (req, res) {
         //     return;
         // }
         return new Promise(function (resolve, reject) {
-            MealsService.getAll(id).then(kitchens => {
+            MealsService.getAll(req.params.page, req.params.sortBy, id).then(kitchens => {
+                resolve(kitchens);
+                if (kitchens == null) {
+                    kitchens = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: kitchens
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.get('/getByKitchen/:kitchen_id/:page', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await userInfoFromToken(token);
+        // await verifyToken(token, res, lang);
+        // if (!id) {
+        //     return;
+        // }
+        return new Promise(function (resolve, reject) {
+            MealsService.getByKitchenId(id, req.params.kitchen_id, req.params.page).then(kitchens => {
                 resolve(kitchens);
                 if (kitchens == null) {
                     kitchens = [];
@@ -267,6 +380,46 @@ router.get('/get', async function (req, res) {
     }
 });
 
+router.get('/admin/getByKitchen/:kitchen_id', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        // await userInfoFromToken(token);
+        // await verifyToken(token, res, lang);
+        // if (!id) {
+        //     return;
+        // }
+        return new Promise(function (resolve, reject) {
+            MealsService.getByKitchenIdAdmin(req.params.kitchen_id).then(kitchens => {
+                resolve(kitchens);
+                if (kitchens == null) {
+                    kitchens = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: kitchens
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.get('/get/:kitchen_id', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);
@@ -280,6 +433,87 @@ router.get('/get/:kitchen_id', async function (req, res) {
         // }
         return new Promise(function (resolve, reject) {
             MealsService.get(req.params.kitchen_id, id).then(kitchens => {
+                resolve(kitchens);
+                if (kitchens == null) {
+                    kitchens = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: kitchens
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+
+router.get('/admin/get', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await userInfoFromToken(token);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            MealsService.getAllAdmin(id).then(kitchens => {
+                resolve(kitchens);
+                if (kitchens == null) {
+                    kitchens = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: kitchens
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.get('/admin/get/:meal_id', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await userInfoFromToken(token);
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            MealsService.getAdmin(req.params.meal_id, id).then(kitchens => {
                 resolve(kitchens);
                 if (kitchens == null) {
                     kitchens = [];
@@ -360,20 +594,6 @@ router.post('/admin/create', async function (req, res) {
                         status: statics.STATUS_FAILURE,
                         code: codes.FAILURE,
                         message: 'EMPTY_FIELD_PRICE',
-                        data: null
-                    });
-                } else if (!credentials.price_monthly || credentials.price_monthly == '') {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: 'EMPTY_FIELD_PRICE_MONETHLY',
-                        data: null
-                    });
-                } else if (!credentials.price_weekly || credentials.price_weekly == '') {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: 'EMPTY_FIELD_PRICE_WEEKLY',
                         data: null
                     });
                 } else if (!credentials.category_id || credentials.category_id == '') {
@@ -480,20 +700,6 @@ router.put('/admin/update', async function (req, res) {
                         message: 'EMPTY_FIELD_PRICE',
                         data: null
                     });
-                } else if (!credentials.price_monthly || credentials.price_monthly == '') {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: 'EMPTY_FIELD_PRICE_MONTHLY',
-                        data: null
-                    });
-                } else if (!credentials.price_weekly || credentials.price_weekly == '') {
-                    res.json({
-                        status: statics.STATUS_FAILURE,
-                        code: codes.FAILURE,
-                        message: 'EMPTY_FIELD_PRICE_WEEKLY',
-                        data: null
-                    });
                 } else {
                     return new Promise(function (resolve, reject) {
                         MealsService.update(credentials).then(account => {
@@ -590,8 +796,6 @@ router.delete('/admin/delete/:meal_id', async function (req, res) {
     }
 }
 );
-
-
 router.get('/reviews/:kitchen_id/:page', function (req, res) {
 
     var lang = req.headers.language;

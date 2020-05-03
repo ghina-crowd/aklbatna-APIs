@@ -120,8 +120,13 @@ router.post('/login', function (req, res) {
                         userData = {
                             id: user.user_id,
                             email: user.email,
+                            user_type: user.user_type,
+                        }
+                        if (user.Kitchen) {
+                            userData.kitchen_id = user.Kitchen.kitchen_id;
                         }
 
+                        console.log(userData);
                         var token = jwt.sign(userData, config.secret, {});
 
                         if (user.active == 0) {
@@ -149,6 +154,16 @@ router.post('/login', function (req, res) {
                                 });
                             }
 
+                        }
+                        if (user.active == 2) {
+                            languageService.get_lang(lang, 'BLOCKED').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.INVALID_DATA,
+                                    message: msg.message,
+                                    data: {}
+                                });
+                            });
                         } else {
                             user['token'] = token,
                                 languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
@@ -369,6 +384,15 @@ router.post('/register', async function (req, res) {
                             });
                         } else {
 
+                            user.user_type = 'normal';
+                            var user_data = {
+                                id: user.user_id,
+                                email: user.email,
+                                password: user.password,
+                            }
+                            var token = jwt.sign(user_data, config.secret, {});
+                            user.token = token;
+
                             //normal user after
                             var tempuser = {
                                 user_id: user.user_id,
@@ -381,14 +405,7 @@ router.post('/register', async function (req, res) {
                                 token: user.token,
                             }
 
-                            tempuser.user_type = 'normal';
-                            var user_data = {
-                                id: user.user_id,
-                                email: user.email,
-                                password: user.password,
-                            }
-                            var token = jwt.sign(user_data, config.secret, {});
-                            tempuser.token = token;
+
 
                             languageService.get_lang(lang, 'REGISTERED_USER').then(msg => {
 
@@ -400,7 +417,8 @@ router.post('/register', async function (req, res) {
                                 });
                             });
 
-                            utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+                            // utils.SendEmail(user.email, 'OTP', '<p>Your OTP here ' + user.otp + '</p>');
+                            utils.sendOTPEmail(user.first_name + " " + user.last_name, user.email, user.otp);
                         }
                     },
                         error => {
@@ -569,6 +587,7 @@ router.put('/resend_code', async function (req, res) {
         if (!id) {
             return;
         }
+        console.log(email)
 
         return new Promise(function (resolve, reject) {
             if (email) {
@@ -583,30 +602,43 @@ router.put('/resend_code', async function (req, res) {
                         }
                     });
 
-                    const mailOptions = {
-                        from: 'acoponey@gmail.com', // sender address
-                        to: user.email, // list of receivers
-                        subject: 'Coponey', // Subject line
-                        html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
-                    };
+                    console.log(user);
+                    if (user.user_type === 'normal') {
+                        const mailOptions = {
+                            from: 'acoponey@gmail.com', // sender address
+                            to: user.email, // list of receivers
+                            subject: 'Coponey', // Subject line
+                            html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
+                        };
 
-                    transporter.sendMail(mailOptions, function (err, info) {
-                        if (err)
-                            console.log(err)
-                        else
-                            console.log(info);
-                    });
-
-                    delete user.otp;
-
-                    languageService.get_lang(lang, 'PLEASE_CHECK_YOUR_EMAIL').then(msg => {
-                        res.json({
-                            status: statics.STATUS_SUCCESS,
-                            code: codes.SUCCESS,
-                            message: msg.message,
-                            data: user,
+                        transporter.sendMail(mailOptions, function (err, info) {
+                            if (err)
+                                console.log(err)
+                            else
+                                console.log(info);
                         });
-                    });
+
+                        delete user.otp;
+
+                        languageService.get_lang(lang, 'PLEASE_CHECK_YOUR_EMAIL').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: user,
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.INVALID_DATA,
+                                message: msg.message,
+                                data: null
+                            });
+                        });
+                    }
+
 
 
 
@@ -661,7 +693,7 @@ router.put('/sent_otp_by_email', function (req, res) {
                 authenticationService.check_email(credentials.email).then(user => {
                     resolve(user);
                     if (!user) {
-                        languageService.get_lang(lang, 'EMPTY_FIELD_EMAIL').then(msg => {
+                        languageService.get_lang(lang, 'INVALID_FIELD_EMAIL').then(msg => {
 
                             res.json({
                                 status: statics.STATUS_FAILURE,
@@ -673,45 +705,46 @@ router.put('/sent_otp_by_email', function (req, res) {
 
                     } else {
 
-                        authenticationService.update_otp(user.email).then(user => {
-                            resolve(user);
-                            var transporter = nodemailer.createTransport({
-                                service: 'gmail',
-                                auth: {
-                                    user: 'acoponey@gmail.com',
-                                    pass: 'muhammadcrowd'
-                                }
+                        console.log(user);
+
+                        if (user.user_type === 'normal') {
+                            authenticationService.update_otp(user.email).then(user => {
+                                resolve(user);
+                                var transporter = nodemailer.createTransport({
+                                    service: 'gmail',
+                                    auth: {
+                                        user: 'acoponey@gmail.com',
+                                        pass: 'muhammadcrowd'
+                                    }
+                                });
+
+
+                                utils.sendOTPEmailForgetPassword(user.first_name + " " + user.last_name, user.email, 'Your code for reset password ' + user.otp)
+
+
+                                languageService.get_lang(lang, 'DATA_FOR_RESET').then(msg => {
+
+                                    res.json({
+                                        status: statics.STATUS_SUCCESS,
+                                        code: codes.SUCCESS,
+                                        message: msg.message,
+                                        data: user,
+                                    });
+                                });
+
+                            }, error => {
+                                reject(error);
                             });
-
-                            const mailOptions = {
-                                from: 'acoponey@gmail.com', // sender address
-                                to: user.email, // list of receivers
-                                subject: 'Coponey', // Subject line
-                                html: '<p>Your code for reset password ' + user.otp + '</p>'// plain text body
-                            };
-
-                            transporter.sendMail(mailOptions, function (err, info) {
-                                if (err)
-                                    console.log(err)
-                                else
-                                    console.log(info);
-                            });
-
-                            delete user.otp;
-
-                            languageService.get_lang(lang, 'DATA_FOR_RESET').then(msg => {
-
+                        } else {
+                            languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
                                 res.json({
-                                    status: statics.STATUS_SUCCESS,
-                                    code: codes.SUCCESS,
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.INVALID_DATA,
                                     message: msg.message,
-                                    data: user,
+                                    data: null
                                 });
                             });
-
-                        }, error => {
-                            reject(error);
-                        });
+                        }
 
 
                     }

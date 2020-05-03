@@ -92,7 +92,118 @@ router.get('/get', async function (req, res) {
         })
     }
 });
-
+router.get('/get/kitchen/:kitchen_id', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        return new Promise(function (resolve, reject) {
+            MenuService.getMenuByKitchen(req.params.kitchen_id).then(meals => {
+                resolve(meals);
+                if (meals == null) {
+                    meals = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: meals
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.get('/admin/get/:menu_id', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        // await verifyToken(token, res, lang);
+        // if (!id) {
+        //     return;
+        // }
+        return new Promise(function (resolve, reject) {
+            MenuService.getAdmin(req.params.menu_id).then(kitchens => {
+                resolve(kitchens);
+                if (kitchens == null) {
+                    kitchens = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: kitchens
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.get('/admin/get', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        // await verifyToken(token, res, lang);
+        // if (!id) {
+        //     return;
+        // }
+        return new Promise(function (resolve, reject) {
+            MenuService.getAllAdmin().then(meals => {
+                resolve(meals);
+                if (meals == null) {
+                    meals = [];
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: meals
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
 router.get('/get/:menu_id', async function (req, res) {
     lang = req.headers.language;
     var errors = validationResult(req);

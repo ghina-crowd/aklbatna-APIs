@@ -34,6 +34,18 @@ module.exports = function (sequelize, DataTypes) {
     featured: {
       type: DataTypes.INTEGER
     },
+    lat: {
+      type: DataTypes.INTEGER
+    },
+    lng: {
+      type: DataTypes.INTEGER
+    },
+    active: {
+      type: DataTypes.INTEGER
+    },
+    location: {
+      type: DataTypes.STRING
+    },
     start_time: {
       type: DataTypes.TIME
     },
@@ -54,6 +66,12 @@ module.exports = function (sequelize, DataTypes) {
     },
     final_value_rate: {
       type: DataTypes.INTEGER,
+    },
+    busy: {
+      type: DataTypes.INTEGER,
+    },
+    is_delivery: {
+      type: DataTypes.BOOLEAN,
     }
   }, {
     tableName: 'Kitchen'

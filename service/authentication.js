@@ -121,10 +121,10 @@ var service = {
             });
         });
     },
-    create_user_admin: function (email, password, first_name, last_name, phone, user_type) {
+    create_user_admin: function (email, password, first_name, last_name, phone, user_type, active, profile) {
         var password = bcrypt.hashSync(password, 8);
         return new Promise(function (resolve, reject) {
-            UserRepository.CreateUserAdmin(email, password, first_name, last_name, phone, user_type).then(users => {
+            UserRepository.CreateUserAdmin(email, password, first_name, last_name, phone, user_type, active, profile).then(users => {
                 if (users == null) {
                     resolve(null);
                 } else {

@@ -35,7 +35,32 @@ var message = {
     SUCCESS: 'Success',
     FAILED: 'Failed',
     MISSING_PAGE_NUMBER: 'Missing Page number',
-    PLEASE_CHECK_YOUR_EMAIL: 'please check your email'
+    PLEASE_CHECK_YOUR_EMAIL: 'please check your email',
+    INVALID_FIELD_EMAIL: 'Your email address is invalid',
+    EMPTY_FIELD_NAME: 'please enter name',
+
+    EMPTY_FIELD_AREA: 'please enter area',
+    EMPTY_FIELD_TYPE: 'please enter type',
+    EMPTY_FIELD_STREET: 'please enter street',
+    EMPTY_FIELD_BUILDING: 'please enter building',
+    EMPTY_FIELD_APARTMENT: 'please enter appartment',
+    EMPTY_FIELD_FLOOR: 'please enter floor',
+    EMPTY_FIELD_CITY_ID: 'invalid city id',
+    EMPTY_FIELD_LANDLINE: 'please enter landline',
+    INVALID_ADDRESS_ID: 'invalid address is',
+    INVALID_KITCHEN_ID: 'invalid kitchen id',
+    NO_MEALS_IN_ORDER: 'no meals found',
+    EMPTY_FIELD_CARD_TYPE: 'Invalid Card Type',
+    EMPTY_FIELD_CARD_NUMBER: 'Invalid Card number',
+    EMPTY_FIELD_EXPIRY_DATE: 'Invalid Expiry date',
+    EMPTY_FIELD_CVC: 'Invalid CVC',
+    EMPTY_FIELD_OWNER_NAME: 'Invalid Owner name',
+    EMPTY_FIELD_USER_ID: 'Invalid User id.',
+    INVALID_USER_ID: 'invalid user id',
+    INVALID_DEAL_ID: 'invalid deal id',
+    INVALID_STATUS: 'invalid status',
+    INVALID_DATE: 'invalid date',
+    SUCCESS_CREATE_WITH_SP:'The registration has been successfully , You will receive activation email in 24 hours.'
 
 };
 

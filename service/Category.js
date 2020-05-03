@@ -12,6 +12,17 @@ var service = {
         });
     },
 
+
+    get_categoriesAdmin: function () {
+        return new Promise(function (resolve, reject) {
+            categoryRepository.get_categoriesAdmin().then(categories => {
+                resolve(categories);
+            }, error => {
+                reject(error);
+            });
+        });
+    },
+
     get_category: function (category_id, page, keyword) {
         return new Promise(function (resolve, reject) {
             categoryRepository.get_category(category_id, page, keyword).then(categories => {
