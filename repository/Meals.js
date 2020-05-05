@@ -710,7 +710,7 @@ var MealRepository = {
                 user_id: newReviewData.user_id,
                 meal_id: newReviewData.meal_id,
                 final_rate: newReviewData.final_rate,
-                comment: newReviewData.comment,
+                comment: '',
             }).then(async rate => {
                 if (rate == null) {
                     resolve(null);

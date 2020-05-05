@@ -154,16 +154,6 @@ router.post('/login', function (req, res) {
                                 });
                             }
 
-                        }
-                        if (user.active == 2) {
-                            languageService.get_lang(lang, 'BLOCKED').then(msg => {
-                                res.json({
-                                    status: statics.STATUS_FAILURE,
-                                    code: codes.INVALID_DATA,
-                                    message: msg.message,
-                                    data: {}
-                                });
-                            });
                         } else {
                             user['token'] = token,
                                 languageService.get_lang(lang, 'DATA_FOUND').then(msg => {

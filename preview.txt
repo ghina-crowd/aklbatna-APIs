@@ -1,0 +1,13 @@
+Hi John Appleseed,
+
+Your order has been processed successfully.        
+
+You can check the status of your order and more in your dashboard:        
+https://mailgen.js/confirm?s=d9729feb74992cc3482b350163a1a010        
+
+We thank you for your purchase.        
+
+Yours truly,  
+Mailgen
+
+&copy; 2020 <a href="https://mailgen.js/" target="_blank">Mailgen</a>. All rights reserved.
