@@ -174,7 +174,7 @@ var OffersRepository = {
 
 
         var order = [];
-
+        order.push(['offer_id', 'DESC']);
         if (filters.sort_by) {
             if (filters.sort_by == 1) {
                 order.push(['price', 'ASC'])

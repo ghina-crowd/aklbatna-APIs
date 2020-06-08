@@ -312,7 +312,7 @@ var MealRepository = {
         models.Meals.belongsTo(models.Categories, { foreignKey: 'category_id' });
         return new Promise(function (resolve, reject) {
             models.Meals.findAll({
-                attributes: Meals, where: { active: 1, featured: 1 }, limit: pageSize, offset: offset, order: order, include: [{ model: models.kitchens, attributes: kitchens }, { model: models.Categories, attributes: Category }, {
+                attributes: Meals, where: { active: 1, featured: 1 }, limit: pageSize, offset: offset, order: order, include: [{ model: models.kitchens, attributes: kitchens, where: { active: 1, } }, { model: models.Categories, attributes: Category }, {
                     required: false,
                     model: models.Favourite, where: {
                         user_id: user_id
@@ -589,7 +589,7 @@ var MealRepository = {
     },
     getSpCount: function (user_id) {
 
-        console.log('user_id',user_id);
+        console.log('user_id', user_id);
         return new Promise(function (resolve, reject) {
             models.Meals.belongsTo(models.kitchens, { foreignKey: 'kitchen_id' });
             models.Meals.findAll({

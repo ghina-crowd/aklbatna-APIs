@@ -67,7 +67,7 @@ var KitchenRepository = {
         }
         return new Promise(function (resolve, reject) {
             models.kitchens.findAll({
-                attributes: kitchens, where: { active: 1 }
+                attributes: kitchens, where: { active: 1 }, order: [['kitchen_id', 'DESC']]
             }).then((kitchens => {
                 if (kitchens == null) {
                     resolve([]);
@@ -233,7 +233,7 @@ var KitchenRepository = {
         models.kitchens.belongsTo(models.User, { foreignKey: 'user_id' });
         return new Promise(function (resolve, reject) {
             models.kitchens.findAll({
-                attributes: kitchens, limit: pageSize, offset: offset, where: { featured: 1 }, include: [{ model: models.User, attributes: User }, { model: models.Categories, attributes: Category }],
+                attributes: kitchens, limit: pageSize, offset: offset, where: { featured: 1, active: 1 }, include: [{ model: models.User, attributes: User }, { model: models.Categories, attributes: Category }],
             }).then((kitchens => {
                 if (kitchens == null) {
                     resolve([]);

@@ -82,6 +82,7 @@ var typeRepository = {
             models.Type.update({
                 name_en: newtypeData.name_en,
                 name_ar: newtypeData.name_ar,
+                active: newtypeData.active,
             }, { where: { type_id: newtypeData.type_id } }).then(function (result) {
                 models.Type.findOne({ where: { type_id: newtypeData.type_id } }).then(type => {
                     resolve(type);

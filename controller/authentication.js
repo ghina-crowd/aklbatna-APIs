@@ -697,7 +697,7 @@ router.put('/sent_otp_by_email', function (req, res) {
 
                         console.log(user);
 
-                        if (user.user_type === 'normal') {
+                        if (user.user_type) {
                             authenticationService.update_otp(user.email).then(user => {
                                 resolve(user);
                                 var transporter = nodemailer.createTransport({
