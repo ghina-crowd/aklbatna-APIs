@@ -126,15 +126,15 @@ var CategoryRepository = {
         } else {
             return new Promise(function (resolve, reject) {
                 models.Categories.findOne({
-                    where: { category_id: categor_id }, attributes: Category, limit: pageSize,
-                    offset: offset,
+                    where: { category_id: categor_id, active: 1 }, attributes: Category
                 }).then(categories => {
                     if (categories == null) {
                         resolve({});
                     } else {
                         models.kitchens.findAndCountAll({
-                            distinct: true, attributes: kitchens,
-                            where: [{ category_id: categor_id }, data], include: [{
+                            distinct: true, attributes: kitchens, limit: pageSize,
+                            offset: offset,
+                            where: [{ category_id: categor_id, active: 1 }, data], include: [{
                                 model: models.Menu,
                                 attributes: Menu,
                                 include: [{
