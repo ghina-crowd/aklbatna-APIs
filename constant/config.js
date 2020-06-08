@@ -7,8 +7,8 @@ var config = {
     db: {
         DATABASE: 'ALKBETNA',
         USERNAME: 'root',
-        PASSWORD: '',
-        HOST: 'localhost',
+        PASSWORD: 'Crowd@123',
+        HOST: '',
         DIALECT: 'mysql'
     }
 };
