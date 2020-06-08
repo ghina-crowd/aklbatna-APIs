@@ -9,6 +9,7 @@ var sequelize=new Sequelize(config.db.DATABASE,config.db.USERNAME,config.db.PASS
         acquire:30000,
         idle:10000
     },
+    logging: false,
     operatorsAliases: false,
     define: {
         timestamps: false
