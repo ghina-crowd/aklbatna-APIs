@@ -7,6 +7,7 @@ var MealsRepository = require('../repository/Meals');
 var UsersRepository = require('../repository/users');
 var OrderRepository = require('../repository/Order');
 var OffersRepository = require('../repository/Offers');
+var ConstrainsRepository = require('../repository/Constrains');
 
 
 module.exports = {
@@ -16,12 +17,15 @@ module.exports = {
                 CategoryRepository.get_categories().then((kitchens) => {
                     KitchensRepository.get_featured(0).then((kitchensFeatured) => {
                         MealsRepository.get_featuredHome(0, 0, id).then((Meals) => {
-                            var data = {};
-                            data.banners = banners;
-                            data.categories = kitchens;
-                            data.featuredKitchens = kitchensFeatured;
-                            data.featuredMeals = Meals;
-                            resolve(data);
+                            ConstrainsRepository.getConstrains().then((Constrains) => {
+                                var data = {};
+                                data.banners = banners;
+                                data.categories = kitchens;
+                                data.featuredKitchens = kitchensFeatured;
+                                data.featuredMeals = Meals;
+                                data.Constrains = Constrains;
+                                resolve(data);
+                            })
                         })
                     })
 

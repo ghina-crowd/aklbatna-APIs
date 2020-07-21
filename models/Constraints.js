@@ -6,6 +6,9 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER,
       primaryKey: true,
       allowNull: false,
+    },
+    side_image: {
+      type: DataTypes.STRING,
     }
   }, {
     tableName: 'constraints'

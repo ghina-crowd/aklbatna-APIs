@@ -10,6 +10,14 @@ var config = {
         PASSWORD: 'Crowd@123',
         HOST: '',
         DIALECT: 'mysql'
+
+
+
+    //     DATABASE: 'ALKBETNA',
+    //    USERNAME: 'root',
+    //     PASSWORD: '',
+    //     HOST: 'localhost',
+    //     DIALECT: 'mysql'
     }
 };
 

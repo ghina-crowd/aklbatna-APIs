@@ -7,6 +7,7 @@ var languageService = require('../validator/language');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
 var config = require('../constant/config.js');
+var ConstrainsServices = require('../repository/Constrains')
 
 
 
@@ -314,4 +315,358 @@ router.put('/updateConstrains', async function (req, res) {
         })
     }
 });
+
+router.get('/about/:type', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+
+        return new Promise(function (resolve, reject) {
+            ConstrainsServices.getAllabout(req.params.type).then(contacts => {
+                resolve(contacts);
+                if (contacts == null) {
+                    contacts = {};
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: contacts
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.get('/admin/about/:type', async function (req, res) {
+    lang = req.headers.language;
+    var errors = validationResult(req);
+
+
+
+
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+    
+    
+
+        return new Promise(function (resolve, reject) {
+            ConstrainsServices.getAllaboutAdmin(req.params.type).then(contacts => {
+                resolve(contacts);
+                if (contacts == null) {
+                    contacts = {};
+                }
+                languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                    res.json({
+                        status: statics.STATUS_SUCCESS,
+                        code: codes.SUCCESS,
+                        message: msg.message,
+                        data: contacts
+                    });
+                });
+            }, error => {
+                reject(error);
+            });
+        });
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.put('/admin/about/update', async function (req, res) {
+    var token = req.headers.authorization;
+    var lang = req.headers.language;
+
+
+    await verifyToken(token, res, lang);
+    if (!id) {
+        return;
+    }
+
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+
+        if (!req.body.about_id || req.body.about_id == '') {
+            languageService.get_lang(lang, 'about_id').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.title_en || req.body.title_en == '') {
+            languageService.get_lang(lang, 'title_en').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.title_ar || req.body.title_ar == '') {
+            languageService.get_lang(lang, 'title_ar').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.description_en || req.body.description_en == '') {
+            languageService.get_lang(lang, 'description_en').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.description_ar || req.body.description_ar == '') {
+            languageService.get_lang(lang, 'description_ar').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.type || req.body.type == '') {
+            languageService.get_lang(lang, 'type').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else {
+
+            return new Promise(function (resolve, reject) {
+                ConstrainsServices.update(req.body).then(homedata => {
+                    resolve(homedata);
+                    if (homedata == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: homedata,
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: homedata,
+                            });
+                        })
+
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.post('/admin/about/create', async function (req, res) {
+    var token = req.headers.authorization;
+    var lang = req.headers.language;
+
+
+    await verifyToken(token, res, lang);
+    if (!id) {
+        return;
+    }
+
+
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        if (!req.body.title_en || req.body.title_en == '') {
+            languageService.get_lang(lang, 'title_en').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.title_ar || req.body.title_ar == '') {
+            languageService.get_lang(lang, 'title_ar').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.description_en || req.body.description_en == '') {
+            languageService.get_lang(lang, 'description_en').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.description_ar || req.body.description_ar == '') {
+            languageService.get_lang(lang, 'description_ar').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else if (!req.body.type || req.body.type == '') {
+            languageService.get_lang(lang, 'type').then(msg => {
+                res.json({
+                    status: statics.STATUS_FAILURE,
+                    code: codes.FAILURE,
+                    message: msg.message,
+                    data: null
+                });
+            });
+        } else {
+
+            return new Promise(function (resolve, reject) {
+                ConstrainsServices.createabout(req.body).then(homedata => {
+                    resolve(homedata);
+                    if (homedata == null) {
+                        languageService.get_lang(lang, 'DATA_NOT_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: homedata,
+                            });
+                        });
+                    } else {
+                        languageService.get_lang(lang, 'DATA_FOUND').then(msg => {
+                            res.json({
+                                status: statics.STATUS_SUCCESS,
+                                code: codes.SUCCESS,
+                                message: msg.message,
+                                data: homedata,
+                            });
+                        })
+
+                    }
+                }, error => {
+                    reject(error);
+                });
+            });
+        }
+
+
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        })
+    }
+});
+router.delete('/admin/about/delete/:about_id', async function (req, res) {
+    var lang = req.headers.language;
+    var errors = validationResult(req);
+    if (errors.array().length == 0) {
+        var lang = req.headers.language;
+        var token = req.headers.authorization;
+        await verifyToken(token, res, lang);
+        if (!id) {
+            return;
+        }
+        return new Promise(function (resolve, reject) {
+            {
+
+                return new Promise(function (resolve, reject) {
+                    ConstrainsServices.deleteabout(req.params.about_id).then(account => {
+                        resolve(account);
+
+                        if (account) {
+                            languageService.get_lang(lang, 'SUCCESS').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_SUCCESS,
+                                    code: codes.SUCCESS,
+                                    message: msg.message,
+                                    data: account
+                                });
+                            });
+                        } else {
+                            languageService.get_lang(lang, 'about_id').then(msg => {
+                                res.json({
+                                    status: statics.STATUS_FAILURE,
+                                    code: codes.FAILURE,
+                                    message: msg.message,
+                                    data: null
+                                });
+                            });
+                        }
+
+                    }
+                        ,
+                        error => {
+                            reject(error);
+                        }
+                    );
+                });
+            }
+        })
+    } else {
+        languageService.get_lang(lang, 'INVALID_DATA').then(msg => {
+            res.json({
+                status: statics.STATUS_FAILURE,
+                code: codes.INVALID_DATA,
+                message: msg.message,
+                data: errors.array()
+            });
+        });
+
+    }
+}
+);
 module.exports = router;

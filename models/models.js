@@ -20,6 +20,7 @@ var subscription = require('./Subscription');
 var profit = require('./Profit');
 var notifications = require('./Notifications');
 var constraints = require('./Constraints');
+var about = require('./About');
 
 
 
@@ -45,5 +46,5 @@ module.exports = {
     Profit: profit(sequelize, Sequelize),
     Notifications: notifications(sequelize, Sequelize),
     Constraints: constraints(sequelize, Sequelize),
-
+    About: about(sequelize, Sequelize),
 };
