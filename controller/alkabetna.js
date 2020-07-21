@@ -421,24 +421,6 @@ router.put('/admin/about/update', async function (req, res) {
                     data: null
                 });
             });
-        } else if (!req.body.title_en || req.body.title_en == '') {
-            languageService.get_lang(lang, 'title_en').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (!req.body.title_ar || req.body.title_ar == '') {
-            languageService.get_lang(lang, 'title_ar').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
         } else if (!req.body.description_en || req.body.description_en == '') {
             languageService.get_lang(lang, 'description_en').then(msg => {
                 res.json({
@@ -522,25 +504,7 @@ router.post('/admin/about/create', async function (req, res) {
 
     var errors = validationResult(req);
     if (errors.array().length == 0) {
-        if (!req.body.title_en || req.body.title_en == '') {
-            languageService.get_lang(lang, 'title_en').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (!req.body.title_ar || req.body.title_ar == '') {
-            languageService.get_lang(lang, 'title_ar').then(msg => {
-                res.json({
-                    status: statics.STATUS_FAILURE,
-                    code: codes.FAILURE,
-                    message: msg.message,
-                    data: null
-                });
-            });
-        } else if (!req.body.description_en || req.body.description_en == '') {
+        if (!req.body.description_en || req.body.description_en == '') {
             languageService.get_lang(lang, 'description_en').then(msg => {
                 res.json({
                     status: statics.STATUS_FAILURE,

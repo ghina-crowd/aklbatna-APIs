@@ -36,9 +36,9 @@ var constrainsRepository = {
     },
     getAllabout: function (type) {
         if (lang.acceptedLanguage == 'en') {
-            about = ['about_id', ['title_en', 'title'], ['description_en', 'description']];
+            about = ['about_id', ['title_en', 'title'], ['description_en', 'description'], 'image'];
         } else {
-            about = ['about_id', ['title_ar', 'title'], ['description_ar', 'description']];
+            about = ['about_id', ['title_ar', 'title'], ['description_ar', 'description'], 'image'];
         }
         return new Promise(function (resolve, reject) {
             models.About.findAll({ where: { type: type }, attributes: about }).then((about => {
@@ -60,6 +60,7 @@ var constrainsRepository = {
                 description_ar: newaboutData.description_ar,
                 description_en: newaboutData.description_en,
                 type: newaboutData.type,
+                image: newaboutData.image,
             }, { where: { about_id: newaboutData.about_id } }).then(about => {
                 models.About.findOne({ where: { about_id: newaboutData.about_id } }).then((about => {
                     if (about == null) {
@@ -80,11 +81,12 @@ var constrainsRepository = {
     createabout: function (newaboutData) {
         return new Promise(function (resolve, reject) {
             models.About.create({
-                title_en: newaboutData.title_en,
-                title_ar: newaboutData.title_ar,
+                title_en: newaboutData.title_en ? newaboutData.title_en : '',
+                title_ar: newaboutData.title_ar ? newaboutData.title_ar : '',
                 description_ar: newaboutData.description_ar,
                 description_en: newaboutData.description_en,
                 type: newaboutData.type,
+                image: newaboutData.image,
             }).then(about => {
                 resolve(about);
             }, error => {

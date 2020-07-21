@@ -13,11 +13,11 @@ var config = {
 
 
 
-    //     DATABASE: 'ALKBETNA',
-    //    USERNAME: 'root',
-    //     PASSWORD: '',
-    //     HOST: 'localhost',
-    //     DIALECT: 'mysql'
+        //  DATABASE: 'ALKBETNA',
+        // USERNAME: 'root',
+        // PASSWORD: 'Crowd@123',
+        // HOST: '',
+        // DIALECT: 'mysql'
     }
 };
 
