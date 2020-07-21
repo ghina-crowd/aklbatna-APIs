@@ -96,7 +96,7 @@ router.get('/admin/get/:page', function (req, res) {
         })
     }
 });
-router.post('/admin/create', async function (req, res) {
+router.post('/create', async function (req, res) {
 
 
     var lang = req.headers.language;

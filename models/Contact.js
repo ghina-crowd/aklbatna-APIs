@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('Contact', {
+  return sequelize.define('contact', {
     contact_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -17,6 +17,6 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
     },
   }, {
-    tableName: 'Contact'
+    tableName: 'contact'
   });
 };
