@@ -11,7 +11,7 @@ const multer = require('multer');
 var kitchenRepository = require('../repository/Kitchen');
 var UserRepository = require('../repository/users');
 const { sendOrderStatus } = require('../util/sendOrderEmails');
-
+var Coupons = require('../repository/Coupons');
 var Notifications = require('../repository/Notifications');
 
 const upload = multer({
@@ -541,9 +541,9 @@ router.post('/create',
                             });
 
 
-
-
-
+                            if (credentials.coupon || String(credentials.coupon) !== '') {
+                                Coupons.updatemax(credentials.coupon)
+                            }
 
                             //Send notifcation to kitchen owner
                             kitchenRepository.get(order.kitchen_id).then((kitchen) => {

@@ -23,6 +23,8 @@ var OffersRouter = require('./controller/Offers');
 var SubsRouter = require('./controller/Subscription');
 var NotificationsRouter = require('./controller/Notifications');
 var SubsRouter = require('./controller/subscribe');
+var CouponsRouter = require('./controller/Coupons');
+
 
 //need to remove this maybe just for testing in local host.
 var cors = require('cors')
@@ -73,6 +75,8 @@ app.use('/offers', OffersRouter);
 app.use('/subscription', SubsRouter);
 app.use('/notifications', NotificationsRouter);
 app.use('/subscribe', SubsRouter);
+app.use('/coupons', CouponsRouter);
+
 
 
 //for images only

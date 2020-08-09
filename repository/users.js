@@ -320,6 +320,59 @@ var UserRepository = {
             });
         });
     },
+    CreateGuest: function (email, first_name, last_name, phone) {
+        var otp_val = Math.floor(1000 + Math.random() * 9000);
+        var hashPassword = bcrypt.hashSync(String(otp_val), 8);
+        return new Promise(function (resolve, reject) {
+            models.User.findOne({ attributes: ['user_id', 'user_type', 'email', 'phone'], where: { email: email } }).then(users => {
+                if (users == null) {
+                    console.log({
+                        email: email,
+                        account_status: 'Pending',
+                        password: hashPassword,
+                        first_name: first_name,
+                        last_name: last_name,
+                        phone: phone,
+                        otp: otp_val,
+                        user_type: 'normal',
+                        photo: first_name,
+                        active: 0,
+                        joining_date: new Date().toDateString()
+                    })
+
+
+                    models.User.create({
+                        email: email,
+                        account_status: 'Pending',
+                        password: hashPassword,
+                        first_name: first_name,
+                        last_name: last_name,
+                        phone: phone,
+                        otp: otp_val,
+                        user_type: 'normal',
+                        photo: first_name,
+                        active: 0,
+                        os: app.os ? app.os : 'old-version',
+                        joining_date: new Date().toDateString()
+
+                    }).then(users => {
+                        var isDeleted = delete users.dataValues['password'];
+                        if (isDeleted) {
+                            resolve(users);
+                        } else {
+                            resolve(null);
+                        }
+                    }, error => {
+                        reject(error)
+                    });
+                } else {
+                    resolve(users)
+                }
+            }, error => {
+                reject(error);
+            });
+        });
+    },
 
     Check: function (email, password, first_name, last_name, phone, user_type) {
         return new Promise(function (resolve, reject) {

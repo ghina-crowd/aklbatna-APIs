@@ -21,6 +21,7 @@ var profit = require('./Profit');
 var notifications = require('./Notifications');
 var constraints = require('./Constraints');
 var about = require('./About');
+var coupons = require('./Coupons');
 
 
 
@@ -47,4 +48,5 @@ module.exports = {
     Notifications: notifications(sequelize, Sequelize),
     Constraints: constraints(sequelize, Sequelize),
     About: about(sequelize, Sequelize),
+    Coupons: coupons(sequelize, Sequelize),
 };

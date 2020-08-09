@@ -495,7 +495,7 @@ var OrderRepository = {
                 transaction_id: newOrderData.transaction_id ? newOrderData.transaction_id : '',
                 payment_type: newOrderData.payment_type ? newOrderData.payment_type : 1,
                 status: 0,
-                order_timing: newOrderData.order_timing ? moment(newOrderData.order_timing).format('YYYY-MM-DD HH:mm:ss') : moment(new Date().toISOString()).format('YYYY-MM-DD HH:mm:ss'),
+                order_timing: newOrderData.order_timing ? moment(new Date(newOrderData.order_timing).getTime()).format('YYYY-MM-DD HH:mm:ss') : moment(new Date().getTime()).format('YYYY-MM-DD HH:mm:ss'),
                 comments: newOrderData.comments ? newOrderData.comments : '',
             }).then(async Order => {
 
