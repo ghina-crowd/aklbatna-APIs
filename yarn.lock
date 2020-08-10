@@ -1876,10 +1876,21 @@ express-jwt-blacklist@^1.1.0:
     memcached "^2.2.1"
     redis "^2.5.3"
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+express-sharp@^4.2.2:
+=======
+express-sharp@^4.2.8:
+>>>>>>> refs/remotes/origin/master
+  version "4.2.8"
+  resolved "https://registry.yarnpkg.com/express-sharp/-/express-sharp-4.2.8.tgz#9b0fc4b39ba5327431ff54ab5887aae0c84cc415"
+  integrity sha512-GE2oX/bAf1rdi8i/4IbqCJNLgUN3o01Ru4dX4DjGZ1xQI/tCnwxcZEKX8x5i9aPzhyuWyPOv/dTZLlr6PGvSLw==
+=======
 express-sharp@4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/express-sharp/-/express-sharp-4.2.4.tgz#2edc05dd016b796cdc3859e2cce2d11fb87091a3"
   integrity sha512-ZY6GQDzLJM69rEAFdQ9p2fOdn0Kml0bdt8ea28MuEn8kTdPD8tVwO3lNqfCDXgCKQsyv1lDZnXRjftmSJHShtw==
+>>>>>>> bf7b4d83dd48a99f55934ae648c46e057d7a9da8
   dependencies:
     class-validator "^0.12.2"
     cors "^2.8.4"
