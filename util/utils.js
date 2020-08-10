@@ -8,8 +8,8 @@ var utils = {
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'acoponey@gmail.com',
-                pass: 'muhammadcrowd'
+                user: 'crowdmarketofficial@gmail.com',
+                pass: 'CrowdMuhammad'
             }
         });
         const mailOptions = {
@@ -31,8 +31,8 @@ var utils = {
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'acoponey@gmail.com',
-                pass: 'muhammadcrowd'
+                user: 'crowdmarketofficial@gmail.com',
+                pass: 'CrowdMuhammad'
             }
         });
         const mailOptions = {
@@ -53,8 +53,8 @@ var utils = {
         var transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'acoponey@gmail.com',
-                pass: 'muhammadcrowd'
+                user: 'crowdmarketofficial@gmail.com',
+                pass: 'CrowdMuhammad'
             }
         });
         const mailOptions = {
