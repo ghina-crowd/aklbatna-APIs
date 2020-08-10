@@ -37,6 +37,7 @@
     "jsonwebtoken": "^8.5.1",
     "log4js": "^3.0.4",
     "mailgen": "^2.0.10",
+    "express-sharp": "^4.2.2",
     "moment": "^2.24.0",
     "morgan": "^1.9.0",
     "multer": "^1.4.2",

@@ -18,6 +18,7 @@ var MealsRouter = require('./controller/Meals');
 var AlkabetnaRouter = require('./controller/alkabetna');
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
+var { expressSharp, FsAdapter } = require('express-sharp')
 var UploadRouter = require('./controller/upload');
 var OffersRouter = require('./controller/Offers');
 var SubsRouter = require('./controller/Subscription');
@@ -26,9 +27,14 @@ var SubsRouter = require('./controller/subscribe');
 var CouponsRouter = require('./controller/Coupons');
 
 
+
+
 //need to remove this maybe just for testing in local host.
 var cors = require('cors')
 var app = express();
+//for images only
+app.use('/images', expressSharp({ imageAdapter: new FsAdapter(__dirname + "/images"), }))
+// app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));
 
 
 //for making image folder
@@ -78,10 +84,6 @@ app.use('/subscribe', SubsRouter);
 app.use('/coupons', CouponsRouter);
 
 
-
-//for images only
-app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));
-//Register routers
 
 
 module.exports = app;
