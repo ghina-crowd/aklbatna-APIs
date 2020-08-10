@@ -5,19 +5,19 @@ var config = {
     PORT: 3200,
     PROFILE: 'dev',
     db: {
-        DATABASE: 'ALKBETNA',
-        USERNAME: 'root',
-        PASSWORD: 'Crowd@123',
-        HOST: '',
-        DIALECT: 'mysql'
-
-
-
         // DATABASE: 'ALKBETNA',
         // USERNAME: 'root',
-        // PASSWORD: '',
-        // HOST: 'localhost',
+        // PASSWORD: 'Crowd@123',
+        // HOST: '',
         // DIALECT: 'mysql'
+
+
+
+        DATABASE: 'ALKBETNA',
+        USERNAME: 'root',
+        PASSWORD: '',
+        HOST: 'localhost',
+        DIALECT: 'mysql'
     }
 };
 
