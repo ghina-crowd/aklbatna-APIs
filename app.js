@@ -18,7 +18,7 @@ var MealsRouter = require('./controller/Meals');
 var AlkabetnaRouter = require('./controller/alkabetna');
 var defaultMiddleware = require('./middleware/defaultMiddleware.js');
 var config = require('./constant/config.js');
-// var { expressSharp, FsAdapter, HttpAdapter } = require('express-sharp')
+var { expressSharp, FsAdapter, HttpAdapter } = require('express-sharp')
 var UploadRouter = require('./controller/upload');
 var OffersRouter = require('./controller/Offers');
 var SubsRouter = require('./controller/Subscription');
@@ -33,8 +33,8 @@ var CouponsRouter = require('./controller/Coupons');
 var cors = require('cors')
 var app = express();
 //for images only
-// app.use('/images', expressSharp({ imageAdapter: new FsAdapter(__dirname + "/images"), }))
-app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));
+app.use('/images', expressSharp({ imageAdapter: new FsAdapter(__dirname + "/images"), }))
+// app.use("/images", express.static(__dirname + "/images", { fallthrough: false }));
 
 
 //for making image folder
