@@ -587,15 +587,15 @@ router.put('/resend_code', async function (req, res) {
                     var transporter = nodemailer.createTransport({
                         service: 'gmail',
                         auth: {
-                            user: 'acoponey@gmail.com',
-                            pass: 'muhammadcrowd'
+                            user: 'crowdmarketofficial@gmail.com',
+                            pass: 'CrowdMuhammad'
                         }
                     });
 
                     console.log(user);
                     if (user.user_type === 'normal') {
                         const mailOptions = {
-                            from: 'acoponey@gmail.com', // sender address
+                            from: 'crowdmarketofficial@gmail.com', // sender address
                             to: user.email, // list of receivers
                             subject: 'Coponey', // Subject line
                             html: '<p>Your OTP here ' + user.otp + '</p>'// plain text body
@@ -703,8 +703,8 @@ router.put('/sent_otp_by_email', function (req, res) {
                                 var transporter = nodemailer.createTransport({
                                     service: 'gmail',
                                     auth: {
-                                        user: 'acoponey@gmail.com',
-                                        pass: 'muhammadcrowd'
+                                        user: 'crowdmarketofficial@gmail.com',
+                                        pass: 'CrowdMuhammad'
                                     }
                                 });
 
