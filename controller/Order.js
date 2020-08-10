@@ -557,6 +557,7 @@ router.post('/create',
                 } else {
 
                     credentials.user_id = id;
+                    console.log(credentials);
                     return new Promise(function (resolve, reject) {
                         orderservice.CreateOrder(credentials).then(order => {
 
