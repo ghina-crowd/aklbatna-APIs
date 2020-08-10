@@ -516,6 +516,35 @@ router.post('/create',
                         });
                     });
                 }
+                else if (!credentials.subtotal || String(credentials.subtotal) == '') {
+                    languageService.get_lang(lang, 'NO_SUB_TOTAL').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                } else if (!String(credentials.tax) || String(credentials.tax) == '') {
+                    languageService.get_lang(lang, 'NO_TAX').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                }
+                else if (!credentials.discount || String(credentials.discount) == '') {
+                    languageService.get_lang(lang, 'NO_DISCOUNT').then(msg => {
+                        res.json({
+                            status: statics.STATUS_FAILURE,
+                            code: codes.FAILURE,
+                            message: msg.message,
+                            data: null
+                        });
+                    });
+                }
                 else if (!credentials.payment_type || String(credentials.payment_type) == '') {
                     languageService.get_lang(lang, 'NO_PAYMENT_TYPE').then(msg => {
                         res.json({

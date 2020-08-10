@@ -509,7 +509,36 @@ router.post('/GuestCreate',
                                 data: null
                             });
                         });
-                    } 
+                    }
+                    else if (!credentials.subtotal || String(credentials.subtotal) == '') {
+                        languageService.get_lang(lang, 'NO_SUB_TOTAL').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: null
+                            });
+                        });
+                    } else if (!String(credentials.tax) || String(credentials.tax) == '') {
+                        languageService.get_lang(lang, 'NO_TAX').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: null
+                            });
+                        });
+                    }
+                    else if (!credentials.discount || String(credentials.discount) == '') {
+                        languageService.get_lang(lang, 'NO_DISCOUNT').then(msg => {
+                            res.json({
+                                status: statics.STATUS_FAILURE,
+                                code: codes.FAILURE,
+                                message: msg.message,
+                                data: null
+                            });
+                        });
+                    }
                     else if (!credentials.kitchen_id || String(credentials.kitchen_id) == '') {
                         languageService.get_lang(lang, 'kitchen_id').then(msg => {
                             res.json({
@@ -519,8 +548,8 @@ router.post('/GuestCreate',
                                 data: null
                             });
                         });
-                    } 
-                    
+                    }
+
                     else {
                         if (!credentials.SubOrders || credentials.SubOrders.length === 0) {
                             languageService.get_lang(lang, 'SUB_ORDER_MISSING').then(msg => {
@@ -538,7 +567,7 @@ router.post('/GuestCreate',
                         UserService.CreateGuest(credentials.email, credentials.first_name, credentials.last_name, credentials.phone).then((user) => {
                             credentials.user_id = user.dataValues.user_id;
                             return new Promise(function (resolve, reject) {
-                              
+
                                 AddressService.create(credentials).then(account => {
                                     credentials.address_id = account.dataValues.address_id;
                                     orderservice.CreateOrder(credentials).then(order => {
@@ -556,7 +585,7 @@ router.post('/GuestCreate',
                                                 data: order
                                             });
                                         });
-            
+
 
                                         //Send notifcation to kitchen owner
                                         kitchenRepository.get(order.kitchen_id).then((kitchen) => {
@@ -631,7 +660,7 @@ router.post('/GuestCreate',
                                         reject(error);
                                     }
                                     );
-                                },error => {
+                                }, error => {
                                     reject(error);
                                 }
                                 );

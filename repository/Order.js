@@ -487,16 +487,24 @@ var OrderRepository = {
 
         return new Promise(async function (resolve, reject) {
             models.Order.create({
+
                 user_id: newOrderData.user_id,
                 kitchen_id: newOrderData.kitchen_id,
                 address_id: newOrderData.address_id,
                 total_price: newOrderData.total_price ? newOrderData.total_price : 0,
+
+                discount: newOrderData.discount ? newOrderData.discount : 0,
+                tax: newOrderData.tax ? newOrderData.tax : 0,
+                subtotal: newOrderData.subtotal ? newOrderData.subtotal : 0,
+
                 delivery_charges: newOrderData.delivery_charges ? newOrderData.delivery_charges : 0,
                 transaction_id: newOrderData.transaction_id ? newOrderData.transaction_id : '',
                 payment_type: newOrderData.payment_type ? newOrderData.payment_type : 1,
                 status: 0,
                 order_timing: newOrderData.order_timing ? moment(new Date(newOrderData.order_timing).getTime()).format('YYYY-MM-DD HH:mm:ss') : moment(new Date().getTime()).format('YYYY-MM-DD HH:mm:ss'),
                 comments: newOrderData.comments ? newOrderData.comments : '',
+                os: lang.os ? lang.os : 'old-version',
+
             }).then(async Order => {
 
                 var transaction_id = uid.randomUUID(6 - String(Order['dataValues'].order_id).length)

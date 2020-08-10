@@ -55,6 +55,22 @@ module.exports = function (sequelize, DataTypes) {
     payment_type: {
       type: DataTypes.INTEGER,
       allowNull: true,
+    },
+    discount: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    tax: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    subtotal: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    os: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     }
   }, {
     tableName: 'alkebetna_order'
