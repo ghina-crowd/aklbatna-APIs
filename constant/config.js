@@ -12,6 +12,7 @@ var config = {
         DIALECT: 'mysql'
 
 
+        
 
         // DATABASE: 'ALKBETNA',
         // USERNAME: 'root',
