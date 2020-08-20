@@ -184,8 +184,8 @@ var OrderRepository = {
         const offset = filters.page * pageSize;
         var data = {};
         if (filters.created_order_date) {
-            console.log('we are in date sort')
-            console.log(filters.created_order_date)
+
+
             var start = new Date(filters.created_order_date).setDate(new Date(filters.created_order_date).getDate());
             var end = new Date(filters.created_order_date).setDate(new Date(filters.created_order_date).getDate() + 1);
 
@@ -220,6 +220,7 @@ var OrderRepository = {
             models.Order.findAndCountAll({
                 distinct: true, where: data,
                 limit: pageSize, offset: offset,
+                order: [['order_id', 'DESC']],
                 include: [
                     { model: models.SubOrder, include: [{ model: models.Meals }] }, { model: models.Address, include: [{ model: models.City }] },
                     { model: models.kitchens },
