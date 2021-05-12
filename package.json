@@ -42,7 +42,7 @@
     "morgan": "^1.9.0",
     "multer": "^1.4.2",
     "mysql2": "^1.6.1",
-    "nodemailer": "^6.3.1",
+    "nodemailer": "^6.4.16",
     "nodemon": "^1.18.3",
     "sequelize": "^4.38.0",
     "sharp": "^0.23.4",
