@@ -36,7 +36,7 @@
     "firebase-admin": "^8.9.2",
     "jimp": "^0.9.3",
     "jsonwebtoken": "^8.5.1",
-    "log4js": "^3.0.4",
+    "log4js": "^6.4.0",
     "mailgen": "^2.0.10",
     "moment": "^2.24.0",
     "morgan": "^1.9.0",
